@@ -6,12 +6,25 @@ dotenv.config();
 
 const SECRET = process.env.JWT_SECRET || 'fallback_secret';
 
+export interface MulterFile {
+  fieldname: string;
+  originalname: string;
+  encoding: string;
+  mimetype: string;
+  size: number;
+  destination: string;
+  filename: string;
+  path: string;
+  buffer: Buffer;
+}
+
 export interface AuthRequest extends Request {
   user?: {
     id: number;
     email: string;
     role: string;
   };
+  file?: MulterFile;
 }
 
 export const authenticateToken = (req: AuthRequest, res: Response, next: NextFunction) => {

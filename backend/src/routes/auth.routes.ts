@@ -88,4 +88,89 @@ router.get('/me', authenticateToken, async (req: AuthRequest, res) => {
   }
 });
 
+// Protected route to update profile (name & email)
+router.put('/profile', authenticateToken, async (req: AuthRequest, res) => {
+  if (!req.user) return res.status(401).json({ error: 'Unauthenticated' });
+
+  try {
+    const { name, email } = req.body;
+
+    if (!name || !email) {
+      return res.status(400).json({ message: 'Nama dan email wajib diisi' });
+    }
+
+    // Check if the new email is already used by another user
+    const existingUser = await db
+      .select({ id: users.id })
+      .from(users)
+      .where(eq(users.email, email));
+
+    if (existingUser.length > 0 && existingUser[0].id !== req.user.id) {
+      return res.status(400).json({ message: 'Email sudah digunakan oleh akun lain' });
+    }
+
+    const updated = await db
+      .update(users)
+      .set({ name, email })
+      .where(eq(users.id, req.user.id))
+      .returning({ id: users.id, name: users.name, email: users.email, role: users.role });
+
+    if (updated.length === 0) {
+      return res.status(404).json({ message: 'User tidak ditemukan' });
+    }
+
+    res.json({ message: 'Profil berhasil diperbarui', user: updated[0] });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: 'Gagal memperbarui profil' });
+  }
+});
+
+// Protected route to update password
+router.put('/password', authenticateToken, async (req: AuthRequest, res) => {
+  if (!req.user) return res.status(401).json({ error: 'Unauthenticated' });
+
+  try {
+    const { currentPassword, newPassword } = req.body;
+
+    if (!currentPassword || !newPassword) {
+      return res.status(400).json({ message: 'Password saat ini dan password baru wajib diisi' });
+    }
+
+    if (newPassword.length < 6) {
+      return res.status(400).json({ message: 'Password baru minimal 6 karakter' });
+    }
+
+    // Fetch the current user record to verify password
+    const userRecord = await db
+      .select()
+      .from(users)
+      .where(eq(users.id, req.user.id));
+
+    if (userRecord.length === 0) {
+      return res.status(404).json({ message: 'User tidak ditemukan' });
+    }
+
+    const user = userRecord[0];
+
+    // Verify current password
+    const isMatch = await bcrypt.compare(currentPassword, user.password);
+    if (!isMatch) {
+      return res.status(400).json({ message: 'Password saat ini tidak sesuai' });
+    }
+
+    // Hash and save the new password
+    const hashedPassword = await bcrypt.hash(newPassword, 10);
+    await db
+      .update(users)
+      .set({ password: hashedPassword })
+      .where(eq(users.id, req.user.id));
+
+    res.json({ message: 'Password berhasil diperbarui' });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: 'Gagal memperbarui password' });
+  }
+});
+
 export default router;
