@@ -3,6 +3,7 @@ import { useNavigate, useLocation } from "react-router-dom";
 import NavigationSidebar from "../components/NavigationSidebar";
 import Profile from "./Profile";
 import Investigasi from "./Investigasi";
+import VirtualLab from "./VirtualLab";
 
 type User = {
   name: string;
@@ -53,6 +54,10 @@ export default function Dashboard() {
     navigate("/login");
   };
 
+  const handleUserUpdate = (nextUser: User) => {
+    setUser(nextUser);
+  };
+
   if (!user) {
     return (
       <div className="flex min-h-screen items-center justify-center">
@@ -61,21 +66,26 @@ export default function Dashboard() {
     );
   }
 
-  const isProfile = location.pathname === "/dashboard" || location.pathname === "/dashboard/";
+  const isProfile =
+    location.pathname === "/dashboard" || location.pathname === "/dashboard/";
   const isInvestigasi = location.pathname.startsWith("/dashboard/investigasi");
+  const isVirtualLab = location.pathname.startsWith("/dashboard/virtual-lab");
 
   return (
     <div className="flex bg-slate-50 min-h-screen">
       {/* Sidebar Navigation */}
       <NavigationSidebar handleLogout={handleLogout} />
-      
+
       {/* Main Content Area */}
       <main className="flex-1 p-4 md:p-8 overflow-y-auto">
         <div className={isProfile ? "block" : "hidden"}>
-          <Profile user={user} setUser={setUser as any} />
+          <Profile user={user} setUser={handleUserUpdate} />
         </div>
         <div className={isInvestigasi ? "block" : "hidden"}>
           <Investigasi user={user} />
+        </div>
+        <div className={isVirtualLab ? "block" : "hidden"}>
+          <VirtualLab />
         </div>
       </main>
     </div>
