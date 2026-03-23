@@ -4,6 +4,7 @@ import NavigationSidebar from "../components/NavigationSidebar";
 import Profile from "./Profile";
 import Investigasi from "./Investigasi";
 import VirtualLab from "./VirtualLab";
+import QuizPage from "./Quiz";
 
 type User = {
   name: string;
@@ -70,6 +71,7 @@ export default function Dashboard() {
     location.pathname === "/dashboard" || location.pathname === "/dashboard/";
   const isInvestigasi = location.pathname.startsWith("/dashboard/investigasi");
   const isVirtualLab = location.pathname.startsWith("/dashboard/virtual-lab");
+  const isKuis = location.pathname.startsWith("/dashboard/kuis");
 
   return (
     <div className="flex bg-[#FDFBF0] min-h-screen font-sans text-[#0F172A]">
@@ -86,6 +88,9 @@ export default function Dashboard() {
         </div>
         <div className={isVirtualLab ? "block w-full h-full" : "hidden"}>
           <VirtualLab />
+        </div>
+        <div className={isKuis ? "block p-4 md:p-8" : "hidden"}>
+          <QuizPage user={user} />
         </div>
       </main>
     </div>

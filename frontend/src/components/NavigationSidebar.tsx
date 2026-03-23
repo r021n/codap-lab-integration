@@ -7,6 +7,7 @@ import {
   Menu,
   ChevronLeft,
   FlaskConical,
+  ClipboardList,
 } from "lucide-react";
 
 export default function NavigationSidebar({
@@ -78,6 +79,16 @@ export default function NavigationSidebar({
           >
             <FlaskConical className="h-4 w-4 shrink-0" />
             {isOpen && <span>Virtual Lab</span>}
+          </NavLink>
+          <NavLink
+            to="/dashboard/kuis"
+            className={({ isActive }) =>
+              isActive ? activeClass : inactiveClass
+            }
+            title="Kuis"
+          >
+            <ClipboardList className="h-4 w-4 shrink-0" />
+            {isOpen && <span>Kuis</span>}
           </NavLink>
         </nav>
       </div>

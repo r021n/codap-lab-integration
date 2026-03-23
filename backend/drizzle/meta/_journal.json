@@ -8,6 +8,13 @@
       "when": 1774160026752,
       "tag": "0000_reflective_iceman",
       "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "7",
+      "when": 1774242813001,
+      "tag": "0001_funny_thunderbolt",
+      "breakpoints": true
     }
   ]
 }
