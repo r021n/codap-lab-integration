@@ -47,6 +47,7 @@ type LabState = {
   time: number;
   logs: LabLog[];
   hoseConnected: boolean;
+  duration: number;
 };
 
 type DragInfo = {
@@ -81,6 +82,8 @@ type TimbanganProps = {
   value: number;
 };
 
+const DEFAULT_DURATION = 5;
+
 const initialState: LabState = {
   flaskA: { hasThermo: false, hasStopper: false, hasPlant: false, temp: 28 },
   flaskB: { hasThermo: false, hasStopper: false, temp: 28 },
@@ -104,6 +107,7 @@ const initialState: LabState = {
   time: 0,
   logs: [],
   hoseConnected: false,
+  duration: DEFAULT_DURATION,
 };
 
 const initialDragInfo: DragInfo = {
@@ -151,31 +155,10 @@ const ErlenmeyerSVG = ({
   isBubbling,
 }: ErlenmeyerProps) => (
   <svg viewBox="0 0 120 160" className="w-full h-full drop-shadow-md">
-    {/* Label */}
-    <rect
-      x="50"
-      y="70"
-      width="20"
-      height="20"
-      fill="white"
-      stroke="#64748b"
-      rx="2"
-    />
-    <text
-      x="60"
-      y="84"
-      fontSize="12"
-      textAnchor="middle"
-      fontWeight="bold"
-      fill="#1e293b"
-    >
-      {label}
-    </text>
-
     {/* Gabus / Stopper */}
     {hasStopper && (
       <path
-        d="M 45 5 L 75 5 L 70 25 L 50 25 Z"
+        d="M 50 22 L 70 22 L 68 35 L 52 35 Z"
         fill="#8B4513"
         stroke="#5c2e0b"
         strokeWidth="2"
@@ -207,13 +190,45 @@ const ErlenmeyerSVG = ({
       </g>
     )}
 
-    {/* Badan Tabung */}
+    {/* Leher Tabung (tanpa kuping/pegangan) */}
     <path
-      d="M 50 25 L 70 25 L 70 50 L 105 130 A 10 10 0 0 1 95 145 L 25 145 A 10 10 0 0 1 15 130 L 50 50 Z"
+      d="M 50 25 L 50 55 L 15 135 A 10 10 0 0 0 25 145 L 95 145 A 10 10 0 0 0 105 135 L 70 55 L 70 25 Z"
       fill="rgba(255, 255, 255, 0.5)"
       stroke="#475569"
-      strokeWidth="3"
+      strokeWidth="2.5"
     />
+
+    {/* Mulut tabung */}
+    <line
+      x1="48"
+      y1="25"
+      x2="72"
+      y2="25"
+      stroke="#475569"
+      strokeWidth="3"
+      strokeLinecap="round"
+    />
+
+    {/* Label */}
+    <rect
+      x="50"
+      y="70"
+      width="20"
+      height="20"
+      fill="white"
+      stroke="#64748b"
+      rx="2"
+    />
+    <text
+      x="60"
+      y="84"
+      fontSize="12"
+      textAnchor="middle"
+      fontWeight="bold"
+      fill="#1e293b"
+    >
+      {label}
+    </text>
 
     {/* Isi Tabung: Tanaman */}
     {hasPlant && (
@@ -290,15 +305,38 @@ const ErlenmeyerSVG = ({
         )}
       </g>
     )}
+  </svg>
+);
 
-    {/* Highlight kilap kaca */}
-    <path
-      d="M 30 120 A 40 40 0 0 1 45 65"
-      stroke="rgba(255,255,255,0.6)"
-      fill="none"
-      strokeWidth="4"
-      strokeLinecap="round"
-    />
+const SunSVG = () => (
+  <svg width="70" height="70" viewBox="0 0 100 100">
+    {/* Lingkaran cahaya luar */}
+    <circle cx="50" cy="50" r="35" fill="#fde68a" opacity="0.3" />
+    {/* Badan matahari */}
+    <circle cx="50" cy="50" r="22" fill="#fbbf24" />
+    <circle cx="50" cy="50" r="18" fill="#fcd34d" />
+    {/* Highlight */}
+    <circle cx="43" cy="43" r="6" fill="#fef3c7" opacity="0.7" />
+    {/* Sinar matahari (garis pendek memancar) */}
+    {[0, 45, 90, 135, 180, 225, 270, 315].map((angle) => {
+      const rad = (angle * Math.PI) / 180;
+      const x1 = 50 + Math.cos(rad) * 28;
+      const y1 = 50 + Math.sin(rad) * 28;
+      const x2 = 50 + Math.cos(rad) * 40;
+      const y2 = 50 + Math.sin(rad) * 40;
+      return (
+        <line
+          key={angle}
+          x1={x1}
+          y1={y1}
+          x2={x2}
+          y2={y2}
+          stroke="#f59e0b"
+          strokeWidth="4"
+          strokeLinecap="round"
+        />
+      );
+    })}
   </svg>
 );
 
@@ -375,6 +413,9 @@ export default function App() {
   const [state, setState] = useState<LabState>(initialState);
   const [dragInfo, setDragInfo] = useState<DragInfo>(initialDragInfo);
   const [activeDropZone, setActiveDropZone] = useState<DropZone | null>(null);
+  const [durationInput, setDurationInput] = useState<string>(
+    String(DEFAULT_DURATION),
+  );
 
   const [hoseDrawing, setHoseDrawing] =
     useState<HoseDrawing>(initialHoseDrawing);
@@ -409,7 +450,7 @@ export default function App() {
 
   useEffect(() => {
     let interval: ReturnType<typeof setInterval> | undefined;
-    if (state.isRunning && state.time < 5) {
+    if (state.isRunning && state.time < state.duration) {
       interval = setInterval(() => {
         setState((prev) => {
           const newTime = prev.time + 1;
@@ -430,13 +471,13 @@ export default function App() {
             flaskA: { ...prev.flaskA, temp: newTempA },
             flaskB: { ...prev.flaskB, temp: newTempB },
             logs: newLogs,
-            isRunning: newTime < 5,
+            isRunning: newTime < prev.duration,
           };
         });
       }, 2000);
     }
     return () => clearInterval(interval);
-  }, [state.isRunning, state.time, state.hoseConnected]);
+  }, [state.isRunning, state.time, state.hoseConnected, state.duration]);
 
   const isSetupComplete = useCallback((s: LabState) => {
     return (
@@ -450,6 +491,30 @@ export default function App() {
       s.flaskC.hasStopper
     );
   }, []);
+
+  const handleReset = useCallback(() => {
+    setState({ ...initialState, duration: state.duration });
+    setDragInfo(initialDragInfo);
+    setActiveDropZone(null);
+    setHoseDrawing(initialHoseDrawing);
+    setPortCoords(initialPortCoords);
+  }, [state.duration]);
+
+  const handleDurationChange = useCallback((value: string) => {
+    setDurationInput(value);
+    const num = parseInt(value, 10);
+    if (!isNaN(num) && num >= 5) {
+      setState((prev) => ({ ...prev, duration: num }));
+    }
+  }, []);
+
+  const handleDurationBlur = useCallback(() => {
+    const num = parseInt(durationInput, 10);
+    if (isNaN(num) || num < 5) {
+      setDurationInput("5");
+      setState((prev) => ({ ...prev, duration: 5 }));
+    }
+  }, [durationInput]);
 
   const processAction = useCallback(
     (item: InventoryItem, zone: DropZone) => {
@@ -496,6 +561,7 @@ export default function App() {
             newState.scale.hasCylinder = true;
             inv.cylinder = false;
           }
+          // Baking soda bisa di-drop ke timbangan (yang sudah ada gelas ukur)
           if (item === "bakingSoda" && newState.scale.hasCylinder) {
             newState.scale.sodaAmount = 10;
           }
@@ -564,7 +630,9 @@ export default function App() {
         const element = document.elementFromPoint(clientX, clientY);
         const dropZone = element?.closest("[data-dropzone]");
         setActiveDropZone(
-          dropZone ? (dropZone.getAttribute("data-dropzone") as DropZone) : null,
+          dropZone
+            ? (dropZone.getAttribute("data-dropzone") as DropZone)
+            : null,
         );
 
         if (dragOverlay) dragOverlay.style.visibility = "visible";
@@ -593,7 +661,9 @@ export default function App() {
 
         const element = document.elementFromPoint(clientX, clientY);
         const dropZoneEl = element?.closest("[data-dropzone]");
-        const targetZone = dropZoneEl?.getAttribute("data-dropzone") as DropZone | null;
+        const targetZone = dropZoneEl?.getAttribute(
+          "data-dropzone",
+        ) as DropZone | null;
 
         if (dragOverlay) dragOverlay.style.visibility = "visible";
 
@@ -714,6 +784,8 @@ export default function App() {
     });
   };
 
+  const isLabFinished = state.time >= state.duration && state.time > 0;
+
   const getInstruction = () => {
     if (!state.flaskA.hasThermo || !state.flaskA.hasStopper)
       return "1. Tarik Termometer A dan Gabus A ke Tabung A. (Opsional: Masukkan Tanaman)";
@@ -724,7 +796,7 @@ export default function App() {
       if (!state.scale.hasCylinder)
         return "3. Tarik Gelas Ukur ke atas Timbangan.";
       if (state.scale.sodaAmount === 0)
-        return "4. Tarik Baking Soda ke Gelas Ukur (di atas timbangan) untuk menimbang 10g.";
+        return "4. Tarik Baking Soda ke Timbangan atau Gelas Ukur untuk menimbang 10g.";
       return "5. Tarik Gelas Ukur (yang berisi soda) ke Tabung C untuk menuangkannya.";
     }
 
@@ -737,7 +809,7 @@ export default function App() {
       return "9. Tarik Matahari ke area kosong untuk memindahkan set alat ke luar ruangan.";
     if (!state.isRunning && state.time === 0)
       return "10. Tarik Stopwatch ke area kerja untuk mulai mengamati suhu!";
-    if (state.time < 5)
+    if (state.time < state.duration)
       return "Mengamati... (Perhatikan suhu di Tabung B naik lebih cepat karena CO2 dari Tabung C)";
     return "Praktikum Selesai! Gas CO2 (Efek Rumah Kaca) memerangkap panas lebih banyak.";
   };
@@ -764,16 +836,28 @@ export default function App() {
   );
 
   return (
-    <div className="flex flex-col md:flex-row h-full min-h-screen w-full bg-[#FDFBF0] text-[#0F172A] overflow-hidden font-sans">
-      {/* PANEL KIRI: INVENTORY */}
-      <div className="w-full md:w-1/4 lg:w-1/5 bg-[#FFFFFF] border-b md:border-b-0 md:border-r border-[#94A3B8]/20 flex flex-col z-20 shadow-[0px_4px_6px_-1px_rgba(0,0,0,0.1)] h-1/3 md:h-full">
+    <div className="flex flex-col md:flex-row h-screen w-full bg-[#FDFBF0] text-[#0F172A] overflow-hidden font-sans">
+      {/* PANEL KIRI: INVENTORY — tinggi = 100vh */}
+      <div className="w-full md:w-1/4 lg:w-1/5 bg-[#FFFFFF] border-b md:border-b-0 md:border-r border-[#94A3B8]/20 flex flex-col z-20 shadow-[0px_4px_6px_-1px_rgba(0,0,0,0.1)] h-1/3 md:h-screen">
         <div className="p-3 border-b border-[#94A3B8]/20 bg-[#FFFFFF]/90 sticky top-0 backdrop-blur-sm z-10">
-          <h2 className="text-sm md:text-base font-serif font-bold text-[#F97316]">
-            Rak Alat & Bahan
-          </h2>
-          <p className="text-[10px] md:text-xs text-[#94A3B8]">
-            Sentuh & tarik ke area praktikum
-          </p>
+          <div className="flex items-center justify-between">
+            <div>
+              <h2 className="text-sm md:text-base font-serif font-bold text-[#F97316]">
+                Rak Alat & Bahan
+              </h2>
+              <p className="text-[10px] md:text-xs text-[#94A3B8]">
+                Sentuh & tarik ke area praktikum
+              </p>
+            </div>
+            {/* Tombol Reset */}
+            <button
+              onClick={handleReset}
+              className="px-2.5 py-1.5 text-[10px] md:text-xs font-semibold rounded-lg border-2 border-[#0F172A] text-[#0F172A] hover:bg-[#0F172A] hover:text-white active:scale-95 transition-all duration-150"
+              title="Reset Lab"
+            >
+              ↺ Reset
+            </button>
+          </div>
         </div>
         <div className="flex-1 overflow-y-auto p-3">
           <div className="grid grid-cols-3 md:grid-cols-2 gap-2">
@@ -814,7 +898,7 @@ export default function App() {
       </div>
 
       {/* PANEL KANAN: AREA PRAKTIKUM & LKPD */}
-      <div className="flex-1 flex flex-col relative h-2/3 md:h-full overflow-hidden">
+      <div className="flex-1 flex flex-col relative h-2/3 md:h-screen overflow-hidden">
         {/* Header Instruksi */}
         <div className="bg-[#FFFFFF]/90 backdrop-blur-sm border-b border-[#94A3B8]/20 p-2 md:p-3 shadow-[0px_4px_6px_-1px_rgba(0,0,0,0.1)] z-20 shrink-0">
           <p className="text-xs md:text-sm text-[#0F172A] font-medium leading-tight">
@@ -823,26 +907,18 @@ export default function App() {
           </p>
         </div>
 
-        {/* Meja Praktikum (Area Interaktif) */}
+        {/* Meja Praktikum (Area Interaktif) — tinggi 50% */}
         <div
           ref={workspaceRef}
-          className={`flex-1 relative transition-colors duration-1000 overflow-hidden touch-none flex flex-col
+          className={`relative transition-colors duration-1000 overflow-hidden touch-none flex flex-col
             ${state.isSunny ? "bg-[#10B981]/10" : "bg-[#94A3B8]/5"}
             ${activeDropZone === "environment" ? "ring-inset ring-4 ring-[#F97316]/50" : ""}`}
-
+          style={{ height: "50%" }}
           data-dropzone="environment"
         >
           {state.isSunny && (
-            <div className="absolute top-2 right-2 md:top-8 md:right-8 animate-spin-slow opacity-80 pointer-events-none">
-              <svg width="60" height="60" viewBox="0 0 100 100">
-                <circle cx="50" cy="50" r="20" fill="#fbbf24" />
-                <path
-                  d="M 50 10 L 50 25 M 50 75 L 50 90 M 10 50 L 25 50 M 75 50 L 90 50 M 22 22 L 32 32 M 68 68 L 78 78 M 22 78 L 32 68 M 68 22 L 78 32"
-                  stroke="#fbbf24"
-                  strokeWidth="6"
-                  strokeLinecap="round"
-                />
-              </svg>
+            <div className="absolute top-2 right-2 md:top-4 md:right-4 opacity-80 pointer-events-none animate-spin-slow">
+              <SunSVG />
             </div>
           )}
 
@@ -976,14 +1052,39 @@ export default function App() {
           <div className="absolute bottom-0 w-full h-8 bg-[#FFFFFF] border-t border-[#94A3B8]/20 z-10 shadow-[0_-5px_15px_rgba(0,0,0,0.05)]"></div>
         </div>
 
-        {/* Panel LKPD (Bawah) */}
-        <div className="h-1/3 md:h-48 bg-[#FFFFFF] border-t-2 border-[#94A3B8]/20 flex flex-col z-40 shadow-[0px_-4px_6px_-1px_rgba(0,0,0,0.05)]">
+        {/* Panel LKPD (Bawah) — tinggi 50% */}
+        <div
+          className="bg-[#FFFFFF] border-t-2 border-[#94A3B8]/20 flex flex-col z-40 shadow-[0px_-4px_6px_-1px_rgba(0,0,0,0.05)]"
+          style={{ height: "50%" }}
+        >
           <div className="flex justify-between items-center bg-[#FDFBF0] px-3 py-1.5 md:p-2 border-b border-[#94A3B8]/20">
             <h3 className="font-serif font-bold text-xs md:text-sm text-[#10B981]">
               📝 LKPD Data Suhu
             </h3>
-            <div className="font-sans font-semibold bg-[#FFFFFF] px-2 py-0.5 rounded text-[#F97316] text-xs md:text-sm border border-[#F97316]/20">
-              Waktu: {state.time} Menit
+            <div className="flex items-center gap-2">
+              {/* Durasi Custom */}
+              <div className="flex items-center gap-1 text-[10px] md:text-xs">
+                <label
+                  htmlFor="duration-input"
+                  className="text-[#94A3B8] font-medium"
+                >
+                  Durasi:
+                </label>
+                <input
+                  id="duration-input"
+                  type="number"
+                  min="5"
+                  value={durationInput}
+                  onChange={(e) => handleDurationChange(e.target.value)}
+                  onBlur={handleDurationBlur}
+                  disabled={state.isRunning || isLabFinished}
+                  className="w-12 md:w-14 px-1.5 py-0.5 rounded border border-[#94A3B8]/30 text-center font-sans font-semibold text-[#0F172A] bg-[#FFFFFF] focus:border-[#F97316] focus:outline-none disabled:opacity-50 disabled:cursor-not-allowed"
+                />
+                <span className="text-[#94A3B8]">mnt</span>
+              </div>
+              <div className="font-sans font-semibold bg-[#FFFFFF] px-2 py-0.5 rounded text-[#F97316] text-xs md:text-sm border border-[#F97316]/20">
+                Waktu: {state.time}/{state.duration} Menit
+              </div>
             </div>
           </div>
           <div className="flex-1 overflow-y-auto">
@@ -991,8 +1092,12 @@ export default function App() {
               <thead className="bg-[#FFFFFF] text-[#0F172A] sticky top-0 border-b border-[#94A3B8]/20">
                 <tr>
                   <th className="p-1.5 md:p-2 pl-4 font-semibold">Menit ke-</th>
-                  <th className="p-1.5 md:p-2 font-semibold">Tabung A (Tanaman)</th>
-                  <th className="p-1.5 md:p-2 font-semibold">Tabung B (+CO2)</th>
+                  <th className="p-1.5 md:p-2 font-semibold">
+                    Tabung A (Tanaman)
+                  </th>
+                  <th className="p-1.5 md:p-2 font-semibold">
+                    Tabung B (+CO2)
+                  </th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-[#94A3B8]/10">
@@ -1029,6 +1134,21 @@ export default function App() {
               </tbody>
             </table>
           </div>
+
+          {/* Footer: Tombol Reset setelah selesai */}
+          {isLabFinished && (
+            <div className="p-3 border-t border-[#94A3B8]/20 bg-[#FDFBF0] flex items-center justify-center gap-3">
+              <p className="text-xs md:text-sm text-[#10B981] font-semibold">
+                ✅ Praktikum Selesai!
+              </p>
+              <button
+                onClick={handleReset}
+                className="px-4 py-1.5 text-xs md:text-sm font-semibold rounded-lg bg-[#F97316] text-white hover:bg-[#ea580c] active:scale-95 transition-all duration-150"
+              >
+                ↺ Ulangi Percobaan
+              </button>
+            </div>
+          )}
         </div>
       </div>
 
