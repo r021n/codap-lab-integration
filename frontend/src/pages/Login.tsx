@@ -53,12 +53,12 @@ export default function Login() {
   };
 
   return (
-    <div className="flex min-h-screen items-center justify-center bg-slate-50 px-4">
-      <Card className="w-full max-w-md">
+    <div className="flex min-h-screen items-center justify-center bg-[#FDFBF0] font-sans text-[#0F172A] px-4">
+      <Card className="w-full max-w-md border border-[#94A3B8]/20 bg-[#FFFFFF] shadow-[0px_4px_6px_-1px_rgba(0,0,0,0.1)]">
         <form onSubmit={handleLogin}>
           <CardHeader className="space-y-1">
-            <CardTitle className="text-2xl font-bold">Sign in</CardTitle>
-            <CardDescription>
+            <CardTitle className="font-serif text-2xl font-bold text-[#0F172A]">Sign in</CardTitle>
+            <CardDescription className="text-[#94A3B8]">
               Enter your email and password to access your account
             </CardDescription>
           </CardHeader>
@@ -69,7 +69,7 @@ export default function Login() {
               </div>
             )}
             <div className="space-y-2">
-              <Label htmlFor="email">Email</Label>
+              <Label htmlFor="email" className="font-semibold text-[#0F172A]">Email</Label>
               <Input
                 id="email"
                 type="email"
@@ -77,10 +77,11 @@ export default function Login() {
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 required
+                className="bg-[#FFFFFF] border-gray-300 focus:border-[#F97316] focus:ring-[#F97316] focus-visible:ring-[#F97316]"
               />
             </div>
             <div className="space-y-2">
-              <Label htmlFor="password">Password</Label>
+              <Label htmlFor="password" className="font-semibold text-[#0F172A]">Password</Label>
               <div className="relative">
                 <Input
                   id="password"
@@ -88,11 +89,12 @@ export default function Login() {
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                   required
+                  className="bg-[#FFFFFF] border-gray-300 focus:border-[#F97316] focus:ring-[#F97316] focus-visible:ring-[#F97316] pr-10"
                 />
                 <button
                   type="button"
                   onClick={() => setShowPassword(!showPassword)}
-                  className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-500 hover:text-slate-700 focus:outline-none"
+                  className="absolute right-3 top-1/2 -translate-y-1/2 text-[#94A3B8] hover:text-[#0F172A] focus:outline-none"
                   tabIndex={-1}
                 >
                   {showPassword ? (
@@ -105,16 +107,24 @@ export default function Login() {
             </div>
           </CardContent>
           <CardFooter className="flex flex-col space-y-4">
-            <Button type="submit" className="w-full" disabled={loading}>
+            <Button type="submit" className="w-full rounded-lg bg-[#F97316] text-[#FFFFFF] hover:bg-[#EA580C]" disabled={loading}>
               {loading ? "Signing in..." : "Sign in"}
             </Button>
-            <div className="text-center text-sm text-slate-500">
+            <div className="text-center text-sm text-[#94A3B8]">
               Don't have an account?{" "}
               <Link
                 to="/register"
-                className="font-semibold text-blue-600 hover:underline"
+                className="font-semibold text-[#F97316] hover:text-[#EA580C] hover:underline"
               >
                 Sign up
+              </Link>
+            </div>
+            <div className="text-center text-sm">
+              <Link
+                to="/"
+                className="text-[#94A3B8] hover:text-[#0F172A] hover:underline"
+              >
+                &larr; Back to Home
               </Link>
             </div>
           </CardFooter>

@@ -17,25 +17,25 @@ export default function NavigationSidebar({
   const [isOpen, setIsOpen] = useState(true);
 
   const activeClass =
-    "flex items-center gap-3 rounded-lg bg-blue-50 px-3 py-2 text-blue-700 transition-all";
+    "flex items-center gap-3 rounded-lg bg-[#F97316] px-3 py-2 text-[#FFFFFF] transition-all shadow-sm";
   const inactiveClass =
-    "flex items-center gap-3 rounded-lg px-3 py-2 text-slate-500 transition-all hover:text-slate-900 hover:bg-slate-100";
+    "flex items-center gap-3 rounded-lg px-3 py-2 text-[#94A3B8] transition-all hover:text-[#0F172A] hover:bg-[#FDFBF0]";
 
   return (
     <div
-      className={`flex flex-col border-r bg-white h-screen sticky top-0 transition-all duration-300 shrink-0 ${isOpen ? "w-64" : "w-16"}`}
+      className={`flex flex-col border-r border-[#94A3B8]/20 bg-[#FFFFFF] font-sans text-[#0F172A] h-screen sticky top-0 transition-all duration-300 shrink-0 ${isOpen ? "w-64" : "w-16"}`}
     >
       <div
-        className={`flex h-14 items-center border-b lg:h-[60px] ${isOpen ? "px-4 justify-between" : "px-0 justify-center"}`}
+        className={`flex h-14 items-center border-b border-[#94A3B8]/20 lg:h-[60px] ${isOpen ? "px-4 justify-between" : "px-0 justify-center"}`}
       >
         {isOpen && (
-          <h2 className="font-semibold text-blue-600 truncate mr-2">
+          <h2 className="font-serif font-bold text-xl text-[#F97316] truncate mr-2">
             EcoDataLearn
           </h2>
         )}
         <button
           onClick={() => setIsOpen(!isOpen)}
-          className="p-1.5 rounded-md text-slate-500 hover:bg-slate-100 hover:text-slate-900 focus:outline-none"
+          className="p-1.5 rounded-md text-[#94A3B8] hover:bg-[#FDFBF0] hover:text-[#0F172A] focus:outline-none focus:ring-2 focus:ring-[#F97316]/20"
           title={isOpen ? "Tutup Menu" : "Buka Menu"}
         >
           {isOpen ? (
@@ -83,7 +83,7 @@ export default function NavigationSidebar({
       </div>
 
       {handleLogout && (
-        <div className="mt-auto p-4 border-t">
+        <div className="mt-auto p-4 border-t border-[#94A3B8]/20">
           <button
             type="button"
             onClick={handleLogout}

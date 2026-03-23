@@ -1,47 +1,99 @@
-# Sistem Desain, UI, dan UX - EcoDataLearn Frontend
+# 📘 Design System: "EduWarm" (Education Platform)
 
-Dokumen ini mendeskripsikan fondasi desain, antarmuka pengguna (UI), dan pengalaman pengguna (UX) yang diterapkan pada frontend proyek ini (berbasis React, Vite, dan TypeScript).
+**Version:** 1.0.0 | **Vibe:** Warm, Professional, Energetic, Focus-Oriented
 
-## 1. Teknologi dan Perangkat Utama
-Sistem desain dibangun di atas ekosistem modern yang memastikan performa, aksesibilitas, dan kemudahan pengembangan:
-- **Tailwind CSS v4:** Digunakan sebagai sistem utilitas utama untuk *styling*. CSS Variables disematkan untuk kustomisasi tema secara menyeluruh.
-- **Shadcn UI & Radix UI Primitives:** Menyediakan fondasi komponen yang *accessible*, dapat disesuaikan (*customizable*), dan tidak terikat pada gaya bawaan yang kaku secara asali.
-- **Lucide React:** Pustaka ikon yang konsisten, berbobot ringan, dan bersih (contoh: digunakan pada fungsionalitas sembunyikan/perlihatkan kata sandi).
+---
 
-## 2. Sistem Desain (Design System)
+## 🎨 1. Foundations: Color & Typography
 
-### A. Palet Warna (Color Palette)
-Sistem warna menggunakan format HSL (Hue, Saturation, Lightness) dan diatur melalui variabel CSS (`index.css`), yang memungkinkan penerapan mode terang (*light mode*) dan gelap (*dark mode*) secara mulus.
+### A. Palet Warna (The Palette)
 
-- **Primary:** Biru terang yang energik (menunjukkan tindakan utama seperti tombol "Sign In").
-- **Background & Foreground:** 
-  - *Light Mode:* Latar belakang putih dan sekitarnya (seperti `slate-50` untuk halaman) dengan teks gelap pekat untuk rasio kontras yang optimal.
-  - *Dark Mode:* Latar belakang sangat gelap (`222.2 84% 4.9%`) dengan teks putih cerah.
-- **Destructive/Error:** Warna merah hati untuk indikator kesalahan (seperti pesan validasi yang gagal saat masuk atau mendaftar).
-- **Muted & Accent:** Warna abu-abu netral untuk elemen sekunder seperti garis batas (border), placeholder input, dan teks *footer*.
+Warna dipilih untuk meningkatkan retensi informasi dan mengurangi kelelahan mata (_eye strain_).
 
-### B. Tipografi dan Layout
-- **Tipografi:** Menggunakan font *sans-serif* bawaan modern (diwarisi dari Tailwind), ukuran judul yang tegas (`text-2xl`), dan *helper text* yang ramping (`text-sm`).
-- **Layout & Spacing:** Memanfaatkan sistem *spacing* 4-point dari Tailwind (`space-y-4`, `p-3`). Pemusatan elemen krusial seperti form dilakukan secara absolut ke tengah layar (`min-h-screen items-center justify-center`).
+| Role          | Color Name       | Hex Code  | Usage                                                        |
+| :------------ | :--------------- | :-------- | :----------------------------------------------------------- |
+| **Primary**   | Energetic Orange | `#F97316` | Action buttons, progress bars, highlights, active states.    |
+| **Surface**   | Creamy Ivory     | `#FDFBF0` | Main background, container backgrounds (warmth & comfort).   |
+| **Contrast**  | Deep Slate       | `#0F172A` | Primary text, navigation bars, footer, professional accents. |
+| **Secondary** | Muted Sage       | `#94A3B8` | Secondary text, borders, decorative elements.                |
+| **Success**   | Forest Green     | `#10B981` | Completed lessons, correct answers, positive feedback.       |
+| **Warning**   | Golden Sun       | `#F59E0B` | Reminders, streaks, upcoming deadlines.                      |
 
-## 3. Komponen Antarmuka Pengguna (UI)
+### B. Tipografi (Typography)
 
-Sistem merancang komponen yang seragam dan dapat digunakan ulang (*reusable*):
-- **Card (`Card`, `CardHeader`, `CardContent`, dsb.):** Digunakan sebagai wadah utama untuk mengelompokkan elemen terkait agar terlihat fokus dan terisolasi dari *background* utama.
-- **Form Elements (`Input`, `Label`):** Bersih, dengan batas (*border*) tipis dan pendar interaktif (`ring`/outlines) saat pengguna memfokuskan kursor.
-- **Button:**
-  - **Primary:** Merupakan tombol Call-to-Action. Memiliki fitur visual penonaktifan secara otomatis saat proses *loading*.
-  - Menyesuaikan lebar kontainer secara penuh untuk kenyamanan *tap/click* (terutama di layar sentuh perangkat seluler).
+- **Headings (Judul):** `Lora` atau `Playfair Display` (Serif). Memberikan kesan akademis, otoritas, dan terpercaya.
+- **Body Text (Isi):** `Inter` atau `Plus Jakarta Sans` (Sans-serif). Dioptimalkan untuk pembacaan teks panjang di layar digital.
 
-## 4. Pengalaman Pengguna (UX)
+---
 
-Pendekatan UX difokuskan pada kejelasan konteks, pencegahan galat, dan kelancaran alur navigasi:
+## 🛠️ 2. UI Components Detail
 
-- **Bebas Gesekan (*Frictionless Context*):**
-  - **Fitur Tampil/Sembunyi Password:** Pengguna tidak dibiarkan menebak apakah sandi yang mereka tik sudah benar. Terdapat fitur mata (`Eye` / `EyeOff` ikon) untuk secara langsung memverifikasi ketikan tanpa harus mengulangi dari awal.
-- **Umpan Balik Visual yang Intuitif:**
-  - **Status Memuat (*Loading States*):** Saat antarmuka sedang berbicara dengan server (seperti saat masuk atau mendaftar), tombol *submit* dilumpuhkan (*disabled*) dan teks berubah (contoh: "Signing in..."). Ini mencegah pengalaman klik ganda (double-submit) secara tidak sengaja oleh pengguna.
-  - **Penanganan Eror:** Jika autentikasi atau permintaan server gagal, pesan eror disajikan dengan kotak pesan merah yang jelas dalam formulir (bukan notifikasi *popup* peramban bawaan yang mengganggu).
-- **Perlindungan Alur (*Flow Guarding*):**
-  - Menghindari langkah redundansi yang membuang waktu. Pengguna yang sudah pernah login dan masih menyimpan token memori lokal (*local storage*) akan secara otomatis diarahkan ke *Dashboard* jika mencoba membuka halaman *Login/Register*, berkat implementasi `useRedirectIfAuthenticated`. Hal ini memastikan pengguna tetap berada dalam alur aplikasi yang benar.
-- **Responsivitas Layar:** Desain bersifat membaur dan dapat menyesuaikan ukuran secara fluid untuk aplikasi multi-perangkat. Container dirancang terpusat dengan ukuran maksimum yang rasional (`max-w-md` pada layar desktop) agar tidak terasa melebar secara aneh pada monitor besar.
+### A. Buttons (Tombol)
+
+- **Primary:** Background `#F97316`, Text `#FFFFFF`, Border-radius `8px`. _Hover state: Darken by 10%_.
+- **Secondary:** Background `Transparent`, Border `2px solid #0F172A`, Text `#0F172A`.
+- **Ghost:** Text `#F97316`, No background. Digunakan untuk aksi minor (misal: "Batal").
+
+### B. Course Cards (Kartu Materi)
+
+- **Background:** `#FFFFFF` (Putih bersih agar kontras dengan latar belakang Creamy Ivory).
+- **Shadow:** `0px 4px 6px -1px rgba(0, 0, 0, 0.1)`. Memberikan efek mengambang halus.
+- **Elements:** \* Thumbnail image (top).
+  - Badge kategori (Orange bg, white text).
+  - Progress bar tipis di bagian bawah kartu.
+
+### C. Inputs & Forms
+
+- **State Normal:** Border Gray-300, Background `#FFFFFF`.
+- **State Focus:** Border `#F97316`, Soft Orange Glow (Ring).
+- **Label:** Gunakan Deep Slate (`#0F172A`) dengan font-weight 600.
+
+---
+
+## 🧩 3. UX Strategy (Education-Specific)
+
+### A. Information Architecture (Hierarki Informasi)
+
+1.  **The "Focus Mode":** Saat user masuk ke halaman materi, hilangkan sidebar utama dan navigasi yang tidak perlu. Fokus hanya pada konten video/teks.
+2.  **Breadcrumbs:** Selalu tampilkan lokasi user (Misal: _Dashboard > Kelas Python > Modul 1_).
+
+### B. Feedback Loops (Interaksi)
+
+- **Micro-interactions:** Saat menyelesaikan kuis, berikan animasi halus (confetti kecil atau checkmark) dengan warna Forest Green.
+- **Progress Tracking:** Visualisasikan progres dalam persentase (%) dan "Step Indicator" yang jelas di bagian atas halaman belajar.
+
+### C. Cognitive Load Management (Beban Kognitif)
+
+- **Chunking:** Bagi materi panjang menjadi sub-bab kecil berdurasi 5-10 menit.
+- **White Space:** Gunakan margin minimal `32px` antar bagian besar untuk menghindari kesan "sumpek" yang membuat pelajar cepat lelah.
+
+---
+
+## 📐 4. Layout & Grid System
+
+- **Grid:** 12-Column Grid (Desktop), 4-Column Grid (Mobile).
+- **Container:** Max-width `1280px` untuk menjaga fokus mata tidak terlalu melebar ke samping.
+- **Spacing System:** Gunakan kelipatan 8 (8px, 16px, 24px, 32px, 64px) untuk konsistensi vertikal dan horizontal.
+
+---
+
+## 💻 5. Coding Reference (Tailwind Config Example)
+
+```javascript
+module.exports = {
+  theme: {
+    extend: {
+      colors: {
+        primary: "#F97316", // Jingga
+        surface: "#FDFBF0", // Creamy White
+        contrast: "#0F172A", // Deep Slate
+        success: "#10B981",
+      },
+      fontFamily: {
+        serif: ["Lora", "serif"],
+        sans: ["Inter", "sans-serif"],
+      },
+    },
+  },
+};
+```

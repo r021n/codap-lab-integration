@@ -564,7 +564,7 @@ export default function App() {
         const element = document.elementFromPoint(clientX, clientY);
         const dropZone = element?.closest("[data-dropzone]");
         setActiveDropZone(
-          dropZone ? dropZone.getAttribute("data-dropzone") : null,
+          dropZone ? (dropZone.getAttribute("data-dropzone") as DropZone) : null,
         );
 
         if (dragOverlay) dragOverlay.style.visibility = "visible";
@@ -593,7 +593,7 @@ export default function App() {
 
         const element = document.elementFromPoint(clientX, clientY);
         const dropZoneEl = element?.closest("[data-dropzone]");
-        const targetZone = dropZoneEl?.getAttribute("data-dropzone");
+        const targetZone = dropZoneEl?.getAttribute("data-dropzone") as DropZone | null;
 
         if (dragOverlay) dragOverlay.style.visibility = "visible";
 
@@ -752,26 +752,26 @@ export default function App() {
       key={id}
       onPointerDown={(e) => handleItemPointerDown(e, id)}
       className={`touch-none cursor-grab flex flex-col items-center justify-center p-2 rounded-lg border-2 ${extraClass} 
-        ${dragInfo.item === id ? "opacity-50 border-dashed border-slate-500" : "bg-slate-700 border-slate-600 shadow-sm hover:bg-slate-600 active:scale-95"}`}
+        ${dragInfo.item === id ? "opacity-50 border-dashed border-[#F97316]" : "bg-[#FFFFFF] border-[#94A3B8]/20 shadow-[0px_4px_6px_-1px_rgba(0,0,0,0.1)] hover:bg-[#F97316]/5 hover:border-[#F97316]/50 active:scale-95"}`}
     >
       <span className="text-2xl sm:text-3xl pointer-events-none select-none">
         {emoji}
       </span>
-      <span className="text-[10px] sm:text-xs text-center mt-1 text-slate-300 font-medium pointer-events-none select-none leading-tight">
+      <span className="text-[10px] sm:text-xs text-center mt-1 text-[#0F172A] font-semibold pointer-events-none select-none leading-tight">
         {label}
       </span>
     </div>
   );
 
   return (
-    <div className="flex flex-col md:flex-row h-screen w-full bg-slate-900 text-slate-100 overflow-hidden font-sans">
+    <div className="flex flex-col md:flex-row h-full min-h-screen w-full bg-[#FDFBF0] text-[#0F172A] overflow-hidden font-sans">
       {/* PANEL KIRI: INVENTORY */}
-      <div className="w-full md:w-1/4 lg:w-1/5 bg-slate-800 border-b md:border-b-0 md:border-r border-slate-700 flex flex-col z-20 shadow-xl h-1/3 md:h-full">
-        <div className="p-3 border-b border-slate-700 bg-slate-800/80 sticky top-0 backdrop-blur-sm z-10">
-          <h2 className="text-sm md:text-base font-bold text-blue-400">
+      <div className="w-full md:w-1/4 lg:w-1/5 bg-[#FFFFFF] border-b md:border-b-0 md:border-r border-[#94A3B8]/20 flex flex-col z-20 shadow-[0px_4px_6px_-1px_rgba(0,0,0,0.1)] h-1/3 md:h-full">
+        <div className="p-3 border-b border-[#94A3B8]/20 bg-[#FFFFFF]/90 sticky top-0 backdrop-blur-sm z-10">
+          <h2 className="text-sm md:text-base font-serif font-bold text-[#F97316]">
             Rak Alat & Bahan
           </h2>
-          <p className="text-[10px] md:text-xs text-slate-400">
+          <p className="text-[10px] md:text-xs text-[#94A3B8]">
             Sentuh & tarik ke area praktikum
           </p>
         </div>
@@ -799,7 +799,7 @@ export default function App() {
                 "sun",
                 "☀️",
                 "Matahari",
-                "border-yellow-500 bg-yellow-900/30 animate-pulse",
+                "border-[#F59E0B] bg-[#F59E0B]/10 animate-pulse",
               )}
             {state.inventory.stopwatch &&
               state.isSunny &&
@@ -807,7 +807,7 @@ export default function App() {
                 "stopwatch",
                 "⏱️",
                 "Stopwatch",
-                "border-blue-500 bg-blue-900/30 animate-pulse",
+                "border-[#10B981] bg-[#10B981]/10 animate-pulse",
               )}
           </div>
         </div>
@@ -816,9 +816,9 @@ export default function App() {
       {/* PANEL KANAN: AREA PRAKTIKUM & LKPD */}
       <div className="flex-1 flex flex-col relative h-2/3 md:h-full overflow-hidden">
         {/* Header Instruksi */}
-        <div className="bg-slate-800/80 backdrop-blur-sm border-b border-slate-700 p-2 md:p-3 shadow-md z-20 flex-shrink-0">
-          <p className="text-xs md:text-sm text-amber-300 font-medium leading-tight">
-            <span className="font-bold text-amber-500">Instruksi:</span>{" "}
+        <div className="bg-[#FFFFFF]/90 backdrop-blur-sm border-b border-[#94A3B8]/20 p-2 md:p-3 shadow-[0px_4px_6px_-1px_rgba(0,0,0,0.1)] z-20 shrink-0">
+          <p className="text-xs md:text-sm text-[#0F172A] font-medium leading-tight">
+            <span className="font-bold text-[#F97316]">Instruksi:</span>{" "}
             {getInstruction()}
           </p>
         </div>
@@ -827,8 +827,9 @@ export default function App() {
         <div
           ref={workspaceRef}
           className={`flex-1 relative transition-colors duration-1000 overflow-hidden touch-none flex flex-col
-            ${state.isSunny ? "bg-sky-200" : "bg-slate-700/50"}
-            ${activeDropZone === "environment" ? "ring-inset ring-4 ring-blue-500/50" : ""}`}
+            ${state.isSunny ? "bg-[#10B981]/10" : "bg-[#94A3B8]/5"}
+            ${activeDropZone === "environment" ? "ring-inset ring-4 ring-[#F97316]/50" : ""}`}
+
           data-dropzone="environment"
         >
           {state.isSunny && (
@@ -911,13 +912,13 @@ export default function App() {
                 hasStopper={state.flaskB.hasStopper}
               />
 
-              {/* Port Selang B - Diubah ke top-[12%] agar pas di gabus, dan diperbesar ke w-8 h-8 */}
+              {/* Port Selang B */}
               <div
                 ref={portBRef}
                 data-port="B"
                 onPointerDown={(e) => handlePortPointerDown(e, "B")}
-                className={`absolute top-[12%] left-1/2 w-8 h-8 rounded-full border-[3px] transform -translate-x-1/2 -translate-y-1/2 touch-none z-40 cursor-pointer
-                  ${state.hoseConnected ? "bg-green-500 border-green-700" : "bg-slate-300 border-slate-600 hover:bg-green-300 hover:scale-125 animate-pulse"}`}
+                className={`absolute top-[12%] left-1/2 w-8 h-8 rounded-full border-[3px] transform -translate-x-1/2 -translate-y-1/2 touch-none z-40 cursor-pointer shadow-sm
+                  ${state.hoseConnected ? "bg-[#10B981] border-[#0F172A]" : "bg-[#FFFFFF] border-[#0F172A] hover:bg-[#10B981]/30 hover:scale-125 animate-pulse"}`}
               ></div>
             </div>
 
@@ -934,13 +935,13 @@ export default function App() {
                 isBubbling={state.flaskC.hasSoda && state.flaskC.hasVinegar}
               />
 
-              {/* Port Selang C - Diubah ke top-[12%] agar pas di gabus, dan diperbesar ke w-8 h-8 */}
+              {/* Port Selang C */}
               <div
                 ref={portCRef}
                 data-port="C"
                 onPointerDown={(e) => handlePortPointerDown(e, "C")}
-                className={`absolute top-[12%] left-1/2 w-8 h-8 rounded-full border-[3px] transform -translate-x-1/2 -translate-y-1/2 touch-none z-40 cursor-pointer
-                  ${state.hoseConnected ? "bg-green-500 border-green-700" : "bg-slate-300 border-slate-600 hover:bg-green-300 hover:scale-125 animate-pulse"}`}
+                className={`absolute top-[12%] left-1/2 w-8 h-8 rounded-full border-[3px] transform -translate-x-1/2 -translate-y-1/2 touch-none z-40 cursor-pointer shadow-sm
+                  ${state.hoseConnected ? "bg-[#10B981] border-[#0F172A]" : "bg-[#FFFFFF] border-[#0F172A] hover:bg-[#10B981]/30 hover:scale-125 animate-pulse"}`}
               ></div>
             </div>
 
@@ -972,34 +973,34 @@ export default function App() {
           </div>
 
           {/* Meja Kayu (Landasan Bawah) */}
-          <div className="absolute bottom-0 w-full h-8 bg-gradient-to-t from-amber-900 to-amber-800 border-t border-amber-950 z-10 shadow-[0_-5px_15px_rgba(0,0,0,0.3)]"></div>
+          <div className="absolute bottom-0 w-full h-8 bg-[#FFFFFF] border-t border-[#94A3B8]/20 z-10 shadow-[0_-5px_15px_rgba(0,0,0,0.05)]"></div>
         </div>
 
         {/* Panel LKPD (Bawah) */}
-        <div className="h-1/3 md:h-48 bg-slate-900 border-t-2 border-slate-700 flex flex-col z-40">
-          <div className="flex justify-between items-center bg-slate-800 px-3 py-1.5 md:p-2 border-b border-slate-700">
-            <h3 className="font-bold text-xs md:text-sm text-emerald-400">
+        <div className="h-1/3 md:h-48 bg-[#FFFFFF] border-t-2 border-[#94A3B8]/20 flex flex-col z-40 shadow-[0px_-4px_6px_-1px_rgba(0,0,0,0.05)]">
+          <div className="flex justify-between items-center bg-[#FDFBF0] px-3 py-1.5 md:p-2 border-b border-[#94A3B8]/20">
+            <h3 className="font-serif font-bold text-xs md:text-sm text-[#10B981]">
               📝 LKPD Data Suhu
             </h3>
-            <div className="font-mono bg-slate-950 px-2 py-0.5 rounded text-blue-300 text-xs md:text-sm border border-slate-700">
+            <div className="font-sans font-semibold bg-[#FFFFFF] px-2 py-0.5 rounded text-[#F97316] text-xs md:text-sm border border-[#F97316]/20">
               Waktu: {state.time} Menit
             </div>
           </div>
           <div className="flex-1 overflow-y-auto">
             <table className="w-full text-left text-[10px] md:text-xs">
-              <thead className="bg-slate-800 text-slate-400 sticky top-0 shadow-sm">
+              <thead className="bg-[#FFFFFF] text-[#0F172A] sticky top-0 border-b border-[#94A3B8]/20">
                 <tr>
-                  <th className="p-1.5 md:p-2 pl-4">Menit ke-</th>
-                  <th className="p-1.5 md:p-2">Tabung A (Tanaman)</th>
-                  <th className="p-1.5 md:p-2">Tabung B (+CO2)</th>
+                  <th className="p-1.5 md:p-2 pl-4 font-semibold">Menit ke-</th>
+                  <th className="p-1.5 md:p-2 font-semibold">Tabung A (Tanaman)</th>
+                  <th className="p-1.5 md:p-2 font-semibold">Tabung B (+CO2)</th>
                 </tr>
               </thead>
-              <tbody>
+              <tbody className="divide-y divide-[#94A3B8]/10">
                 {state.logs.length === 0 ? (
                   <tr>
                     <td
-                      colSpan="3"
-                      className="p-3 text-center text-slate-500 italic"
+                      colSpan={3}
+                      className="p-3 text-center text-[#94A3B8] italic"
                     >
                       Mulai stopwatch untuk mencatat data.
                     </td>
@@ -1008,15 +1009,15 @@ export default function App() {
                   state.logs.map((log) => (
                     <tr
                       key={log.time}
-                      className="border-b border-slate-800/50 hover:bg-slate-800 transition-colors"
+                      className="hover:bg-[#FDFBF0]/50 transition-colors"
                     >
-                      <td className="p-1.5 md:p-2 pl-4 font-mono">
+                      <td className="p-1.5 md:p-2 pl-4 font-sans font-semibold text-[#0F172A]">
                         {log.time}
                       </td>
-                      <td className="p-1.5 md:p-2 text-blue-300 font-mono">
+                      <td className="p-1.5 md:p-2 text-[#94A3B8] font-sans">
                         {log.tempA} °C
                       </td>
-                      <td className="p-1.5 md:p-2 text-red-400 font-bold font-mono">
+                      <td className="p-1.5 md:p-2 text-[#F97316] font-bold font-sans">
                         {log.tempB} °C{" "}
                         {parseFloat(log.tempB) > parseFloat(log.tempA)
                           ? "🔥"
@@ -1038,7 +1039,7 @@ export default function App() {
           className="fixed pointer-events-none z-50 transform -translate-x-1/2 -translate-y-1/2 drop-shadow-2xl scale-110"
           style={{ left: dragInfo.x, top: dragInfo.y }}
         >
-          <div className="bg-slate-800 p-3 rounded-xl border border-blue-500 shadow-[0_0_15px_rgba(59,130,246,0.5)]">
+          <div className="bg-[#FFFFFF] p-3 rounded-xl border-2 border-[#F97316] shadow-[0_0_15px_rgba(249,115,22,0.3)]">
             <span className="text-4xl">
               {dragInfo.item === "thermoA" || dragInfo.item === "thermoB"
                 ? "🌡️"

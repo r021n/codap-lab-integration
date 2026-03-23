@@ -129,20 +129,20 @@ export default function Profile({ user, setUser }: ProfileProps) {
   };
 
   return (
-    <div className="mx-auto max-w-3xl space-y-6 relative">
+    <div className="mx-auto max-w-3xl space-y-8 relative">
       {/* Toast Notification */}
       {toast && toast.show && (
         <div className="fixed bottom-4 right-4 z-50 flex max-h-screen w-full flex-col-reverse p-4 sm:bottom-0 sm:right-0 sm:top-auto sm:flex-col md:max-w-[420px]">
-          <div className="pointer-events-auto relative flex w-full items-center justify-between space-x-4 overflow-hidden rounded-md border p-4 pr-6 shadow-lg transition-all border-slate-200 bg-white text-slate-950">
+          <div className="pointer-events-auto relative flex w-full items-center justify-between space-x-4 overflow-hidden rounded-lg border p-4 pr-6 shadow-[0px_4px_6px_-1px_rgba(0,0,0,0.1)] transition-all border-[#94A3B8]/20 bg-[#FFFFFF] text-[#0F172A]">
             <div className="flex gap-3">
               {toast.type === "success" ? (
-                <CheckCircle2 className="h-5 w-5 text-green-600 mt-0.5 shrink-0" />
+                <CheckCircle2 className="h-5 w-5 text-[#10B981] mt-0.5 shrink-0" />
               ) : (
                 <XCircle className="h-5 w-5 text-red-600 mt-0.5 shrink-0" />
               )}
               <div className="grid gap-1">
                 <div className="text-sm font-semibold">{toast.title}</div>
-                <div className="text-sm opacity-90">{toast.description}</div>
+                <div className="text-sm opacity-90 text-[#94A3B8]">{toast.description}</div>
               </div>
             </div>
           </div>
@@ -150,30 +150,31 @@ export default function Profile({ user, setUser }: ProfileProps) {
       )}
 
       <header className="mb-8">
-        <h1 className="text-3xl font-bold text-slate-900">Pengaturan Profil</h1>
-        <p className="text-slate-600">Perbarui informasi akun dan kata sandi Anda</p>
+        <h1 className="font-serif text-3xl font-bold text-[#0F172A]">Pengaturan Profil</h1>
+        <p className="mt-2 text-lg text-[#94A3B8]">Perbarui informasi akun dan kata sandi Anda</p>
       </header>
 
       {/* Edit Profile */}
-      <Card>
-        <CardHeader>
-          <CardTitle>Detail Profil</CardTitle>
-          <CardDescription>Ubah nama atau alamat email Anda</CardDescription>
+      <Card className="border border-[#94A3B8]/20 bg-[#FFFFFF] shadow-[0px_4px_6px_-1px_rgba(0,0,0,0.1)] rounded-lg overflow-hidden">
+        <CardHeader className="border-b border-[#94A3B8]/10 bg-[#FFFFFF]/50">
+          <CardTitle className="font-serif text-xl font-bold text-[#0F172A]">Detail Profil</CardTitle>
+          <CardDescription className="text-[#94A3B8]">Ubah nama atau alamat email Anda</CardDescription>
         </CardHeader>
-        <CardContent>
-          <form onSubmit={handleUpdateProfile} className="space-y-4">
+        <CardContent className="pt-6">
+          <form onSubmit={handleUpdateProfile} className="space-y-5">
             <div className="space-y-2">
-              <Label htmlFor="name">Nama Lengkap</Label>
+              <Label htmlFor="name" className="font-semibold text-[#0F172A]">Nama Lengkap</Label>
               <Input
                 id="name"
                 value={name}
                 onChange={(e) => setName(e.target.value)}
                 placeholder="Nama Lengkap"
                 required
+                className="bg-[#FFFFFF] border-gray-300 focus:border-[#F97316] focus:ring-[#F97316] focus-visible:ring-[#F97316]"
               />
             </div>
             <div className="space-y-2">
-              <Label htmlFor="email">Alamat Email</Label>
+              <Label htmlFor="email" className="font-semibold text-[#0F172A]">Alamat Email</Label>
               <Input
                 id="email"
                 type="email"
@@ -181,17 +182,18 @@ export default function Profile({ user, setUser }: ProfileProps) {
                 onChange={(e) => setEmail(e.target.value)}
                 placeholder="nama@email.com"
                 required
+                className="bg-[#FFFFFF] border-gray-300 focus:border-[#F97316] focus:ring-[#F97316] focus-visible:ring-[#F97316]"
               />
             </div>
             <div className="flex items-center gap-2 pt-2">
-              <span className="inline-flex items-center rounded-full bg-blue-100 px-2.5 py-0.5 text-xs font-semibold text-blue-800">
+              <span className="inline-flex items-center rounded-md bg-[#F97316]/10 px-2.5 py-1 text-xs font-bold text-[#F97316]">
                 Akses: {user.role === "admin" ? "Administrator" : "Siswa"}
               </span>
             </div>
             <Button
               type="submit"
               disabled={isLoadingProfile}
-              className="mt-4"
+              className="mt-6 rounded-lg bg-[#F97316] text-[#FFFFFF] hover:bg-[#EA580C]"
             >
               {isLoadingProfile ? (
                 <>
@@ -207,15 +209,15 @@ export default function Profile({ user, setUser }: ProfileProps) {
       </Card>
 
       {/* Edit Password */}
-      <Card>
-        <CardHeader>
-          <CardTitle>Keamanan</CardTitle>
-          <CardDescription>Ganti kata sandi akun Anda</CardDescription>
+      <Card className="border border-[#94A3B8]/20 bg-[#FFFFFF] shadow-[0px_4px_6px_-1px_rgba(0,0,0,0.1)] rounded-lg overflow-hidden">
+        <CardHeader className="border-b border-[#94A3B8]/10 bg-[#FFFFFF]/50">
+          <CardTitle className="font-serif text-xl font-bold text-[#0F172A]">Keamanan</CardTitle>
+          <CardDescription className="text-[#94A3B8]">Ganti kata sandi akun Anda</CardDescription>
         </CardHeader>
-        <CardContent>
-          <form onSubmit={handleUpdatePassword} className="space-y-4">
+        <CardContent className="pt-6">
+          <form onSubmit={handleUpdatePassword} className="space-y-5">
             <div className="space-y-2">
-              <Label htmlFor="currentPassword">Password Saat Ini</Label>
+              <Label htmlFor="currentPassword" className="font-semibold text-[#0F172A]">Password Saat Ini</Label>
               <div className="relative">
                 <Input
                   id="currentPassword"
@@ -224,11 +226,12 @@ export default function Profile({ user, setUser }: ProfileProps) {
                   onChange={(e) => setCurrentPassword(e.target.value)}
                   placeholder="Masukkan password saat ini"
                   required
+                  className="bg-[#FFFFFF] border-gray-300 focus:border-[#F97316] focus:ring-[#F97316] focus-visible:ring-[#F97316] pr-10"
                 />
                 <button
                   type="button"
                   onClick={() => setShowCurrentPassword(!showCurrentPassword)}
-                  className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-500 hover:text-slate-700"
+                  className="absolute right-3 top-1/2 -translate-y-1/2 text-[#94A3B8] hover:text-[#0F172A]"
                   tabIndex={-1}
                 >
                   {showCurrentPassword ? <EyeOff size={18} /> : <Eye size={18} />}
@@ -237,7 +240,7 @@ export default function Profile({ user, setUser }: ProfileProps) {
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="newPassword">Password Baru</Label>
+              <Label htmlFor="newPassword" className="font-semibold text-[#0F172A]">Password Baru</Label>
               <div className="relative">
                 <Input
                   id="newPassword"
@@ -246,11 +249,12 @@ export default function Profile({ user, setUser }: ProfileProps) {
                   onChange={(e) => setNewPassword(e.target.value)}
                   placeholder="Masukkan password baru"
                   required
+                  className="bg-[#FFFFFF] border-gray-300 focus:border-[#F97316] focus:ring-[#F97316] focus-visible:ring-[#F97316] pr-10"
                 />
                 <button
                   type="button"
                   onClick={() => setShowNewPassword(!showNewPassword)}
-                  className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-500 hover:text-slate-700"
+                  className="absolute right-3 top-1/2 -translate-y-1/2 text-[#94A3B8] hover:text-[#0F172A]"
                   tabIndex={-1}
                 >
                   {showNewPassword ? <EyeOff size={18} /> : <Eye size={18} />}
@@ -259,7 +263,7 @@ export default function Profile({ user, setUser }: ProfileProps) {
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="confirmPassword">Konfirmasi Password Baru</Label>
+              <Label htmlFor="confirmPassword" className="font-semibold text-[#0F172A]">Konfirmasi Password Baru</Label>
               <div className="relative">
                 <Input
                   id="confirmPassword"
@@ -268,11 +272,12 @@ export default function Profile({ user, setUser }: ProfileProps) {
                   onChange={(e) => setConfirmPassword(e.target.value)}
                   placeholder="Konfirmasi password baru"
                   required
+                  className="bg-[#FFFFFF] border-gray-300 focus:border-[#F97316] focus:ring-[#F97316] focus-visible:ring-[#F97316] pr-10"
                 />
                 <button
                   type="button"
                   onClick={() => setShowConfirmPassword(!showConfirmPassword)}
-                  className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-500 hover:text-slate-700"
+                  className="absolute right-3 top-1/2 -translate-y-1/2 text-[#94A3B8] hover:text-[#0F172A]"
                   tabIndex={-1}
                 >
                   {showConfirmPassword ? <EyeOff size={18} /> : <Eye size={18} />}
@@ -283,8 +288,7 @@ export default function Profile({ user, setUser }: ProfileProps) {
             <Button
               type="submit"
               disabled={isLoadingPassword || !currentPassword || !newPassword || !confirmPassword}
-              className="mt-4"
-              variant="default"
+              className="mt-6 rounded-lg bg-[#F97316] text-[#FFFFFF] hover:bg-[#EA580C]"
             >
               {isLoadingPassword ? (
                 <>

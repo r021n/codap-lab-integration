@@ -12,26 +12,26 @@ import { FileQuestion } from "lucide-react";
 
 export default function NotFound() {
   return (
-    <div className="flex min-h-screen items-center justify-center bg-slate-50 px-4">
-      <Card className="w-full max-w-md text-center border-none shadow-sm md:border-solid md:shadow-md">
-        <CardHeader className="space-y-2">
+    <div className="flex min-h-screen items-center justify-center bg-[#FDFBF0] font-sans text-[#0F172A] px-4">
+      <Card className="w-full max-w-md text-center border-[#94A3B8]/20 bg-[#FFFFFF] shadow-[0px_4px_6px_-1px_rgba(0,0,0,0.1)] rounded-lg">
+        <CardHeader className="space-y-4 pt-8">
           <div className="flex justify-center mb-2">
-            <div className="rounded-full bg-slate-100 p-4">
-              <FileQuestion className="h-12 w-12 text-slate-400" />
+            <div className="rounded-xl bg-[#FDFBF0] border border-[#94A3B8]/20 p-5 shadow-sm">
+              <FileQuestion className="h-14 w-14 text-[#94A3B8]" />
             </div>
           </div>
-          <CardTitle className="text-4xl font-bold text-slate-800">404</CardTitle>
-          <CardDescription className="text-lg">
+          <CardTitle className="font-serif text-5xl font-bold text-[#F97316]">404</CardTitle>
+          <CardDescription className="text-xl font-serif font-bold text-[#0F172A]">
             Halaman Tidak Ditemukan
           </CardDescription>
         </CardHeader>
         <CardContent>
-          <p className="text-slate-500">
-            Maaf, kami tidak dapat menemukan halaman yang Anda cari. Periksa kembali tautan Anda atau kembali ke halaman utama.
+          <p className="text-[#94A3B8] text-base leading-relaxed">
+            Maaf, kami tidak dapat menemukan halaman yang Anda cari. Periksa kembali tautan Anda atau kembali ke halaman utama untuk melanjutkan pembelajaran.
           </p>
         </CardContent>
-        <CardFooter className="flex flex-col space-y-3">
-          <Button asChild className="w-full" size="lg">
+        <CardFooter className="flex flex-col space-y-3 pb-8">
+          <Button asChild className="w-full h-12 rounded-lg bg-[#F97316] text-[#FFFFFF] hover:bg-[#EA580C] text-lg font-semibold shadow-sm">
             <Link to="/">Kembali ke Beranda</Link>
           </Button>
         </CardFooter>

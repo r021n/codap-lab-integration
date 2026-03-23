@@ -149,24 +149,24 @@ export default function Investigasi({ user }: { user: User }) {
   const activeMode = user.role === "admin" ? mode : "preview";
 
   return (
-    <div className="mx-auto max-w-6xl space-y-6 pb-12">
+    <div className="mx-auto max-w-6xl space-y-8 pb-12 font-sans text-[#0F172A]">
       <header className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
         <div>
-          <h1 className="text-3xl font-bold text-slate-900">Ruang Investigasi Data</h1>
-          <p className="text-slate-600 mt-1">Pelajari dan analisis data lingkungan dengan interaktif menggunakan CODAP.</p>
+          <h1 className="font-serif text-3xl font-bold text-[#0F172A]">Ruang Investigasi Data</h1>
+          <p className="text-[#94A3B8] mt-2 text-lg">Pelajari dan analisis data lingkungan dengan interaktif menggunakan CODAP.</p>
         </div>
         
         {user.role === "admin" && (
-          <div className="flex bg-slate-100 p-1 rounded-lg border border-slate-200 shrink-0">
+          <div className="flex bg-[#FDFBF0] p-1 rounded-lg border border-[#94A3B8]/20 shrink-0">
             <button
                onClick={() => setMode('editor')}
-               className={`flex items-center gap-2 px-4 py-2 rounded-md text-sm font-medium transition-colors ${mode === 'editor' ? 'bg-white shadow-sm text-blue-600' : 'text-slate-600 hover:text-slate-900'}`}
+               className={`flex items-center gap-2 px-4 py-2 rounded-md text-sm font-medium transition-colors ${mode === 'editor' ? 'bg-[#FFFFFF] shadow-[0px_4px_6px_-1px_rgba(0,0,0,0.1)] text-[#F97316]' : 'text-[#94A3B8] hover:text-[#0F172A]'}`}
             >
               <Edit className="w-4 h-4" /> Editor
             </button>
             <button
                onClick={() => setMode('preview')}
-               className={`flex items-center gap-2 px-4 py-2 rounded-md text-sm font-medium transition-colors ${mode === 'preview' ? 'bg-white shadow-sm text-blue-600' : 'text-slate-600 hover:text-slate-900'}`}
+               className={`flex items-center gap-2 px-4 py-2 rounded-md text-sm font-medium transition-colors ${mode === 'preview' ? 'bg-[#FFFFFF] shadow-[0px_4px_6px_-1px_rgba(0,0,0,0.1)] text-[#F97316]' : 'text-[#94A3B8] hover:text-[#0F172A]'}`}
             >
               <Eye className="w-4 h-4" /> Preview
             </button>
@@ -176,13 +176,13 @@ export default function Investigasi({ user }: { user: User }) {
 
       {activeMode === "editor" ? (
         <div className="space-y-6">
-          <Card className="border-blue-200 bg-blue-50">
+          <Card className="border border-[#F97316]/20 bg-[#F97316]/5 shadow-[0px_4px_6px_-1px_rgba(0,0,0,0.1)] rounded-lg">
             <CardHeader>
-              <CardTitle className="text-blue-900 flex items-center gap-2">
-                <Upload className="h-5 w-5" />
+              <CardTitle className="font-serif text-xl font-bold text-[#0F172A] flex items-center gap-2">
+                <Upload className="h-5 w-5 text-[#F97316]" />
                 Unggah Dataset Baru (Admin)
               </CardTitle>
-              <CardDescription className="text-blue-700">
+              <CardDescription className="text-[#F97316]">
                 Unggah file CSV baru agar dapat digunakan oleh siswa untuk investigasi.
               </CardDescription>
             </CardHeader>
@@ -193,54 +193,54 @@ export default function Investigasi({ user }: { user: User }) {
                   type="file" 
                   accept=".csv" 
                   onChange={handleFileChange}
-                  className="bg-white max-w-md"
+                  className="bg-[#FFFFFF] max-w-md border-gray-300 focus:border-[#F97316] focus:ring-[#F97316] focus-visible:ring-[#F97316]"
                   required
                 />
-                <Button type="submit" disabled={isUploading || !file} className="bg-blue-600 hover:bg-blue-700 text-white min-w-[120px]">
+                <Button type="submit" disabled={isUploading || !file} className="rounded-lg bg-[#F97316] hover:bg-[#EA580C] text-[#FFFFFF] min-w-[120px]">
                   {isUploading ? "Mengunggah..." : "Unggah CSV"}
                 </Button>
               </form>
             </CardContent>
           </Card>
 
-          <Card>
-            <CardHeader>
-              <CardTitle>Kelola Dataset</CardTitle>
-              <CardDescription>Daftar dataset referensi CSV yang tersedia di sistem.</CardDescription>
+          <Card className="border border-[#94A3B8]/20 bg-[#FFFFFF] shadow-[0px_4px_6px_-1px_rgba(0,0,0,0.1)] rounded-lg">
+            <CardHeader className="border-b border-[#94A3B8]/10 bg-[#FFFFFF]/50">
+              <CardTitle className="font-serif text-xl font-bold text-[#0F172A]">Kelola Dataset</CardTitle>
+              <CardDescription className="text-[#94A3B8]">Daftar dataset referensi CSV yang tersedia di sistem.</CardDescription>
             </CardHeader>
-            <CardContent>
-              <div className="rounded-md border overflow-x-auto">
+            <CardContent className="pt-6">
+              <div className="rounded-lg border border-[#94A3B8]/20 overflow-x-auto">
                 <table className="w-full text-sm text-left">
-                  <thead className="bg-slate-50 border-b">
+                  <thead className="bg-[#FDFBF0] border-b border-[#94A3B8]/20">
                     <tr>
-                      <th className="px-4 py-3 font-medium text-slate-700">Nama File</th>
-                      <th className="px-4 py-3 font-medium text-slate-700 w-48">Tanggal Unggah</th>
-                      <th className="px-4 py-3 font-medium text-slate-700 text-right w-32">Aksi</th>
+                      <th className="px-5 py-4 font-semibold text-[#0F172A]">Nama File</th>
+                      <th className="px-5 py-4 font-semibold text-[#0F172A] w-48">Tanggal Unggah</th>
+                      <th className="px-5 py-4 font-semibold text-[#0F172A] text-right w-32">Aksi</th>
                     </tr>
                   </thead>
-                  <tbody className="divide-y">
+                  <tbody className="divide-y divide-[#94A3B8]/10">
                     {datasets.length === 0 ? (
                       <tr>
-                        <td colSpan={3} className="px-4 py-8 text-center text-slate-500">
+                        <td colSpan={3} className="px-5 py-8 text-center text-[#94A3B8]">
                           Belum ada dataset yang diunggah.
                         </td>
                       </tr>
                     ) : (
                       datasets.map(dataset => (
-                        <tr key={dataset.id} className="hover:bg-slate-50 transition-colors">
-                          <td className="px-4 py-3 font-medium text-slate-900">
-                            <div className="flex items-center gap-2">
-                              <FileText className="h-4 w-4 text-blue-500 shrink-0" />
+                        <tr key={dataset.id} className="hover:bg-[#FDFBF0]/50 transition-colors">
+                          <td className="px-5 py-4 font-medium text-[#0F172A]">
+                            <div className="flex items-center gap-3">
+                              <FileText className="h-5 w-5 text-[#F97316] shrink-0" />
                               <span className="truncate max-w-[300px]" title={dataset.name}>{dataset.name}</span>
                             </div>
                           </td>
-                          <td className="px-4 py-3 text-slate-600">{dataset.uploadDate}</td>
-                          <td className="px-4 py-3 text-right">
+                          <td className="px-5 py-4 text-[#94A3B8]">{dataset.uploadDate}</td>
+                          <td className="px-5 py-4 text-right">
                             <div className="flex justify-end gap-2">
                               <Button 
                                 variant="outline" 
                                 size="icon" 
-                                className="h-8 w-8 text-blue-600 hover:text-blue-700"
+                                className="h-8 w-8 text-[#0F172A] border-[#94A3B8]/20 hover:bg-[#FDFBF0] hover:text-[#F97316]"
                                 onClick={() => handleDownload(dataset)} 
                                 disabled={dataset.url === "#"}
                                 title="Unduh CSV"
@@ -250,7 +250,7 @@ export default function Investigasi({ user }: { user: User }) {
                               <Button 
                                 variant="destructive" 
                                 size="icon" 
-                                className="h-8 w-8"
+                                className="h-8 w-8 bg-red-500 hover:bg-red-600 focus:ring-red-500"
                                 onClick={() => handleDelete(dataset.id)}
                                 title="Hapus Dataset"
                               >
@@ -268,28 +268,28 @@ export default function Investigasi({ user }: { user: User }) {
           </Card>
         </div>
       ) : (
-        <div className="grid gap-6 lg:grid-cols-4">
-          <div className="lg:col-span-1 space-y-6">
-            <Card>
-              <CardHeader className="pb-3">
-                <CardTitle className="text-lg">Dataset Tersedia</CardTitle>
-                <CardDescription>Pilih dan unduh data untuk dianalisis</CardDescription>
+        <div className="grid gap-8 lg:grid-cols-4">
+          <div className="lg:col-span-1 space-y-8">
+            <Card className="border border-[#94A3B8]/20 bg-[#FFFFFF] shadow-[0px_4px_6px_-1px_rgba(0,0,0,0.1)] rounded-lg">
+              <CardHeader className="pb-4">
+                <CardTitle className="font-serif text-lg font-bold text-[#0F172A]">Dataset Tersedia</CardTitle>
+                <CardDescription className="text-[#94A3B8]">Pilih dan unduh data untuk dianalisis</CardDescription>
               </CardHeader>
               <CardContent>
-                <div className="space-y-3">
+                <div className="space-y-4">
                   {datasets.length === 0 ? (
-                    <p className="text-sm text-slate-500">Belum ada dataset yang diunggah.</p>
+                    <p className="text-sm text-[#94A3B8]">Belum ada dataset yang diunggah.</p>
                   ) : (
                     datasets.map((dataset) => (
-                      <div key={dataset.id} className="rounded-md border p-3 flex flex-col gap-2 bg-slate-50 hover:bg-slate-100 transition-colors">
-                        <div className="flex items-start gap-2">
-                          <FileText className="h-4 w-4 text-blue-500 shrink-0 mt-0.5" />
-                          <span className="text-sm font-medium text-slate-700 break-all">
+                      <div key={dataset.id} className="rounded-lg border border-[#94A3B8]/20 p-4 flex flex-col gap-3 bg-[#FDFBF0] hover:bg-[#10B981]/5 hover:border-[#10B981]/20 transition-all shadow-sm">
+                        <div className="flex items-start gap-3">
+                          <FileText className="h-5 w-5 text-[#10B981] shrink-0 mt-0.5" />
+                          <span className="text-sm font-semibold text-[#0F172A] break-all leading-tight">
                             {dataset.name}
                           </span>
                         </div>
-                        <Button size="sm" variant="outline" className="w-full h-8 text-xs" onClick={() => handleDownload(dataset)} disabled={dataset.url === "#"}>
-                          <Download className="h-3 w-3 mr-2" />
+                        <Button size="sm" variant="outline" className="w-full h-9 text-xs border-[#0F172A] text-[#0F172A] hover:bg-[#0F172A]/5 hover:text-[#0F172A]" onClick={() => handleDownload(dataset)} disabled={dataset.url === "#"}>
+                          <Download className="h-3.5 w-3.5 mr-2" />
                           Unduh CSV
                         </Button>
                       </div>
@@ -299,15 +299,15 @@ export default function Investigasi({ user }: { user: User }) {
               </CardContent>
             </Card>
 
-            <Card className="bg-amber-50 border-amber-200">
-              <CardHeader className="pb-3">
-                <CardTitle className="text-lg text-amber-900 flex items-center gap-2">
-                  <Info className="h-4 w-4" />
+            <Card className="border border-[#F59E0B]/20 bg-[#F59E0B]/5 shadow-[0px_4px_6px_-1px_rgba(0,0,0,0.1)] rounded-lg">
+              <CardHeader className="pb-4">
+                <CardTitle className="font-serif text-lg font-bold text-[#F59E0B] flex items-center gap-2">
+                  <Info className="h-5 w-5" />
                   Petunjuk CODAP
                 </CardTitle>
               </CardHeader>
-              <CardContent className="text-sm text-amber-800 space-y-3">
-                <ol className="list-decimal pl-4 space-y-1">
+              <CardContent className="text-sm text-[#0F172A] space-y-4">
+                <ol className="list-decimal pl-5 space-y-2 leading-relaxed marker:text-[#F59E0B] marker:font-bold">
                   <li><strong>Unduh</strong> data CSV dari menu di atas.</li>
                   <li><strong>Tarik (Drag)</strong> file CSV yang sudah diunduh dari folder komputermu, lalu <strong>Lepaskan (Drop)</strong> ke dalam area CODAP di sebelah kanan.</li>
                   <li>Buat <strong>Grafik (Graph)</strong> menggunakan menu di pojok kiri atas CODAP.</li>
@@ -317,11 +317,11 @@ export default function Investigasi({ user }: { user: User }) {
             </Card>
           </div>
 
-          <Card className="lg:col-span-3 flex flex-col h-[700px] border-slate-300">
-            <CardHeader className="border-b bg-slate-50 py-3">
-              <CardTitle className="text-lg">Ruang Analisis Workspace</CardTitle>
+          <Card className="lg:col-span-3 flex flex-col h-[740px] border border-[#94A3B8]/20 bg-[#FFFFFF] shadow-[0px_4px_6px_-1px_rgba(0,0,0,0.1)] rounded-lg overflow-hidden">
+            <CardHeader className="border-b border-[#94A3B8]/10 bg-[#FDFBF0] py-4">
+              <CardTitle className="font-serif text-lg font-bold text-[#0F172A]">Ruang Analisis Workspace</CardTitle>
             </CardHeader>
-            <div className="flex-1 bg-white relative">
+            <div className="flex-1 bg-[#FFFFFF] relative">
               <iframe 
                 src="https://codap.concord.org/releases/latest/static/dg/en/cert/index.html" 
                 className="absolute inset-0 w-full h-full border-0"
