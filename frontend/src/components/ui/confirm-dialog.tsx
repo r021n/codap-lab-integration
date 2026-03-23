@@ -1,4 +1,5 @@
 import { useEffect, useRef, type ReactNode } from "react";
+import { createPortal } from "react-dom";
 import { AlertTriangle, X } from "lucide-react";
 
 type ConfirmDialogProps = {
@@ -68,8 +69,8 @@ export default function ConfirmDialog({
 
   const styles = variantStyles[variant];
 
-  return (
-    <div className="fixed inset-0 z-9998 flex items-center justify-center">
+  return createPortal(
+    <div className="fixed inset-0 z-9999 flex items-center justify-center">
       {/* Overlay */}
       <div
         className="absolute inset-0 bg-[#0F172A]/40 backdrop-blur-sm animate-fade-in"
@@ -123,6 +124,7 @@ export default function ConfirmDialog({
           </div>
         </div>
       </div>
-    </div>
+    </div>,
+    document.body
   );
 }

@@ -9,6 +9,7 @@ import {
   FlaskConical,
   ClipboardList,
 } from "lucide-react";
+import ConfirmDialog from "./ui/confirm-dialog";
 
 export default function NavigationSidebar({
   handleLogout,
@@ -16,6 +17,7 @@ export default function NavigationSidebar({
   handleLogout?: () => void;
 }) {
   const [isOpen, setIsOpen] = useState(true);
+  const [logoutConfirmOpen, setLogoutConfirmOpen] = useState(false);
 
   const activeClass =
     "flex items-center gap-3 rounded-lg bg-[#F97316] px-3 py-2 text-[#FFFFFF] transition-all shadow-sm";
@@ -97,7 +99,7 @@ export default function NavigationSidebar({
         <div className="mt-auto p-4 border-t border-[#94A3B8]/20">
           <button
             type="button"
-            onClick={handleLogout}
+            onClick={() => setLogoutConfirmOpen(true)}
             className={`flex w-full items-center gap-3 rounded-lg py-2 text-red-500 transition-all hover:bg-red-50 ${isOpen ? "px-3" : "justify-center"}`}
             title="Sign Out"
           >
@@ -106,6 +108,20 @@ export default function NavigationSidebar({
           </button>
         </div>
       )}
+
+      <ConfirmDialog
+        open={logoutConfirmOpen}
+        onConfirm={() => {
+          setLogoutConfirmOpen(false);
+          handleLogout?.();
+        }}
+        onCancel={() => setLogoutConfirmOpen(false)}
+        title="Konfirmasi Logout"
+        description="Apakah Anda yakin ingin logout?"
+        confirmText="Ya, Logout"
+        cancelText="Batal"
+        variant="danger"
+      />
     </div>
   );
 }
