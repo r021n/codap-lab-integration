@@ -1,6 +1,8 @@
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { Eye, EyeOff } from "lucide-react";
+import { login } from "../api/auth.api";
+import { getApiErrorMessage } from "../api/errors";
 import { Button } from "../components/ui/button";
 import { Input } from "../components/ui/input";
 import { Label } from "../components/ui/label";
@@ -29,24 +31,14 @@ export default function Login() {
     setLoading(true);
 
     try {
-      const res = await fetch("http://localhost:5000/api/auth/login", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email, password }),
-      });
-
-      const data = await res.json();
-
-      if (!res.ok) {
-        throw new Error(data.error || "Failed to login");
-      }
+      const data = await login({ email, password });
 
       localStorage.setItem("token", data.token);
       localStorage.setItem("user", JSON.stringify(data.user));
 
       navigate("/dashboard");
     } catch (err: unknown) {
-      setError(err instanceof Error ? err.message : "Failed to login");
+      setError(getApiErrorMessage(err, "Failed to login"));
     } finally {
       setLoading(false);
     }
@@ -57,7 +49,9 @@ export default function Login() {
       <Card className="w-full max-w-md border border-[#94A3B8]/20 bg-[#FFFFFF] shadow-[0px_4px_6px_-1px_rgba(0,0,0,0.1)]">
         <form onSubmit={handleLogin}>
           <CardHeader className="space-y-1">
-            <CardTitle className="font-serif text-2xl font-bold text-[#0F172A]">Sign in</CardTitle>
+            <CardTitle className="font-serif text-2xl font-bold text-[#0F172A]">
+              Sign in
+            </CardTitle>
             <CardDescription className="text-[#94A3B8]">
               Enter your email and password to access your account
             </CardDescription>
@@ -69,7 +63,9 @@ export default function Login() {
               </div>
             )}
             <div className="space-y-2">
-              <Label htmlFor="email" className="font-semibold text-[#0F172A]">Email</Label>
+              <Label htmlFor="email" className="font-semibold text-[#0F172A]">
+                Email
+              </Label>
               <Input
                 id="email"
                 type="email"
@@ -81,7 +77,12 @@ export default function Login() {
               />
             </div>
             <div className="space-y-2">
-              <Label htmlFor="password" className="font-semibold text-[#0F172A]">Password</Label>
+              <Label
+                htmlFor="password"
+                className="font-semibold text-[#0F172A]"
+              >
+                Password
+              </Label>
               <div className="relative">
                 <Input
                   id="password"
@@ -107,7 +108,11 @@ export default function Login() {
             </div>
           </CardContent>
           <CardFooter className="flex flex-col space-y-4">
-            <Button type="submit" className="w-full rounded-lg bg-[#F97316] text-[#FFFFFF] hover:bg-[#EA580C]" disabled={loading}>
+            <Button
+              type="submit"
+              className="w-full rounded-lg bg-[#F97316] text-[#FFFFFF] hover:bg-[#EA580C]"
+              disabled={loading}
+            >
               {loading ? "Signing in..." : "Sign in"}
             </Button>
             <div className="text-center text-sm text-[#94A3B8]">

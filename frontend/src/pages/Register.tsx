@@ -1,6 +1,8 @@
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { Eye, EyeOff } from "lucide-react";
+import { register } from "../api/auth.api";
+import { getApiErrorMessage } from "../api/errors";
 import { Button } from "../components/ui/button";
 import { Input } from "../components/ui/input";
 import { Label } from "../components/ui/label";
@@ -30,22 +32,12 @@ export default function Register() {
     setLoading(true);
 
     try {
-      const res = await fetch("http://localhost:5000/api/auth/register", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ name, email, password }),
-      });
-
-      const data = await res.json();
-
-      if (!res.ok) {
-        throw new Error(data.error || "Failed to register");
-      }
+      await register({ name, email, password });
 
       // Automatically login or redirect to login
       navigate("/login");
     } catch (err: unknown) {
-      setError(err instanceof Error ? err.message : "Failed to register");
+      setError(getApiErrorMessage(err, "Failed to register"));
     } finally {
       setLoading(false);
     }
@@ -70,7 +62,9 @@ export default function Register() {
               </div>
             )}
             <div className="space-y-2">
-              <Label htmlFor="name" className="font-semibold text-[#0F172A]">Full Name</Label>
+              <Label htmlFor="name" className="font-semibold text-[#0F172A]">
+                Full Name
+              </Label>
               <Input
                 id="name"
                 type="text"
@@ -82,7 +76,9 @@ export default function Register() {
               />
             </div>
             <div className="space-y-2">
-              <Label htmlFor="email" className="font-semibold text-[#0F172A]">Email</Label>
+              <Label htmlFor="email" className="font-semibold text-[#0F172A]">
+                Email
+              </Label>
               <Input
                 id="email"
                 type="email"
@@ -94,7 +90,12 @@ export default function Register() {
               />
             </div>
             <div className="space-y-2">
-              <Label htmlFor="password" className="font-semibold text-[#0F172A]">Password</Label>
+              <Label
+                htmlFor="password"
+                className="font-semibold text-[#0F172A]"
+              >
+                Password
+              </Label>
               <div className="relative">
                 <Input
                   id="password"
@@ -120,7 +121,11 @@ export default function Register() {
             </div>
           </CardContent>
           <CardFooter className="flex flex-col space-y-4">
-            <Button type="submit" className="w-full rounded-lg bg-[#F97316] text-[#FFFFFF] hover:bg-[#EA580C]" disabled={loading}>
+            <Button
+              type="submit"
+              className="w-full rounded-lg bg-[#F97316] text-[#FFFFFF] hover:bg-[#EA580C]"
+              disabled={loading}
+            >
               {loading ? "Creating account..." : "Sign up"}
             </Button>
             <div className="text-center text-sm text-[#94A3B8]">

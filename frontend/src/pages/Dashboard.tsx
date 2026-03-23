@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
+import { getMe } from "../api/auth.api";
 import NavigationSidebar from "../components/NavigationSidebar";
 import Profile from "./Profile";
 import Investigasi from "./Investigasi";
@@ -26,17 +27,7 @@ export default function Dashboard() {
       }
 
       try {
-        const res = await fetch("http://localhost:5000/api/auth/me", {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        });
-
-        if (!res.ok) {
-          throw new Error("Failed to fetch user");
-        }
-
-        const data: User = await res.json();
+        const data: User = await getMe();
         setUser(data);
       } catch (err) {
         console.error(err);

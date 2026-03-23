@@ -1,4 +1,12 @@
 import { useState, useEffect } from "react";
+import {
+  deleteDataset,
+  downloadDataset,
+  getDatasets,
+  uploadDataset,
+  type Dataset,
+} from "../api/datasets.api";
+import { getApiErrorMessage } from "../api/errors";
 import { Button } from "../components/ui/button";
 import { Input } from "../components/ui/input";
 import {
@@ -10,19 +18,20 @@ import {
 } from "../components/ui/card";
 import { showToast, ToastContainer } from "../components/ui/toast";
 import ConfirmDialog from "../components/ui/confirm-dialog";
-import { Upload, Download, FileText, Info, Trash2, Eye, Edit } from "lucide-react";
+import {
+  Upload,
+  Download,
+  FileText,
+  Info,
+  Trash2,
+  Eye,
+  Edit,
+} from "lucide-react";
 
 type User = {
   name: string;
   email: string;
   role: string;
-};
-
-type Dataset = {
-  id: string;
-  name: string;
-  url: string;
-  uploadDate: string;
 };
 
 export default function Investigasi({ user }: { user: User }) {
@@ -41,16 +50,8 @@ export default function Investigasi({ user }: { user: User }) {
 
   const fetchDatasets = async () => {
     try {
-      const token = localStorage.getItem("token");
-      const res = await fetch("http://localhost:5000/api/datasets", {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      });
-      if (res.ok) {
-        const data = await res.json();
-        setDatasets(data);
-      }
+      const data = await getDatasets();
+      setDatasets(data);
     } catch (err) {
       console.error("Gagal mengambil daftar dataset:", err);
     }
@@ -67,40 +68,20 @@ export default function Investigasi({ user }: { user: User }) {
     if (!file) return;
 
     setIsUploading(true);
-    const formData = new FormData();
-    formData.append("file", file);
 
     try {
-      const token = localStorage.getItem("token");
-      const res = await fetch("http://localhost:5000/api/datasets/upload", {
-        method: "POST",
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-        body: formData,
-      });
-
-      if (res.ok) {
-        showToast("File berhasil diunggah!", "success");
-        setFile(null);
-        fetchDatasets();
-        // Reset file input
-        const fileInput = document.getElementById(
-          "csv-upload",
-        ) as HTMLInputElement;
-        if (fileInput) fileInput.value = "";
-      } else {
-        showToast(
-          "Gagal mengunggah file. Pastikan server berjalan dan endpoint sesuai.",
-          "error",
-        );
-      }
+      await uploadDataset(file);
+      showToast("File berhasil diunggah!", "success");
+      setFile(null);
+      fetchDatasets();
+      // Reset file input
+      const fileInput = document.getElementById(
+        "csv-upload",
+      ) as HTMLInputElement;
+      if (fileInput) fileInput.value = "";
     } catch (err) {
       console.error(err);
-      showToast(
-        "Gagal mengunggah file. Terjadi kesalahan jaringan.",
-        "error",
-      );
+      showToast(getApiErrorMessage(err, "Gagal mengunggah file."), "error");
     } finally {
       setIsUploading(false);
     }
@@ -110,18 +91,7 @@ export default function Investigasi({ user }: { user: User }) {
     if (dataset.url === "#") return;
 
     try {
-      const token = localStorage.getItem("token");
-      const res = await fetch(dataset.url, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      });
-
-      if (!res.ok) {
-        throw new Error("Gagal mengunduh dataset");
-      }
-
-      const blob = await res.blob();
+      const blob = await downloadDataset(dataset.url);
       const downloadUrl = window.URL.createObjectURL(blob);
       const a = document.createElement("a");
       a.href = downloadUrl;
@@ -132,7 +102,7 @@ export default function Investigasi({ user }: { user: User }) {
       window.URL.revokeObjectURL(downloadUrl);
     } catch (err) {
       console.error("Download error:", err);
-      showToast("Gagal mengunduh file.", "error");
+      showToast(getApiErrorMessage(err, "Gagal mengunduh file."), "error");
     }
   };
 
@@ -149,29 +119,12 @@ export default function Investigasi({ user }: { user: User }) {
     setPendingDeleteId(null);
 
     try {
-      const token = localStorage.getItem("token");
-      const res = await fetch(
-        `http://localhost:5000/api/datasets/${idToDelete}`,
-        {
-          method: "DELETE",
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        },
-      );
-
-      if (res.ok) {
-        showToast("Dataset berhasil dihapus!", "success");
-        fetchDatasets();
-      } else {
-        showToast("Gagal menghapus dataset.", "error");
-      }
+      await deleteDataset(idToDelete);
+      showToast("Dataset berhasil dihapus!", "success");
+      fetchDatasets();
     } catch (err) {
       console.error(err);
-      showToast(
-        "Terjadi kesalahan jaringan saat menghapus dataset.",
-        "error",
-      );
+      showToast(getApiErrorMessage(err, "Gagal menghapus dataset."), "error");
     }
   };
 

@@ -1,5 +1,7 @@
 import { useState, useRef, useEffect } from "react";
 import { Eye, EyeOff, Loader2, CheckCircle2, XCircle } from "lucide-react";
+import { updatePassword, updateProfile } from "../api/auth.api";
+import { getApiErrorMessage } from "../api/errors";
 import { Button } from "../components/ui/button";
 import { Input } from "../components/ui/input";
 import { Label } from "../components/ui/label";
@@ -23,31 +25,39 @@ type ProfileProps = {
 };
 
 export default function Profile({ user, setUser }: ProfileProps) {
-  
   const [name, setName] = useState(user.name);
   const [email, setEmail] = useState(user.email);
-  
+
   const [currentPassword, setCurrentPassword] = useState("");
   const [newPassword, setNewPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
-  
+
   const [showCurrentPassword, setShowCurrentPassword] = useState(false);
   const [showNewPassword, setShowNewPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
-  
+
   const [isLoadingProfile, setIsLoadingProfile] = useState(false);
   const [isLoadingPassword, setIsLoadingPassword] = useState(false);
-  
-  const [toast, setToast] = useState<{ show: boolean; type: "success" | "error"; title: string; description: string } | null>(null);
+
+  const [toast, setToast] = useState<{
+    show: boolean;
+    type: "success" | "error";
+    title: string;
+    description: string;
+  } | null>(null);
   const toastTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
-  const showToast = (type: "success" | "error", title: string, description: string) => {
+  const showToast = (
+    type: "success" | "error",
+    title: string,
+    description: string,
+  ) => {
     setToast({ show: true, type, title, description });
-    
+
     if (toastTimeoutRef.current) {
       clearTimeout(toastTimeoutRef.current);
     }
-    
+
     toastTimeoutRef.current = setTimeout(() => {
       setToast((prev) => (prev ? { ...prev, show: false } : null));
     }, 3000);
@@ -64,28 +74,17 @@ export default function Profile({ user, setUser }: ProfileProps) {
   const handleUpdateProfile = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsLoadingProfile(true);
-    
+
     try {
-      const token = localStorage.getItem("token");
-      const res = await fetch("http://localhost:5000/api/auth/profile", {
-        method: "PUT",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`
-        },
-        body: JSON.stringify({ name, email })
-      });
-      
-      if (!res.ok) {
-        const errorData = await res.json().catch(() => ({}));
-        throw new Error(errorData.message || "Gagal memperbarui profil");
-      }
-      
-      const data = await res.json();
+      const data = await updateProfile({ name, email });
       showToast("success", "Berhasil", "Profil berhasil diperbarui!");
-      setUser({ ...user, name: data.user?.name || name, email: data.user?.email || email });
-    } catch (err: any) {
-      showToast("error", "Gagal", err.message || "Terjadi kesalahan");
+      setUser({
+        ...user,
+        name: data.user?.name || name,
+        email: data.user?.email || email,
+      });
+    } catch (err: unknown) {
+      showToast("error", "Gagal", getApiErrorMessage(err, "Terjadi kesalahan"));
     } finally {
       setIsLoadingProfile(false);
     }
@@ -94,35 +93,22 @@ export default function Profile({ user, setUser }: ProfileProps) {
   const handleUpdatePassword = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsLoadingPassword(true);
-    
+
     if (newPassword !== confirmPassword) {
       showToast("error", "Gagal", "Password baru tidak cocok");
       setIsLoadingPassword(false);
       return;
     }
-    
+
     try {
-      const token = localStorage.getItem("token");
-      const res = await fetch("http://localhost:5000/api/auth/password", {
-        method: "PUT",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`
-        },
-        body: JSON.stringify({ currentPassword, newPassword })
-      });
-      
-      if (!res.ok) {
-        const errorData = await res.json().catch(() => ({}));
-        throw new Error(errorData.message || "Gagal memperbarui password");
-      }
-      
+      await updatePassword({ currentPassword, newPassword });
+
       showToast("success", "Berhasil", "Password berhasil diperbarui!");
       setCurrentPassword("");
       setNewPassword("");
       setConfirmPassword("");
-    } catch (err: any) {
-      showToast("error", "Gagal", err.message || "Terjadi kesalahan");
+    } catch (err: unknown) {
+      showToast("error", "Gagal", getApiErrorMessage(err, "Terjadi kesalahan"));
     } finally {
       setIsLoadingPassword(false);
     }
@@ -142,7 +128,9 @@ export default function Profile({ user, setUser }: ProfileProps) {
               )}
               <div className="grid gap-1">
                 <div className="text-sm font-semibold">{toast.title}</div>
-                <div className="text-sm opacity-90 text-[#94A3B8]">{toast.description}</div>
+                <div className="text-sm opacity-90 text-[#94A3B8]">
+                  {toast.description}
+                </div>
               </div>
             </div>
           </div>
@@ -150,20 +138,30 @@ export default function Profile({ user, setUser }: ProfileProps) {
       )}
 
       <header className="mb-8">
-        <h1 className="font-serif text-3xl font-bold text-[#0F172A]">Pengaturan Profil</h1>
-        <p className="mt-2 text-lg text-[#94A3B8]">Perbarui informasi akun dan kata sandi Anda</p>
+        <h1 className="font-serif text-3xl font-bold text-[#0F172A]">
+          Pengaturan Profil
+        </h1>
+        <p className="mt-2 text-lg text-[#94A3B8]">
+          Perbarui informasi akun dan kata sandi Anda
+        </p>
       </header>
 
       {/* Edit Profile */}
       <Card className="border border-[#94A3B8]/20 bg-[#FFFFFF] shadow-[0px_4px_6px_-1px_rgba(0,0,0,0.1)] rounded-lg overflow-hidden">
         <CardHeader className="border-b border-[#94A3B8]/10 bg-[#FFFFFF]/50">
-          <CardTitle className="font-serif text-xl font-bold text-[#0F172A]">Detail Profil</CardTitle>
-          <CardDescription className="text-[#94A3B8]">Ubah nama atau alamat email Anda</CardDescription>
+          <CardTitle className="font-serif text-xl font-bold text-[#0F172A]">
+            Detail Profil
+          </CardTitle>
+          <CardDescription className="text-[#94A3B8]">
+            Ubah nama atau alamat email Anda
+          </CardDescription>
         </CardHeader>
         <CardContent className="pt-6">
           <form onSubmit={handleUpdateProfile} className="space-y-5">
             <div className="space-y-2">
-              <Label htmlFor="name" className="font-semibold text-[#0F172A]">Nama Lengkap</Label>
+              <Label htmlFor="name" className="font-semibold text-[#0F172A]">
+                Nama Lengkap
+              </Label>
               <Input
                 id="name"
                 value={name}
@@ -174,7 +172,9 @@ export default function Profile({ user, setUser }: ProfileProps) {
               />
             </div>
             <div className="space-y-2">
-              <Label htmlFor="email" className="font-semibold text-[#0F172A]">Alamat Email</Label>
+              <Label htmlFor="email" className="font-semibold text-[#0F172A]">
+                Alamat Email
+              </Label>
               <Input
                 id="email"
                 type="email"
@@ -211,13 +211,22 @@ export default function Profile({ user, setUser }: ProfileProps) {
       {/* Edit Password */}
       <Card className="border border-[#94A3B8]/20 bg-[#FFFFFF] shadow-[0px_4px_6px_-1px_rgba(0,0,0,0.1)] rounded-lg overflow-hidden">
         <CardHeader className="border-b border-[#94A3B8]/10 bg-[#FFFFFF]/50">
-          <CardTitle className="font-serif text-xl font-bold text-[#0F172A]">Keamanan</CardTitle>
-          <CardDescription className="text-[#94A3B8]">Ganti kata sandi akun Anda</CardDescription>
+          <CardTitle className="font-serif text-xl font-bold text-[#0F172A]">
+            Keamanan
+          </CardTitle>
+          <CardDescription className="text-[#94A3B8]">
+            Ganti kata sandi akun Anda
+          </CardDescription>
         </CardHeader>
         <CardContent className="pt-6">
           <form onSubmit={handleUpdatePassword} className="space-y-5">
             <div className="space-y-2">
-              <Label htmlFor="currentPassword" className="font-semibold text-[#0F172A]">Password Saat Ini</Label>
+              <Label
+                htmlFor="currentPassword"
+                className="font-semibold text-[#0F172A]"
+              >
+                Password Saat Ini
+              </Label>
               <div className="relative">
                 <Input
                   id="currentPassword"
@@ -234,13 +243,22 @@ export default function Profile({ user, setUser }: ProfileProps) {
                   className="absolute right-3 top-1/2 -translate-y-1/2 text-[#94A3B8] hover:text-[#0F172A]"
                   tabIndex={-1}
                 >
-                  {showCurrentPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+                  {showCurrentPassword ? (
+                    <EyeOff size={18} />
+                  ) : (
+                    <Eye size={18} />
+                  )}
                 </button>
               </div>
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="newPassword" className="font-semibold text-[#0F172A]">Password Baru</Label>
+              <Label
+                htmlFor="newPassword"
+                className="font-semibold text-[#0F172A]"
+              >
+                Password Baru
+              </Label>
               <div className="relative">
                 <Input
                   id="newPassword"
@@ -263,7 +281,12 @@ export default function Profile({ user, setUser }: ProfileProps) {
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="confirmPassword" className="font-semibold text-[#0F172A]">Konfirmasi Password Baru</Label>
+              <Label
+                htmlFor="confirmPassword"
+                className="font-semibold text-[#0F172A]"
+              >
+                Konfirmasi Password Baru
+              </Label>
               <div className="relative">
                 <Input
                   id="confirmPassword"
@@ -280,14 +303,23 @@ export default function Profile({ user, setUser }: ProfileProps) {
                   className="absolute right-3 top-1/2 -translate-y-1/2 text-[#94A3B8] hover:text-[#0F172A]"
                   tabIndex={-1}
                 >
-                  {showConfirmPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+                  {showConfirmPassword ? (
+                    <EyeOff size={18} />
+                  ) : (
+                    <Eye size={18} />
+                  )}
                 </button>
               </div>
             </div>
 
             <Button
               type="submit"
-              disabled={isLoadingPassword || !currentPassword || !newPassword || !confirmPassword}
+              disabled={
+                isLoadingPassword ||
+                !currentPassword ||
+                !newPassword ||
+                !confirmPassword
+              }
               className="mt-6 rounded-lg bg-[#F97316] text-[#FFFFFF] hover:bg-[#EA580C]"
             >
               {isLoadingPassword ? (

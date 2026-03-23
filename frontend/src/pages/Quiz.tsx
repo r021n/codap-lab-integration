@@ -1,4 +1,18 @@
 import { useState, useEffect, useCallback } from "react";
+import {
+  addQuestion as addQuestionApi,
+  createQuiz as createQuizApi,
+  deleteQuestion as deleteQuestionApi,
+  deleteQuiz as deleteQuizApi,
+  getQuizDetail as getQuizDetailApi,
+  getQuizzes as getQuizzesApi,
+  getSubmissionDetail as getSubmissionDetailApi,
+  getSubmissions as getSubmissionsApi,
+  reorderQuestions as reorderQuestionsApi,
+  submitQuiz as submitQuizApi,
+  updateQuestion as updateQuestionApi,
+  updateQuiz as updateQuizApi,
+} from "../api/quiz.api";
 import { Button } from "../components/ui/button";
 import {
   Card,
@@ -74,12 +88,6 @@ type SubmissionDetail = Submission & {
   }[];
 };
 
-const API = "http://localhost:5000/api/quizzes";
-const headers = () => ({
-  Authorization: `Bearer ${localStorage.getItem("token")}`,
-  "Content-Type": "application/json",
-});
-
 // ─── STUDENT QUIZ VIEW ──────────────────────────────────────────
 function StudentQuizView({ quiz }: { quiz: Quiz & { questions: Question[] } }) {
   const [current, setCurrent] = useState(0);
@@ -107,15 +115,9 @@ function StudentQuizView({ quiz }: { quiz: Quiz & { questions: Question[] } }) {
       essayAnswer: answers[question.id]?.essayAnswer || null,
     }));
     try {
-      const res = await fetch(`${API}/${quiz.id}/submit`, {
-        method: "POST",
-        headers: headers(),
-        body: JSON.stringify({ answers: payload }),
-      });
-      if (res.ok) {
-        setSubmitted(true);
-        showToast("Kuis berhasil dikirim!", "success");
-      } else showToast("Gagal mengirim kuis.", "error");
+      await submitQuizApi(quiz.id, { answers: payload });
+      setSubmitted(true);
+      showToast("Kuis berhasil dikirim!", "success");
     } catch {
       showToast("Terjadi kesalahan jaringan.", "error");
     }
@@ -279,8 +281,8 @@ function EditorMode() {
 
   const fetchQuizzes = useCallback(async () => {
     try {
-      const res = await fetch(API, { headers: headers() });
-      if (res.ok) setQuizList(await res.json());
+      const quizzes = await getQuizzesApi();
+      setQuizList(quizzes);
     } catch {
       console.error("Failed to fetch quizzes");
     }
@@ -288,8 +290,8 @@ function EditorMode() {
 
   const fetchQuizDetail = useCallback(async (id: number) => {
     try {
-      const res = await fetch(`${API}/${id}`, { headers: headers() });
-      if (res.ok) setSelectedQuiz(await res.json());
+      const quizDetail = await getQuizDetailApi(id);
+      setSelectedQuiz(quizDetail as Quiz & { questions: Question[] });
     } catch {
       console.error("Failed to fetch quiz detail");
     }
@@ -302,17 +304,11 @@ function EditorMode() {
   const createQuiz = async () => {
     if (!newTitle.trim()) return showToast("Judul kuis harus diisi.", "error");
     try {
-      const res = await fetch(API, {
-        method: "POST",
-        headers: headers(),
-        body: JSON.stringify({ title: newTitle, description: newDesc }),
-      });
-      if (res.ok) {
-        showToast("Kuis berhasil dibuat!", "success");
-        setNewTitle("");
-        setNewDesc("");
-        fetchQuizzes();
-      } else showToast("Gagal membuat kuis.", "error");
+      await createQuizApi({ title: newTitle, description: newDesc });
+      showToast("Kuis berhasil dibuat!", "success");
+      setNewTitle("");
+      setNewDesc("");
+      fetchQuizzes();
     } catch {
       showToast("Kesalahan jaringan.", "error");
     }
@@ -320,11 +316,7 @@ function EditorMode() {
 
   const togglePublish = async (quiz: Quiz) => {
     try {
-      await fetch(`${API}/${quiz.id}`, {
-        method: "PUT",
-        headers: headers(),
-        body: JSON.stringify({ isPublished: !quiz.isPublished }),
-      });
+      await updateQuizApi(quiz.id, { isPublished: !quiz.isPublished });
       fetchQuizzes();
       if (selectedQuiz?.id === quiz.id) fetchQuizDetail(quiz.id);
     } catch {
@@ -339,16 +331,10 @@ function EditorMode() {
     if (qType === "multiple_choice")
       body.options = qOptions.filter((o) => o.optionText.trim());
     try {
-      const res = await fetch(`${API}/${selectedQuiz.id}/questions`, {
-        method: "POST",
-        headers: headers(),
-        body: JSON.stringify(body),
-      });
-      if (res.ok) {
-        showToast("Soal berhasil ditambahkan!", "success");
-        resetQuestionForm();
-        fetchQuizDetail(selectedQuiz.id);
-      } else showToast("Gagal menambahkan soal.", "error");
+      await addQuestionApi(selectedQuiz.id, body);
+      showToast("Soal berhasil ditambahkan!", "success");
+      resetQuestionForm();
+      fetchQuizDetail(selectedQuiz.id);
     } catch {
       showToast("Kesalahan jaringan.", "error");
     }
@@ -360,16 +346,10 @@ function EditorMode() {
     if (qType === "multiple_choice")
       body.options = qOptions.filter((o) => o.optionText.trim());
     try {
-      const res = await fetch(`${API}/questions/${editingQuestion.id}`, {
-        method: "PUT",
-        headers: headers(),
-        body: JSON.stringify(body),
-      });
-      if (res.ok) {
-        showToast("Soal berhasil diperbarui!", "success");
-        resetQuestionForm();
-        if (selectedQuiz) fetchQuizDetail(selectedQuiz.id);
-      } else showToast("Gagal memperbarui soal.", "error");
+      await updateQuestionApi(editingQuestion.id, body);
+      showToast("Soal berhasil diperbarui!", "success");
+      resetQuestionForm();
+      if (selectedQuiz) fetchQuizDetail(selectedQuiz.id);
     } catch {
       showToast("Kesalahan jaringan.", "error");
     }
@@ -383,19 +363,17 @@ function EditorMode() {
   const handleDeleteConfirmed = async () => {
     if (!pendingDelete) return;
     setConfirmOpen(false);
-    const url =
-      pendingDelete.type === "quiz"
-        ? `${API}/${pendingDelete.id}`
-        : `${API}/questions/${pendingDelete.id}`;
     try {
-      const res = await fetch(url, { method: "DELETE", headers: headers() });
-      if (res.ok) {
-        showToast("Berhasil dihapus!", "success");
-        if (pendingDelete.type === "quiz") {
-          setSelectedQuiz(null);
-          fetchQuizzes();
-        } else if (selectedQuiz) fetchQuizDetail(selectedQuiz.id);
-      } else showToast("Gagal menghapus.", "error");
+      if (pendingDelete.type === "quiz") {
+        await deleteQuizApi(pendingDelete.id);
+      } else {
+        await deleteQuestionApi(pendingDelete.id);
+      }
+      showToast("Berhasil dihapus!", "success");
+      if (pendingDelete.type === "quiz") {
+        setSelectedQuiz(null);
+        fetchQuizzes();
+      } else if (selectedQuiz) fetchQuizDetail(selectedQuiz.id);
     } catch {
       showToast("Kesalahan jaringan.", "error");
     }
@@ -410,11 +388,7 @@ function EditorMode() {
     [qs[idx], qs[target]] = [qs[target], qs[idx]];
     const orderedIds = qs.map((q) => q.id);
     try {
-      await fetch(`${API}/${selectedQuiz.id}/reorder`, {
-        method: "PUT",
-        headers: headers(),
-        body: JSON.stringify({ orderedIds }),
-      });
+      await reorderQuestionsApi(selectedQuiz.id, orderedIds);
       fetchQuizDetail(selectedQuiz.id);
     } catch {
       showToast("Gagal mengubah urutan.", "error");
@@ -796,8 +770,8 @@ function TeacherMode() {
   useEffect(() => {
     (async () => {
       try {
-        const res = await fetch(API, { headers: headers() });
-        if (res.ok) setQuizList(await res.json());
+        const quizzes = await getQuizzesApi();
+        setQuizList(quizzes);
       } catch {
         /* ignore */
       }
@@ -808,10 +782,8 @@ function TeacherMode() {
     setSelectedQuizId(quizId);
     setDetail(null);
     try {
-      const res = await fetch(`${API}/${quizId}/submissions`, {
-        headers: headers(),
-      });
-      if (res.ok) setSubmissions(await res.json());
+      const submissionList = await getSubmissionsApi(quizId);
+      setSubmissions(submissionList);
     } catch {
       showToast("Gagal memuat data.", "error");
     }
@@ -819,10 +791,8 @@ function TeacherMode() {
 
   const fetchDetail = async (submissionId: number) => {
     try {
-      const res = await fetch(`${API}/submissions/${submissionId}`, {
-        headers: headers(),
-      });
-      if (res.ok) setDetail(await res.json());
+      const submissionDetail = await getSubmissionDetailApi(submissionId);
+      setDetail(submissionDetail as SubmissionDetail);
     } catch {
       showToast("Gagal memuat detail.", "error");
     }
@@ -1023,13 +993,10 @@ function PreviewMode({ user }: { user: User }) {
   useEffect(() => {
     (async () => {
       try {
-        const res = await fetch(API, { headers: headers() });
-        if (res.ok) {
-          const all: Quiz[] = await res.json();
-          setQuizList(
-            user.role === "admin" ? all : all.filter((q) => q.isPublished),
-          );
-        }
+        const all = await getQuizzesApi();
+        setQuizList(
+          user.role === "admin" ? all : all.filter((q) => q.isPublished),
+        );
       } catch {
         /* ignore */
       }
@@ -1038,8 +1005,8 @@ function PreviewMode({ user }: { user: User }) {
 
   const selectQuiz = async (id: number) => {
     try {
-      const res = await fetch(`${API}/${id}`, { headers: headers() });
-      if (res.ok) setSelectedQuiz(await res.json());
+      const quizDetail = await getQuizDetailApi(id);
+      setSelectedQuiz(quizDetail as Quiz & { questions: Question[] });
     } catch {
       showToast("Gagal memuat kuis.", "error");
     }
