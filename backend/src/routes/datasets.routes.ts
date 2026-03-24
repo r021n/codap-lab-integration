@@ -46,8 +46,13 @@ router.get('/', authenticateToken, async (req: AuthRequest, res: Response) => {
       .from(datasets)
       .orderBy(datasets.createdAt);
 
+    const forwardedProto = req.headers['x-forwarded-proto'];
+    const protocol =
+      (Array.isArray(forwardedProto)
+        ? forwardedProto[0]
+        : forwardedProto?.split(',')[0]) || req.protocol;
     const host = req.get('host') as string;
-    const baseUrl = `${req.protocol}://${host}`;
+    const baseUrl = `${protocol}://${host}`;
 
     const result = allDatasets.map((d) => ({
       id: String(d.id),
