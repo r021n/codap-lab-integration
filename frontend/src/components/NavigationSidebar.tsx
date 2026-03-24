@@ -33,7 +33,7 @@ export default function NavigationSidebar({
       >
         {isOpen && (
           <h2 className="font-serif font-bold text-xl text-[#F97316] truncate mr-2">
-            EcoDataLearn
+            AirDataLabs
           </h2>
         )}
         <button

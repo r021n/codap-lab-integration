@@ -52,7 +52,7 @@ export default function Register() {
               Create an account
             </CardTitle>
             <CardDescription className="text-[#94A3B8]">
-              Enter your details to get started with EcoDataLearn
+              Enter your details to get started with AirDataLabs
             </CardDescription>
           </CardHeader>
           <CardContent className="space-y-4">
