@@ -1,7 +1,7 @@
 import { Router, Request, Response } from 'express';
 import multer from 'multer';
 import path from 'path';
-import fs from 'fs';
+
 import { eq } from 'drizzle-orm';
 import { db } from '../db/db';
 import { datasets } from '../db/schema';
@@ -11,25 +11,7 @@ const router = Router();
 
 // ─── Multer Configuration ─────────────────────────────────────────────────────
 
-const UPLOADS_DIR = path.join(process.cwd(), 'uploads');
-
-// Ensure the uploads directory exists at startup
-if (!fs.existsSync(UPLOADS_DIR)) {
-  fs.mkdirSync(UPLOADS_DIR, { recursive: true });
-}
-
-const storage = multer.diskStorage({
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  destination: (_req: any, _file: any, cb: any) => {
-    cb(null, UPLOADS_DIR);
-  },
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  filename: (_req: any, file: any, cb: any) => {
-    const sanitized = (file.originalname as string).replace(/[^a-zA-Z0-9._-]/g, '_');
-    const unique = `${Date.now()}_${sanitized}`;
-    cb(null, unique);
-  },
-});
+const storage = multer.memoryStorage();
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 const fileFilter = (_req: any, file: any, cb: any) => {
@@ -91,16 +73,20 @@ router.post(
   upload.single('file'),
   async (req: AuthRequest, res: Response) => {
     try {
-      if (!req.file) {
+      if (!req.file || !req.file.buffer) {
         return res.status(400).json({ error: 'File tidak ditemukan dalam request' });
       }
+
+      const fileData = req.file.buffer.toString('utf-8');
+      const sanitized = req.file.originalname.replace(/[^a-zA-Z0-9._-]/g, '_');
+      const storedName = `${Date.now()}_${sanitized}`;
 
       const inserted = await db
         .insert(datasets)
         .values({
           originalName: req.file.originalname,
-          storedName: req.file.filename,
-          filePath: req.file.path,
+          storedName: storedName,
+          fileData: fileData,
           uploadedBy: req.user!.id,
         })
         .returning({ id: datasets.id, originalName: datasets.originalName });
@@ -119,16 +105,19 @@ router.post(
 // ─── GET /api/datasets/download/:storedName ───────────────────────────────────
 // Serves the actual CSV file as a download. Protected: any authenticated user.
 
-router.get('/download/:storedName', authenticateToken, (req: AuthRequest, res: Response) => {
+router.get('/download/:storedName', authenticateToken, async (req: AuthRequest, res: Response) => {
   try {
     const safeName = path.basename(req.params['storedName'] as string);
-    const filePath = path.join(UPLOADS_DIR, safeName);
+    
+    const record = await db.select().from(datasets).where(eq(datasets.storedName, safeName));
 
-    if (!fs.existsSync(filePath)) {
-      return res.status(404).json({ error: 'File tidak ditemukan' });
+    if (record.length === 0) {
+      return res.status(404).json({ error: 'File tidak ditemukan di database' });
     }
 
-    res.download(filePath, safeName);
+    res.setHeader('Content-Type', 'text/csv');
+    res.attachment(safeName);
+    res.send(record[0].fileData);
   } catch (error) {
     console.error(error);
     res.status(500).json({ error: 'Gagal mengunduh file' });
@@ -149,11 +138,6 @@ router.delete('/:id', authenticateToken, requireAdmin, async (req: AuthRequest, 
 
     if (record.length === 0) {
       return res.status(404).json({ error: 'Dataset tidak ditemukan' });
-    }
-
-    const filePath = path.join(UPLOADS_DIR, record[0].storedName);
-    if (fs.existsSync(filePath)) {
-      fs.unlinkSync(filePath);
     }
 
     await db.delete(datasets).where(eq(datasets.id, id));

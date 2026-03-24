@@ -13,7 +13,7 @@ export const datasets = pgTable('datasets', {
   id: serial('id').primaryKey(),
   originalName: varchar('original_name', { length: 255 }).notNull(),
   storedName: varchar('stored_name', { length: 255 }).notNull().unique(),
-  filePath: text('file_path').notNull(),
+  fileData: text('file_data').notNull(),
   uploadedBy: integer('uploaded_by').references(() => users.id).notNull(),
   createdAt: timestamp('created_at').defaultNow().notNull(),
 });
