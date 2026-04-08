@@ -119,16 +119,16 @@ export default function Profile({ user, setUser }: ProfileProps) {
       {/* Toast Notification */}
       {toast && toast.show && (
         <div className="fixed bottom-4 right-4 z-50 flex max-h-screen w-full flex-col-reverse p-4 sm:bottom-0 sm:right-0 sm:top-auto sm:flex-col md:max-w-[420px]">
-          <div className="pointer-events-auto relative flex w-full items-center justify-between space-x-4 overflow-hidden rounded-lg border p-4 pr-6 shadow-[0px_4px_6px_-1px_rgba(0,0,0,0.1)] transition-all border-[#94A3B8]/20 bg-[#FFFFFF] text-[#0F172A]">
+          <div className="pointer-events-auto relative flex w-full items-center justify-between space-x-4 overflow-hidden rounded-lg border p-4 pr-6 shadow-[0px_4px_6px_-1px_rgba(0,0,0,0.1)] transition-all border-border/20 bg-background text-foreground">
             <div className="flex gap-3">
               {toast.type === "success" ? (
-                <CheckCircle2 className="h-5 w-5 text-[#10B981] mt-0.5 shrink-0" />
+                <CheckCircle2 className="h-5 w-5 text-primary mt-0.5 shrink-0" />
               ) : (
                 <XCircle className="h-5 w-5 text-red-600 mt-0.5 shrink-0" />
               )}
               <div className="grid gap-1">
                 <div className="text-sm font-semibold">{toast.title}</div>
-                <div className="text-sm opacity-90 text-[#94A3B8]">
+                <div className="text-sm opacity-90 text-muted-foreground">
                   {toast.description}
                 </div>
               </div>
@@ -138,28 +138,28 @@ export default function Profile({ user, setUser }: ProfileProps) {
       )}
 
       <header className="mb-8">
-        <h1 className="font-serif text-3xl font-bold text-[#0F172A]">
+        <h1 className="font-serif text-3xl font-bold text-foreground">
           Pengaturan Profil
         </h1>
-        <p className="mt-2 text-lg text-[#94A3B8]">
+        <p className="mt-2 text-lg text-muted-foreground">
           Perbarui informasi akun dan kata sandi Anda
         </p>
       </header>
 
       {/* Edit Profile */}
-      <Card className="border border-[#94A3B8]/20 bg-[#FFFFFF] shadow-[0px_4px_6px_-1px_rgba(0,0,0,0.1)] rounded-lg overflow-hidden">
-        <CardHeader className="border-b border-[#94A3B8]/10 bg-[#FFFFFF]/50">
-          <CardTitle className="font-serif text-xl font-bold text-[#0F172A]">
+      <Card className="border border-border/20 bg-background shadow-[0px_4px_6px_-1px_rgba(0,0,0,0.1)] rounded-lg overflow-hidden">
+        <CardHeader className="border-b border-border/10 bg-background/50">
+          <CardTitle className="font-serif text-xl font-bold text-foreground">
             Detail Profil
           </CardTitle>
-          <CardDescription className="text-[#94A3B8]">
+          <CardDescription className="text-muted-foreground">
             Ubah nama atau alamat email Anda
           </CardDescription>
         </CardHeader>
         <CardContent className="pt-6">
           <form onSubmit={handleUpdateProfile} className="space-y-5">
             <div className="space-y-2">
-              <Label htmlFor="name" className="font-semibold text-[#0F172A]">
+              <Label htmlFor="name" className="font-semibold text-foreground">
                 Nama Lengkap
               </Label>
               <Input
@@ -168,11 +168,11 @@ export default function Profile({ user, setUser }: ProfileProps) {
                 onChange={(e) => setName(e.target.value)}
                 placeholder="Nama Lengkap"
                 required
-                className="bg-[#FFFFFF] border-gray-300 focus:border-[#F97316] focus:ring-[#F97316] focus-visible:ring-[#F97316]"
+                className="bg-background border-gray-300 focus:border-primary focus:ring-primary focus-visible:ring-primary"
               />
             </div>
             <div className="space-y-2">
-              <Label htmlFor="email" className="font-semibold text-[#0F172A]">
+              <Label htmlFor="email" className="font-semibold text-foreground">
                 Alamat Email
               </Label>
               <Input
@@ -182,18 +182,18 @@ export default function Profile({ user, setUser }: ProfileProps) {
                 onChange={(e) => setEmail(e.target.value)}
                 placeholder="nama@email.com"
                 required
-                className="bg-[#FFFFFF] border-gray-300 focus:border-[#F97316] focus:ring-[#F97316] focus-visible:ring-[#F97316]"
+                className="bg-background border-gray-300 focus:border-primary focus:ring-primary focus-visible:ring-primary"
               />
             </div>
             <div className="flex items-center gap-2 pt-2">
-              <span className="inline-flex items-center rounded-md bg-[#F97316]/10 px-2.5 py-1 text-xs font-bold text-[#F97316]">
+              <span className="inline-flex items-center rounded-md bg-primary/10 px-2.5 py-1 text-xs font-bold text-primary">
                 Akses: {user.role === "admin" ? "Administrator" : "Siswa"}
               </span>
             </div>
             <Button
               type="submit"
               disabled={isLoadingProfile}
-              className="mt-6 rounded-lg bg-[#F97316] text-[#FFFFFF] hover:bg-[#EA580C]"
+              className="mt-6 rounded-lg bg-primary text-white hover:bg-primary/90"
             >
               {isLoadingProfile ? (
                 <>
@@ -209,12 +209,12 @@ export default function Profile({ user, setUser }: ProfileProps) {
       </Card>
 
       {/* Edit Password */}
-      <Card className="border border-[#94A3B8]/20 bg-[#FFFFFF] shadow-[0px_4px_6px_-1px_rgba(0,0,0,0.1)] rounded-lg overflow-hidden">
-        <CardHeader className="border-b border-[#94A3B8]/10 bg-[#FFFFFF]/50">
-          <CardTitle className="font-serif text-xl font-bold text-[#0F172A]">
+      <Card className="border border-border/20 bg-background shadow-[0px_4px_6px_-1px_rgba(0,0,0,0.1)] rounded-lg overflow-hidden">
+        <CardHeader className="border-b border-border/10 bg-background/50">
+          <CardTitle className="font-serif text-xl font-bold text-foreground">
             Keamanan
           </CardTitle>
-          <CardDescription className="text-[#94A3B8]">
+          <CardDescription className="text-muted-foreground">
             Ganti kata sandi akun Anda
           </CardDescription>
         </CardHeader>
@@ -223,7 +223,7 @@ export default function Profile({ user, setUser }: ProfileProps) {
             <div className="space-y-2">
               <Label
                 htmlFor="currentPassword"
-                className="font-semibold text-[#0F172A]"
+                className="font-semibold text-foreground"
               >
                 Password Saat Ini
               </Label>
@@ -235,12 +235,12 @@ export default function Profile({ user, setUser }: ProfileProps) {
                   onChange={(e) => setCurrentPassword(e.target.value)}
                   placeholder="Masukkan password saat ini"
                   required
-                  className="bg-[#FFFFFF] border-gray-300 focus:border-[#F97316] focus:ring-[#F97316] focus-visible:ring-[#F97316] pr-10"
+                  className="bg-background border-gray-300 focus:border-primary focus:ring-primary focus-visible:ring-primary pr-10"
                 />
                 <button
                   type="button"
                   onClick={() => setShowCurrentPassword(!showCurrentPassword)}
-                  className="absolute right-3 top-1/2 -translate-y-1/2 text-[#94A3B8] hover:text-[#0F172A]"
+                  className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground"
                   tabIndex={-1}
                 >
                   {showCurrentPassword ? (
@@ -255,7 +255,7 @@ export default function Profile({ user, setUser }: ProfileProps) {
             <div className="space-y-2">
               <Label
                 htmlFor="newPassword"
-                className="font-semibold text-[#0F172A]"
+                className="font-semibold text-foreground"
               >
                 Password Baru
               </Label>
@@ -267,12 +267,12 @@ export default function Profile({ user, setUser }: ProfileProps) {
                   onChange={(e) => setNewPassword(e.target.value)}
                   placeholder="Masukkan password baru"
                   required
-                  className="bg-[#FFFFFF] border-gray-300 focus:border-[#F97316] focus:ring-[#F97316] focus-visible:ring-[#F97316] pr-10"
+                  className="bg-background border-gray-300 focus:border-primary focus:ring-primary focus-visible:ring-primary pr-10"
                 />
                 <button
                   type="button"
                   onClick={() => setShowNewPassword(!showNewPassword)}
-                  className="absolute right-3 top-1/2 -translate-y-1/2 text-[#94A3B8] hover:text-[#0F172A]"
+                  className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground"
                   tabIndex={-1}
                 >
                   {showNewPassword ? <EyeOff size={18} /> : <Eye size={18} />}
@@ -283,7 +283,7 @@ export default function Profile({ user, setUser }: ProfileProps) {
             <div className="space-y-2">
               <Label
                 htmlFor="confirmPassword"
-                className="font-semibold text-[#0F172A]"
+                className="font-semibold text-foreground"
               >
                 Konfirmasi Password Baru
               </Label>
@@ -295,12 +295,12 @@ export default function Profile({ user, setUser }: ProfileProps) {
                   onChange={(e) => setConfirmPassword(e.target.value)}
                   placeholder="Konfirmasi password baru"
                   required
-                  className="bg-[#FFFFFF] border-gray-300 focus:border-[#F97316] focus:ring-[#F97316] focus-visible:ring-[#F97316] pr-10"
+                  className="bg-background border-gray-300 focus:border-primary focus:ring-primary focus-visible:ring-primary pr-10"
                 />
                 <button
                   type="button"
                   onClick={() => setShowConfirmPassword(!showConfirmPassword)}
-                  className="absolute right-3 top-1/2 -translate-y-1/2 text-[#94A3B8] hover:text-[#0F172A]"
+                  className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground"
                   tabIndex={-1}
                 >
                   {showConfirmPassword ? (
@@ -320,7 +320,7 @@ export default function Profile({ user, setUser }: ProfileProps) {
                 !newPassword ||
                 !confirmPassword
               }
-              className="mt-6 rounded-lg bg-[#F97316] text-[#FFFFFF] hover:bg-[#EA580C]"
+              className="mt-6 rounded-lg bg-primary text-white hover:bg-primary/90"
             >
               {isLoadingPassword ? (
                 <>

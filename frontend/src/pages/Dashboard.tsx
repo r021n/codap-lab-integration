@@ -52,7 +52,7 @@ export default function Dashboard() {
 
   if (!user) {
     return (
-      <div className="flex min-h-screen items-center justify-center bg-[#FDFBF0] font-sans text-[#0F172A]">
+      <div className="flex min-h-screen items-center justify-center bg-background font-sans text-foreground">
         Memuat data akun...
       </div>
     );
@@ -65,7 +65,7 @@ export default function Dashboard() {
   const isKuis = location.pathname.startsWith("/dashboard/kuis");
 
   return (
-    <div className="flex bg-[#FDFBF0] min-h-screen font-sans text-[#0F172A]">
+    <div className="flex bg-background min-h-screen font-sans text-foreground">
       {/* Sidebar Navigation */}
       <NavigationSidebar handleLogout={handleLogout} />
 

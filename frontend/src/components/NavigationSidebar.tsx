@@ -20,25 +20,25 @@ export default function NavigationSidebar({
   const [logoutConfirmOpen, setLogoutConfirmOpen] = useState(false);
 
   const activeClass =
-    "flex items-center gap-3 rounded-lg bg-[#F97316] px-3 py-2 text-[#FFFFFF] transition-all shadow-sm";
+    "flex items-center gap-3 rounded-lg bg-primary px-3 py-2 text-white transition-all shadow-sm";
   const inactiveClass =
-    "flex items-center gap-3 rounded-lg px-3 py-2 text-[#94A3B8] transition-all hover:text-[#0F172A] hover:bg-[#FDFBF0]";
+    "flex items-center gap-3 rounded-lg px-3 py-2 text-muted-foreground transition-all hover:text-foreground hover:bg-background/50";
 
   return (
     <div
-      className={`flex flex-col border-r border-[#94A3B8]/20 bg-[#FFFFFF] font-sans text-[#0F172A] h-screen sticky top-0 transition-all duration-300 shrink-0 ${isOpen ? "w-64" : "w-16"}`}
+      className={`flex flex-col border-r border-border/20 bg-background font-sans text-foreground h-screen sticky top-0 transition-all duration-300 shrink-0 ${isOpen ? "w-64" : "w-16"}`}
     >
       <div
-        className={`flex h-14 items-center border-b border-[#94A3B8]/20 lg:h-[60px] ${isOpen ? "px-4 justify-between" : "px-0 justify-center"}`}
+        className={`flex h-14 items-center border-b border-border/20 lg:h-[60px] ${isOpen ? "px-4 justify-between" : "px-0 justify-center"}`}
       >
         {isOpen && (
-          <h2 className="font-serif font-bold text-xl text-[#F97316] truncate mr-2">
+          <h2 className="font-serif font-bold text-xl text-primary truncate mr-2">
             AirDataLabs
           </h2>
         )}
         <button
           onClick={() => setIsOpen(!isOpen)}
-          className="p-1.5 rounded-md text-[#94A3B8] hover:bg-[#FDFBF0] hover:text-[#0F172A] focus:outline-none focus:ring-2 focus:ring-[#F97316]/20"
+          className="p-1.5 rounded-md text-muted-foreground hover:bg-background/50 hover:text-foreground focus:outline-none focus:ring-2 focus:ring-primary/20"
           title={isOpen ? "Tutup Menu" : "Buka Menu"}
         >
           {isOpen ? (
@@ -96,7 +96,7 @@ export default function NavigationSidebar({
       </div>
 
       {handleLogout && (
-        <div className="mt-auto p-4 border-t border-[#94A3B8]/20">
+        <div className="mt-auto p-4 border-t border-border/20">
           <button
             type="button"
             onClick={() => setLogoutConfirmOpen(true)}

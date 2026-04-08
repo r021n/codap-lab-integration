@@ -45,14 +45,14 @@ export default function Login() {
   };
 
   return (
-    <div className="flex min-h-screen items-center justify-center bg-[#FDFBF0] font-sans text-[#0F172A] px-4">
-      <Card className="w-full max-w-md border border-[#94A3B8]/20 bg-[#FFFFFF] shadow-[0px_4px_6px_-1px_rgba(0,0,0,0.1)]">
+    <div className="flex min-h-screen items-center justify-center bg-background font-sans text-foreground px-4">
+      <Card className="w-full max-w-md border border-border/20 bg-background shadow-[0px_4px_6px_-1px_rgba(0,0,0,0.1)]">
         <form onSubmit={handleLogin}>
           <CardHeader className="space-y-1">
-            <CardTitle className="font-serif text-2xl font-bold text-[#0F172A]">
+            <CardTitle className="font-serif text-2xl font-bold text-foreground">
               Sign in
             </CardTitle>
-            <CardDescription className="text-[#94A3B8]">
+            <CardDescription className="text-muted-foreground">
               Enter your email and password to access your account
             </CardDescription>
           </CardHeader>
@@ -63,7 +63,7 @@ export default function Login() {
               </div>
             )}
             <div className="space-y-2">
-              <Label htmlFor="email" className="font-semibold text-[#0F172A]">
+              <Label htmlFor="email" className="font-semibold text-foreground">
                 Email
               </Label>
               <Input
@@ -73,13 +73,13 @@ export default function Login() {
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 required
-                className="bg-[#FFFFFF] border-gray-300 focus:border-[#F97316] focus:ring-[#F97316] focus-visible:ring-[#F97316]"
+                className="bg-background border-gray-300 focus:border-primary focus:ring-primary focus-visible:ring-primary"
               />
             </div>
             <div className="space-y-2">
               <Label
                 htmlFor="password"
-                className="font-semibold text-[#0F172A]"
+                className="font-semibold text-foreground"
               >
                 Password
               </Label>
@@ -90,12 +90,12 @@ export default function Login() {
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                   required
-                  className="bg-[#FFFFFF] border-gray-300 focus:border-[#F97316] focus:ring-[#F97316] focus-visible:ring-[#F97316] pr-10"
+                  className="bg-background border-gray-300 focus:border-primary focus:ring-primary focus-visible:ring-primary pr-10"
                 />
                 <button
                   type="button"
                   onClick={() => setShowPassword(!showPassword)}
-                  className="absolute right-3 top-1/2 -translate-y-1/2 text-[#94A3B8] hover:text-[#0F172A] focus:outline-none"
+                  className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground focus:outline-none"
                   tabIndex={-1}
                 >
                   {showPassword ? (
@@ -110,16 +110,16 @@ export default function Login() {
           <CardFooter className="flex flex-col space-y-4">
             <Button
               type="submit"
-              className="w-full rounded-lg bg-[#F97316] text-[#FFFFFF] hover:bg-[#EA580C]"
+              className="w-full rounded-lg bg-primary text-white hover:bg-primary/90"
               disabled={loading}
             >
               {loading ? "Signing in..." : "Sign in"}
             </Button>
-            <div className="text-center text-sm text-[#94A3B8]">
+            <div className="text-center text-sm text-muted-foreground">
               Don't have an account?{" "}
               <Link
                 to="/register"
-                className="font-semibold text-[#F97316] hover:text-[#EA580C] hover:underline"
+                className="font-semibold text-primary hover:text-primary/80 hover:underline"
               >
                 Sign up
               </Link>
@@ -127,7 +127,7 @@ export default function Login() {
             <div className="text-center text-sm">
               <Link
                 to="/"
-                className="text-[#94A3B8] hover:text-[#0F172A] hover:underline"
+                className="text-muted-foreground hover:text-foreground hover:underline"
               >
                 &larr; Back to Home
               </Link>

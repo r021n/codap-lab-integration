@@ -136,7 +136,7 @@ export default function Investigasi({ user }: { user: User }) {
   const activeMode = user.role === "admin" ? mode : "preview";
 
   return (
-    <div className="mx-auto max-w-6xl space-y-8 pb-12 font-sans text-[#0F172A]">
+    <div className="mx-auto max-w-6xl space-y-8 pb-12 font-sans text-foreground">
       <ToastContainer />
       <ConfirmDialog
         open={confirmOpen}
@@ -151,26 +151,26 @@ export default function Investigasi({ user }: { user: User }) {
 
       <header className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
         <div>
-          <h1 className="font-serif text-3xl font-bold text-[#0F172A]">
+          <h1 className="font-serif text-3xl font-bold text-foreground">
             Ruang Investigasi Data
           </h1>
-          <p className="text-[#94A3B8] mt-2 text-lg">
+          <p className="text-muted-foreground mt-2 text-lg">
             Pelajari dan analisis data lingkungan dengan interaktif menggunakan
             CODAP.
           </p>
         </div>
 
         {user.role === "admin" && (
-          <div className="flex bg-[#FDFBF0] p-1 rounded-lg border border-[#94A3B8]/20 shrink-0">
+          <div className="flex bg-background p-1 rounded-lg border border-border/20 shrink-0">
             <button
               onClick={() => setMode("editor")}
-              className={`flex items-center gap-2 px-4 py-2 rounded-md text-sm font-medium transition-colors ${mode === "editor" ? "bg-[#FFFFFF] shadow-[0px_4px_6px_-1px_rgba(0,0,0,0.1)] text-[#F97316]" : "text-[#94A3B8] hover:text-[#0F172A]"}`}
+              className={`flex items-center gap-2 px-4 py-2 rounded-md text-sm font-medium transition-colors ${mode === "editor" ? "bg-background shadow-[0px_4px_6px_-1px_rgba(0,0,0,0.1)] text-primary" : "text-muted-foreground hover:text-foreground"}`}
             >
               <Edit className="w-4 h-4" /> Editor
             </button>
             <button
               onClick={() => setMode("preview")}
-              className={`flex items-center gap-2 px-4 py-2 rounded-md text-sm font-medium transition-colors ${mode === "preview" ? "bg-[#FFFFFF] shadow-[0px_4px_6px_-1px_rgba(0,0,0,0.1)] text-[#F97316]" : "text-[#94A3B8] hover:text-[#0F172A]"}`}
+              className={`flex items-center gap-2 px-4 py-2 rounded-md text-sm font-medium transition-colors ${mode === "preview" ? "bg-background shadow-[0px_4px_6px_-1px_rgba(0,0,0,0.1)] text-primary" : "text-muted-foreground hover:text-foreground"}`}
             >
               <Eye className="w-4 h-4" /> Preview
             </button>
@@ -180,13 +180,13 @@ export default function Investigasi({ user }: { user: User }) {
 
       {activeMode === "editor" ? (
         <div className="space-y-6">
-          <Card className="border border-[#F97316]/20 bg-[#F97316]/5 shadow-[0px_4px_6px_-1px_rgba(0,0,0,0.1)] rounded-lg">
+          <Card className="border border-primary/20 bg-primary/5 shadow-[0px_4px_6px_-1px_rgba(0,0,0,0.1)] rounded-lg">
             <CardHeader>
-              <CardTitle className="font-serif text-xl font-bold text-[#0F172A] flex items-center gap-2">
-                <Upload className="h-5 w-5 text-[#F97316]" />
+              <CardTitle className="font-serif text-xl font-bold text-foreground flex items-center gap-2">
+                <Upload className="h-5 w-5 text-primary" />
                 Unggah Dataset Baru (Admin)
               </CardTitle>
-              <CardDescription className="text-[#F97316]">
+              <CardDescription className="text-primary">
                 Unggah file CSV baru agar dapat digunakan oleh siswa untuk
                 investigasi.
               </CardDescription>
@@ -201,13 +201,13 @@ export default function Investigasi({ user }: { user: User }) {
                   type="file"
                   accept=".csv"
                   onChange={handleFileChange}
-                  className="bg-[#FFFFFF] max-w-md border-gray-300 focus:border-[#F97316] focus:ring-[#F97316] focus-visible:ring-[#F97316]"
+                  className="bg-background max-w-md border-gray-300 focus:border-primary focus:ring-primary focus-visible:ring-primary"
                   required
                 />
                 <Button
                   type="submit"
                   disabled={isUploading || !file}
-                  className="rounded-lg bg-[#F97316] hover:bg-[#EA580C] text-[#FFFFFF] min-w-[120px]"
+                  className="rounded-lg bg-primary hover:bg-primary/90 text-white min-w-[120px]"
                 >
                   {isUploading ? "Mengunggah..." : "Unggah CSV"}
                 </Button>
@@ -215,37 +215,37 @@ export default function Investigasi({ user }: { user: User }) {
             </CardContent>
           </Card>
 
-          <Card className="border border-[#94A3B8]/20 bg-[#FFFFFF] shadow-[0px_4px_6px_-1px_rgba(0,0,0,0.1)] rounded-lg">
-            <CardHeader className="border-b border-[#94A3B8]/10 bg-[#FFFFFF]/50">
-              <CardTitle className="font-serif text-xl font-bold text-[#0F172A]">
+          <Card className="border border-border/20 bg-background shadow-[0px_4px_6px_-1px_rgba(0,0,0,0.1)] rounded-lg">
+            <CardHeader className="border-b border-border/10 bg-background/50">
+              <CardTitle className="font-serif text-xl font-bold text-foreground">
                 Kelola Dataset
               </CardTitle>
-              <CardDescription className="text-[#94A3B8]">
+              <CardDescription className="text-muted-foreground">
                 Daftar dataset referensi CSV yang tersedia di sistem.
               </CardDescription>
             </CardHeader>
             <CardContent className="pt-6">
-              <div className="rounded-lg border border-[#94A3B8]/20 overflow-x-auto">
+              <div className="rounded-lg border border-border/20 overflow-x-auto">
                 <table className="w-full text-sm text-left">
-                  <thead className="bg-[#FDFBF0] border-b border-[#94A3B8]/20">
+                  <thead className="bg-background border-b border-border/20">
                     <tr>
-                      <th className="px-5 py-4 font-semibold text-[#0F172A]">
+                      <th className="px-5 py-4 font-semibold text-foreground">
                         Nama File
                       </th>
-                      <th className="px-5 py-4 font-semibold text-[#0F172A] w-48">
+                      <th className="px-5 py-4 font-semibold text-foreground w-48">
                         Tanggal Unggah
                       </th>
-                      <th className="px-5 py-4 font-semibold text-[#0F172A] text-right w-32">
+                      <th className="px-5 py-4 font-semibold text-foreground text-right w-32">
                         Aksi
                       </th>
                     </tr>
                   </thead>
-                  <tbody className="divide-y divide-[#94A3B8]/10">
+                  <tbody className="divide-y divide-border/10">
                     {datasets.length === 0 ? (
                       <tr>
                         <td
                           colSpan={3}
-                          className="px-5 py-8 text-center text-[#94A3B8]"
+                          className="px-5 py-8 text-center text-muted-foreground"
                         >
                           Belum ada dataset yang diunggah.
                         </td>
@@ -254,11 +254,11 @@ export default function Investigasi({ user }: { user: User }) {
                       datasets.map((dataset) => (
                         <tr
                           key={dataset.id}
-                          className="hover:bg-[#FDFBF0]/50 transition-colors"
+                          className="hover:bg-background/50 transition-colors"
                         >
-                          <td className="px-5 py-4 font-medium text-[#0F172A]">
+                          <td className="px-5 py-4 font-medium text-foreground">
                             <div className="flex items-center gap-3">
-                              <FileText className="h-5 w-5 text-[#F97316] shrink-0" />
+                              <FileText className="h-5 w-5 text-primary shrink-0" />
                               <span
                                 className="truncate max-w-[300px]"
                                 title={dataset.name}
@@ -267,7 +267,7 @@ export default function Investigasi({ user }: { user: User }) {
                               </span>
                             </div>
                           </td>
-                          <td className="px-5 py-4 text-[#94A3B8]">
+                          <td className="px-5 py-4 text-muted-foreground">
                             {dataset.uploadDate}
                           </td>
                           <td className="px-5 py-4 text-right">
@@ -275,7 +275,7 @@ export default function Investigasi({ user }: { user: User }) {
                               <Button
                                 variant="outline"
                                 size="icon"
-                                className="h-8 w-8 text-[#0F172A] border-[#94A3B8]/20 hover:bg-[#FDFBF0] hover:text-[#F97316]"
+                                className="h-8 w-8 text-foreground border-border/20 hover:bg-background hover:text-primary"
                                 onClick={() => handleDownload(dataset)}
                                 disabled={dataset.url === "#"}
                                 title="Unduh CSV"
@@ -305,37 +305,37 @@ export default function Investigasi({ user }: { user: User }) {
       ) : (
         <div className="grid gap-8 lg:grid-cols-4">
           <div className="lg:col-span-1 space-y-8">
-            <Card className="border border-[#94A3B8]/20 bg-[#FFFFFF] shadow-[0px_4px_6px_-1px_rgba(0,0,0,0.1)] rounded-lg">
+            <Card className="border border-border/20 bg-background shadow-[0px_4px_6px_-1px_rgba(0,0,0,0.1)] rounded-lg">
               <CardHeader className="pb-4">
-                <CardTitle className="font-serif text-lg font-bold text-[#0F172A]">
+                <CardTitle className="font-serif text-lg font-bold text-foreground">
                   Dataset Tersedia
                 </CardTitle>
-                <CardDescription className="text-[#94A3B8]">
+                <CardDescription className="text-muted-foreground">
                   Pilih dan unduh data untuk dianalisis
                 </CardDescription>
               </CardHeader>
               <CardContent>
                 <div className="space-y-4">
                   {datasets.length === 0 ? (
-                    <p className="text-sm text-[#94A3B8]">
+                    <p className="text-sm text-muted-foreground">
                       Belum ada dataset yang diunggah.
                     </p>
                   ) : (
                     datasets.map((dataset) => (
                       <div
                         key={dataset.id}
-                        className="rounded-lg border border-[#94A3B8]/20 p-4 flex flex-col gap-3 bg-[#FDFBF0] hover:bg-[#10B981]/5 hover:border-[#10B981]/20 transition-all shadow-sm"
+                        className="rounded-lg border border-border/20 p-4 flex flex-col gap-3 bg-background hover:bg-primary/5 hover:border-primary/20 transition-all shadow-sm"
                       >
                         <div className="flex items-start gap-3">
-                          <FileText className="h-5 w-5 text-[#10B981] shrink-0 mt-0.5" />
-                          <span className="text-sm font-semibold text-[#0F172A] break-all leading-tight">
+                          <FileText className="h-5 w-5 text-primary shrink-0 mt-0.5" />
+                          <span className="text-sm font-semibold text-foreground break-all leading-tight">
                             {dataset.name}
                           </span>
                         </div>
                         <Button
                           size="sm"
                           variant="outline"
-                          className="w-full h-9 text-xs border-[#0F172A] text-[#0F172A] hover:bg-[#0F172A]/5 hover:text-[#0F172A]"
+                          className="w-full h-9 text-xs border-foreground text-foreground hover:bg-foreground/5 hover:text-foreground"
                           onClick={() => handleDownload(dataset)}
                           disabled={dataset.url === "#"}
                         >
@@ -349,15 +349,15 @@ export default function Investigasi({ user }: { user: User }) {
               </CardContent>
             </Card>
 
-            <Card className="border border-[#F59E0B]/20 bg-[#F59E0B]/5 shadow-[0px_4px_6px_-1px_rgba(0,0,0,0.1)] rounded-lg">
+            <Card className="border border-warning/20 bg-warning/5 shadow-[0px_4px_6px_-1px_rgba(0,0,0,0.1)] rounded-lg">
               <CardHeader className="pb-4">
-                <CardTitle className="font-serif text-lg font-bold text-[#F59E0B] flex items-center gap-2">
+                <CardTitle className="font-serif text-lg font-bold text-warning flex items-center gap-2">
                   <Info className="h-5 w-5" />
                   Petunjuk CODAP
                 </CardTitle>
               </CardHeader>
-              <CardContent className="text-sm text-[#0F172A] space-y-4">
-                <ol className="list-decimal pl-5 space-y-2 leading-relaxed marker:text-[#F59E0B] marker:font-bold">
+              <CardContent className="text-sm text-foreground space-y-4">
+                <ol className="list-decimal pl-5 space-y-2 leading-relaxed marker:text-warning marker:font-bold">
                   <li>
                     <strong>Unduh</strong> data CSV dari menu di atas.
                   </li>
@@ -381,13 +381,13 @@ export default function Investigasi({ user }: { user: User }) {
             </Card>
           </div>
 
-          <Card className="lg:col-span-3 flex flex-col h-[740px] border border-[#94A3B8]/20 bg-[#FFFFFF] shadow-[0px_4px_6px_-1px_rgba(0,0,0,0.1)] rounded-lg overflow-hidden">
-            <CardHeader className="border-b border-[#94A3B8]/10 bg-[#FDFBF0] py-4">
-              <CardTitle className="font-serif text-lg font-bold text-[#0F172A]">
+          <Card className="lg:col-span-3 flex flex-col h-[740px] border border-border/20 bg-background shadow-[0px_4px_6px_-1px_rgba(0,0,0,0.1)] rounded-lg overflow-hidden">
+            <CardHeader className="border-b border-border/10 bg-background py-4">
+              <CardTitle className="font-serif text-lg font-bold text-foreground">
                 Ruang Analisis Workspace
               </CardTitle>
             </CardHeader>
-            <div className="flex-1 bg-[#FFFFFF] relative">
+            <div className="flex-1 bg-background relative">
               <iframe
                 src="https://codap.concord.org/releases/latest/static/dg/en/cert/index.html"
                 className="absolute inset-0 w-full h-full border-0"

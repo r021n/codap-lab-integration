@@ -28,28 +28,28 @@ const variantConfig: Record<
   { bg: string; border: string; icon: React.ReactNode; text: string }
 > = {
   success: {
-    bg: "bg-[#10B981]/10",
-    border: "border-[#10B981]/30",
-    icon: <CheckCircle2 className="h-5 w-5 text-[#10B981] shrink-0" />,
-    text: "text-[#0F172A]",
+    bg: "bg-primary/10",
+    border: "border-primary/30",
+    icon: <CheckCircle2 className="h-5 w-5 text-primary shrink-0" />,
+    text: "text-foreground",
   },
   error: {
     bg: "bg-red-50",
     border: "border-red-300/40",
     icon: <XCircle className="h-5 w-5 text-red-500 shrink-0" />,
-    text: "text-[#0F172A]",
+    text: "text-foreground",
   },
   warning: {
-    bg: "bg-[#F59E0B]/10",
-    border: "border-[#F59E0B]/30",
-    icon: <AlertTriangle className="h-5 w-5 text-[#F59E0B] shrink-0" />,
-    text: "text-[#0F172A]",
+    bg: "bg-secondary/10",
+    border: "border-secondary/30",
+    icon: <AlertTriangle className="h-5 w-5 text-secondary shrink-0" />,
+    text: "text-foreground",
   },
   info: {
     bg: "bg-blue-50",
     border: "border-blue-300/40",
     icon: <Info className="h-5 w-5 text-blue-500 shrink-0" />,
-    text: "text-[#0F172A]",
+    text: "text-foreground",
   },
 };
 
@@ -129,7 +129,7 @@ function ToastItem({
       </p>
       <button
         onClick={() => setIsExiting(true)}
-        className="text-[#94A3B8] hover:text-[#0F172A] transition-colors shrink-0 mt-0.5"
+        className="text-muted-foreground hover:text-foreground transition-colors shrink-0 mt-0.5"
         aria-label="Tutup"
       >
         <X className="h-4 w-4" />

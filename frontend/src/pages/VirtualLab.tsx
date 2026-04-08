@@ -824,35 +824,35 @@ export default function App() {
       key={id}
       onPointerDown={(e) => handleItemPointerDown(e, id)}
       className={`touch-none cursor-grab flex flex-col items-center justify-center p-2 rounded-lg border-2 ${extraClass} 
-        ${dragInfo.item === id ? "opacity-50 border-dashed border-[#F97316]" : "bg-[#FFFFFF] border-[#94A3B8]/20 shadow-[0px_4px_6px_-1px_rgba(0,0,0,0.1)] hover:bg-[#F97316]/5 hover:border-[#F97316]/50 active:scale-95"}`}
+        ${dragInfo.item === id ? "opacity-50 border-dashed border-primary" : "bg-background border-border/20 shadow-[0px_4px_6px_-1px_rgba(0,0,0,0.1)] hover:bg-primary/5 hover:border-primary/50 active:scale-95"}`}
     >
       <span className="text-2xl sm:text-3xl pointer-events-none select-none">
         {emoji}
       </span>
-      <span className="text-[10px] sm:text-xs text-center mt-1 text-[#0F172A] font-semibold pointer-events-none select-none leading-tight">
+      <span className="text-[10px] sm:text-xs text-center mt-1 text-foreground font-semibold pointer-events-none select-none leading-tight">
         {label}
       </span>
     </div>
   );
 
   return (
-    <div className="flex flex-col md:flex-row h-screen w-full bg-[#FDFBF0] text-[#0F172A] overflow-hidden font-sans">
+    <div className="flex flex-col md:flex-row h-screen w-full bg-background text-foreground overflow-hidden font-sans">
       {/* PANEL KIRI: INVENTORY — tinggi = 100vh */}
-      <div className="w-full md:w-1/4 lg:w-1/5 bg-[#FFFFFF] border-b md:border-b-0 md:border-r border-[#94A3B8]/20 flex flex-col z-20 shadow-[0px_4px_6px_-1px_rgba(0,0,0,0.1)] h-1/3 md:h-screen">
-        <div className="p-3 border-b border-[#94A3B8]/20 bg-[#FFFFFF]/90 sticky top-0 backdrop-blur-sm z-10">
+      <div className="w-full md:w-1/4 lg:w-1/5 bg-background border-b md:border-b-0 md:border-r border-border/20 flex flex-col z-20 shadow-[0px_4px_6px_-1px_rgba(0,0,0,0.1)] h-1/3 md:h-screen">
+        <div className="p-3 border-b border-border/20 bg-background/90 sticky top-0 backdrop-blur-sm z-10">
           <div className="flex items-center justify-between">
             <div>
-              <h2 className="text-sm md:text-base font-serif font-bold text-[#F97316]">
+              <h2 className="text-sm md:text-base font-serif font-bold text-primary">
                 Rak Alat & Bahan
               </h2>
-              <p className="text-[10px] md:text-xs text-[#94A3B8]">
+              <p className="text-[10px] md:text-xs text-muted-foreground">
                 Sentuh & tarik ke area praktikum
               </p>
             </div>
             {/* Tombol Reset */}
             <button
               onClick={handleReset}
-              className="px-2.5 py-1.5 text-[10px] md:text-xs font-semibold rounded-lg border-2 border-[#0F172A] text-[#0F172A] hover:bg-[#0F172A] hover:text-white active:scale-95 transition-all duration-150"
+              className="px-2.5 py-1.5 text-[10px] md:text-xs font-semibold rounded-lg border-2 border-foreground text-foreground hover:bg-foreground hover:text-white active:scale-95 transition-all duration-150"
               title="Reset Lab"
             >
               ↺ Reset
@@ -891,7 +891,7 @@ export default function App() {
                 "stopwatch",
                 "⏱️",
                 "Stopwatch",
-                "border-[#10B981] bg-[#10B981]/10 animate-pulse",
+                "border-primary bg-primary/10 animate-pulse",
               )}
           </div>
         </div>
@@ -900,9 +900,9 @@ export default function App() {
       {/* PANEL KANAN: AREA PRAKTIKUM & LKPD */}
       <div className="flex-1 flex flex-col relative h-2/3 md:h-screen overflow-hidden">
         {/* Header Instruksi */}
-        <div className="bg-[#FFFFFF]/90 backdrop-blur-sm border-b border-[#94A3B8]/20 p-2 md:p-3 shadow-[0px_4px_6px_-1px_rgba(0,0,0,0.1)] z-20 shrink-0">
-          <p className="text-xs md:text-sm text-[#0F172A] font-medium leading-tight">
-            <span className="font-bold text-[#F97316]">Instruksi:</span>{" "}
+        <div className="bg-background/90 backdrop-blur-sm border-b border-border/20 p-2 md:p-3 shadow-[0px_4px_6px_-1px_rgba(0,0,0,0.1)] z-20 shrink-0">
+          <p className="text-xs md:text-sm text-foreground font-medium leading-tight">
+            <span className="font-bold text-primary">Instruksi:</span>{" "}
             {getInstruction()}
           </p>
         </div>
@@ -911,8 +911,8 @@ export default function App() {
         <div
           ref={workspaceRef}
           className={`relative transition-colors duration-1000 overflow-hidden touch-none flex flex-col
-            ${state.isSunny ? "bg-[#10B981]/10" : "bg-[#94A3B8]/5"}
-            ${activeDropZone === "environment" ? "ring-inset ring-4 ring-[#F97316]/50" : ""}`}
+            ${state.isSunny ? "bg-primary/10" : "bg-muted-foreground/5"}
+            ${activeDropZone === "environment" ? "ring-inset ring-4 ring-primary/50" : ""}`}
           style={{ height: "50%" }}
           data-dropzone="environment"
         >
@@ -989,12 +989,12 @@ export default function App() {
               />
 
               {/* Port Selang B */}
-              <div
+                <div
                 ref={portBRef}
                 data-port="B"
                 onPointerDown={(e) => handlePortPointerDown(e, "B")}
                 className={`absolute top-[12%] left-1/2 w-8 h-8 rounded-full border-[3px] transform -translate-x-1/2 -translate-y-1/2 touch-none z-40 cursor-pointer shadow-sm
-                  ${state.hoseConnected ? "bg-[#10B981] border-[#0F172A]" : "bg-[#FFFFFF] border-[#0F172A] hover:bg-[#10B981]/30 hover:scale-125 animate-pulse"}`}
+                  ${state.hoseConnected ? "bg-primary border-foreground" : "bg-background border-foreground hover:bg-primary/30 hover:scale-125 animate-pulse"}`}
               ></div>
             </div>
 
@@ -1012,12 +1012,12 @@ export default function App() {
               />
 
               {/* Port Selang C */}
-              <div
+                <div
                 ref={portCRef}
                 data-port="C"
                 onPointerDown={(e) => handlePortPointerDown(e, "C")}
                 className={`absolute top-[12%] left-1/2 w-8 h-8 rounded-full border-[3px] transform -translate-x-1/2 -translate-y-1/2 touch-none z-40 cursor-pointer shadow-sm
-                  ${state.hoseConnected ? "bg-[#10B981] border-[#0F172A]" : "bg-[#FFFFFF] border-[#0F172A] hover:bg-[#10B981]/30 hover:scale-125 animate-pulse"}`}
+                  ${state.hoseConnected ? "bg-primary border-foreground" : "bg-background border-foreground hover:bg-primary/30 hover:scale-125 animate-pulse"}`}
               ></div>
             </div>
 
@@ -1049,16 +1049,16 @@ export default function App() {
           </div>
 
           {/* Meja Kayu (Landasan Bawah) */}
-          <div className="absolute bottom-0 w-full h-8 bg-[#FFFFFF] border-t border-[#94A3B8]/20 z-10 shadow-[0_-5px_15px_rgba(0,0,0,0.05)]"></div>
+          <div className="absolute bottom-0 w-full h-8 bg-background border-t border-border/20 z-10 shadow-[0_-5px_15px_rgba(0,0,0,0.05)]"></div>
         </div>
 
         {/* Panel LKPD (Bawah) — tinggi 50% */}
         <div
-          className="bg-[#FFFFFF] border-t-2 border-[#94A3B8]/20 flex flex-col z-40 shadow-[0px_-4px_6px_-1px_rgba(0,0,0,0.05)]"
+          className="bg-background border-t-2 border-border/20 flex flex-col z-40 shadow-[0px_-4px_6px_-1px_rgba(0,0,0,0.05)]"
           style={{ height: "50%" }}
         >
-          <div className="flex justify-between items-center bg-[#FDFBF0] px-3 py-1.5 md:p-2 border-b border-[#94A3B8]/20">
-            <h3 className="font-serif font-bold text-xs md:text-sm text-[#10B981]">
+          <div className="flex justify-between items-center bg-background px-3 py-1.5 md:p-2 border-b border-border/20">
+            <h3 className="font-serif font-bold text-xs md:text-sm text-primary">
               📝 LKPD Data Suhu
             </h3>
             <div className="flex items-center gap-2">
@@ -1066,7 +1066,7 @@ export default function App() {
               <div className="flex items-center gap-1 text-[10px] md:text-xs">
                 <label
                   htmlFor="duration-input"
-                  className="text-[#94A3B8] font-medium"
+                  className="text-muted-foreground font-medium"
                 >
                   Durasi:
                 </label>
@@ -1078,18 +1078,18 @@ export default function App() {
                   onChange={(e) => handleDurationChange(e.target.value)}
                   onBlur={handleDurationBlur}
                   disabled={state.isRunning || isLabFinished}
-                  className="w-12 md:w-14 px-1.5 py-0.5 rounded border border-[#94A3B8]/30 text-center font-sans font-semibold text-[#0F172A] bg-[#FFFFFF] focus:border-[#F97316] focus:outline-none disabled:opacity-50 disabled:cursor-not-allowed"
+                  className="w-12 md:w-14 px-1.5 py-0.5 rounded border border-border/30 text-center font-sans font-semibold text-foreground bg-background focus:border-primary focus:outline-none disabled:opacity-50 disabled:cursor-not-allowed"
                 />
-                <span className="text-[#94A3B8]">mnt</span>
+                <span className="text-muted-foreground">mnt</span>
               </div>
-              <div className="font-sans font-semibold bg-[#FFFFFF] px-2 py-0.5 rounded text-[#F97316] text-xs md:text-sm border border-[#F97316]/20">
+              <div className="font-sans font-semibold bg-background px-2 py-0.5 rounded text-primary text-xs md:text-sm border border-primary/20">
                 Waktu: {state.time}/{state.duration} Menit
               </div>
             </div>
           </div>
           <div className="flex-1 overflow-y-auto">
             <table className="w-full text-left text-[10px] md:text-xs">
-              <thead className="bg-[#FFFFFF] text-[#0F172A] sticky top-0 border-b border-[#94A3B8]/20">
+              <thead className="bg-background text-foreground sticky top-0 border-b border-border/20">
                 <tr>
                   <th className="p-1.5 md:p-2 pl-4 font-semibold">Menit ke-</th>
                   <th className="p-1.5 md:p-2 font-semibold">
@@ -1100,12 +1100,12 @@ export default function App() {
                   </th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-[#94A3B8]/10">
+              <tbody className="divide-y divide-border/10">
                 {state.logs.length === 0 ? (
                   <tr>
                     <td
                       colSpan={3}
-                      className="p-3 text-center text-[#94A3B8] italic"
+                      className="p-3 text-center text-muted-foreground italic"
                     >
                       Mulai stopwatch untuk mencatat data.
                     </td>
@@ -1114,15 +1114,15 @@ export default function App() {
                   state.logs.map((log) => (
                     <tr
                       key={log.time}
-                      className="hover:bg-[#FDFBF0]/50 transition-colors"
+                      className="hover:bg-background/50 transition-colors"
                     >
-                      <td className="p-1.5 md:p-2 pl-4 font-sans font-semibold text-[#0F172A]">
+                      <td className="p-1.5 md:p-2 pl-4 font-sans font-semibold text-foreground">
                         {log.time}
                       </td>
-                      <td className="p-1.5 md:p-2 text-[#94A3B8] font-sans">
+                      <td className="p-1.5 md:p-2 text-muted-foreground font-sans">
                         {log.tempA} °C
                       </td>
-                      <td className="p-1.5 md:p-2 text-[#F97316] font-bold font-sans">
+                      <td className="p-1.5 md:p-2 text-primary font-bold font-sans">
                         {log.tempB} °C{" "}
                         {parseFloat(log.tempB) > parseFloat(log.tempA)
                           ? "🔥"
@@ -1137,13 +1137,13 @@ export default function App() {
 
           {/* Footer: Tombol Reset setelah selesai */}
           {isLabFinished && (
-            <div className="p-3 border-t border-[#94A3B8]/20 bg-[#FDFBF0] flex items-center justify-center gap-3">
-              <p className="text-xs md:text-sm text-[#10B981] font-semibold">
+            <div className="p-3 border-t border-border/20 bg-background flex items-center justify-center gap-3">
+              <p className="text-xs md:text-sm text-primary font-semibold">
                 ✅ Praktikum Selesai!
               </p>
               <button
                 onClick={handleReset}
-                className="px-4 py-1.5 text-xs md:text-sm font-semibold rounded-lg bg-[#F97316] text-white hover:bg-[#ea580c] active:scale-95 transition-all duration-150"
+                className="px-4 py-1.5 text-xs md:text-sm font-semibold rounded-lg bg-primary text-white hover:bg-primary/90 active:scale-95 transition-all duration-150"
               >
                 ↺ Ulangi Percobaan
               </button>
@@ -1159,7 +1159,7 @@ export default function App() {
           className="fixed pointer-events-none z-50 transform -translate-x-1/2 -translate-y-1/2 drop-shadow-2xl scale-110"
           style={{ left: dragInfo.x, top: dragInfo.y }}
         >
-          <div className="bg-[#FFFFFF] p-3 rounded-xl border-2 border-[#F97316] shadow-[0_0_15px_rgba(249,115,22,0.3)]">
+          <div className="bg-background p-3 rounded-xl border-2 border-primary shadow-[0_0_15px_rgba(16,185,129,0.3)]">
             <span className="text-4xl">
               {dragInfo.item === "thermoA" || dragInfo.item === "thermoB"
                 ? "🌡️"

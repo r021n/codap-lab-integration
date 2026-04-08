@@ -12,12 +12,12 @@ Warna dipilih untuk meningkatkan retensi informasi dan mengurangi kelelahan mata
 
 | Role          | Color Name       | Hex Code  | Usage                                                        |
 | :------------ | :--------------- | :-------- | :----------------------------------------------------------- |
-| **Primary**   | Energetic Orange | `#F97316` | Action buttons, progress bars, highlights, active states.    |
-| **Surface**   | Creamy Ivory     | `#FDFBF0` | Main background, container backgrounds (warmth & comfort).   |
+| **Primary**   | Emerald Green    | `#10B981` | Action buttons, progress bars, highlights, active states.    |
+| **Surface**   | Crisp White      | `#FFFFFF` | Main background, container backgrounds.                      |
 | **Contrast**  | Deep Slate       | `#0F172A` | Primary text, navigation bars, footer, professional accents. |
-| **Secondary** | Muted Sage       | `#94A3B8` | Secondary text, borders, decorative elements.                |
-| **Success**   | Forest Green     | `#10B981` | Completed lessons, correct answers, positive feedback.       |
-| **Warning**   | Golden Sun       | `#F59E0B` | Reminders, streaks, upcoming deadlines.                      |
+| **Secondary** | Ocean Blue       | `#3B82F6` | Secondary accents, badges, decorative elements.              |
+| **Success**   | Mint Green       | `#34D399` | Completed lessons, correct answers, positive feedback.       |
+| **Warning**   | Energetic Orange | `#F97316` | Reminders, streaks, upcoming deadlines, warning states.      |
 
 ### B. Tipografi (Typography)
 
@@ -30,22 +30,22 @@ Warna dipilih untuk meningkatkan retensi informasi dan mengurangi kelelahan mata
 
 ### A. Buttons (Tombol)
 
-- **Primary:** Background `#F97316`, Text `#FFFFFF`, Border-radius `8px`. _Hover state: Darken by 10%_.
+- **Primary:** Background `#10B981`, Text `#FFFFFF`, Border-radius `8px`. _Hover state: Darken by 10%_.
 - **Secondary:** Background `Transparent`, Border `2px solid #0F172A`, Text `#0F172A`.
-- **Ghost:** Text `#F97316`, No background. Digunakan untuk aksi minor (misal: "Batal").
+- **Ghost:** Text `#10B981`, No background. Digunakan untuk aksi minor (misal: "Batal").
 
 ### B. Course Cards (Kartu Materi)
 
-- **Background:** `#FFFFFF` (Putih bersih agar kontras dengan latar belakang Creamy Ivory).
+- **Background:** `#F8FAFC` (Slate yang sangat terang agar kontras dengan latar belakang putih).
 - **Shadow:** `0px 4px 6px -1px rgba(0, 0, 0, 0.1)`. Memberikan efek mengambang halus.
 - **Elements:** \* Thumbnail image (top).
-  - Badge kategori (Orange bg, white text).
+  - Badge kategori (Blue/Orange bg, white text).
   - Progress bar tipis di bagian bawah kartu.
 
 ### C. Inputs & Forms
 
 - **State Normal:** Border Gray-300, Background `#FFFFFF`.
-- **State Focus:** Border `#F97316`, Soft Orange Glow (Ring).
+- **State Focus:** Border `#10B981`, Soft Green Glow (Ring).
 - **Label:** Gunakan Deep Slate (`#0F172A`) dengan font-weight 600.
 
 ---
@@ -84,10 +84,12 @@ module.exports = {
   theme: {
     extend: {
       colors: {
-        primary: "#F97316", // Jingga
-        surface: "#FDFBF0", // Creamy White
+        primary: "#10B981", // Hijau
+        surface: "#FFFFFF", // Putih
+        secondary: "#3B82F6", // Biru
         contrast: "#0F172A", // Deep Slate
-        success: "#10B981",
+        warning: "#F97316", // Jingga
+        success: "#34D399",
       },
       fontFamily: {
         serif: ["Lora", "serif"],

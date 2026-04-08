@@ -126,13 +126,13 @@ function StudentQuizView({ quiz }: { quiz: Quiz & { questions: Question[] } }) {
   if (submitted) {
     return (
       <div className="flex flex-col items-center justify-center py-20 gap-6">
-        <div className="w-20 h-20 rounded-full bg-[#10B981]/10 flex items-center justify-center">
-          <CheckCircle className="w-10 h-10 text-[#10B981]" />
+        <div className="w-20 h-20 rounded-full bg-primary/10 flex items-center justify-center">
+          <CheckCircle className="w-10 h-10 text-primary" />
         </div>
-        <h2 className="font-serif text-2xl font-bold text-[#0F172A]">
+        <h2 className="font-serif text-2xl font-bold text-foreground">
           Kuis Berhasil Dikirim!
         </h2>
-        <p className="text-[#94A3B8] text-center max-w-md">
+        <p className="text-muted-foreground text-center max-w-md">
           Jawaban kamu sudah tercatat. Terima kasih telah mengerjakan kuis ini.
         </p>
       </div>
@@ -141,7 +141,7 @@ function StudentQuizView({ quiz }: { quiz: Quiz & { questions: Question[] } }) {
 
   if (total === 0) {
     return (
-      <p className="text-[#94A3B8] text-center py-12">
+      <p className="text-muted-foreground text-center py-12">
         Belum ada soal dalam kuis ini.
       </p>
     );
@@ -151,34 +151,34 @@ function StudentQuizView({ quiz }: { quiz: Quiz & { questions: Question[] } }) {
     <div className="max-w-3xl mx-auto space-y-6">
       {/* Progress */}
       <div className="space-y-2">
-        <div className="flex justify-between text-sm text-[#94A3B8]">
+        <div className="flex justify-between text-sm text-muted-foreground">
           <span>
             Soal {current + 1} dari {total}
           </span>
           <span>{progress}% selesai</span>
         </div>
-        <div className="w-full h-3 bg-[#94A3B8]/10 rounded-full overflow-hidden">
+        <div className="w-full h-3 bg-muted-foreground/10 rounded-full overflow-hidden">
           <div
-            className="h-full bg-linear-to-r from-[#F97316] to-[#F59E0B] rounded-full transition-all duration-500 ease-out"
+            className="h-full bg-linear-to-r from-primary to-secondary rounded-full transition-all duration-500 ease-out"
             style={{ width: `${progress}%` }}
           />
         </div>
       </div>
 
       {/* Question Card */}
-      <Card className="border border-[#94A3B8]/20 bg-[#FFFFFF] shadow-[0px_4px_6px_-1px_rgba(0,0,0,0.1)] rounded-lg">
-        <CardHeader className="border-b border-[#94A3B8]/10 bg-[#FDFBF0]">
+      <Card className="border border-border/20 bg-background shadow-[0px_4px_6px_-1px_rgba(0,0,0,0.1)] rounded-lg">
+        <CardHeader className="border-b border-border/10 bg-background">
           <div className="flex items-center gap-3">
-            <span className="flex items-center justify-center w-8 h-8 rounded-full bg-[#F97316] text-white text-sm font-bold">
+            <span className="flex items-center justify-center w-8 h-8 rounded-full bg-primary text-white text-sm font-bold">
               {current + 1}
             </span>
-            <span className="text-xs font-medium px-3 py-1 rounded-full bg-[#F97316]/10 text-[#F97316]">
+            <span className="text-xs font-medium px-3 py-1 rounded-full bg-primary/10 text-primary">
               {q.type === "multiple_choice" ? "Pilihan Ganda" : "Essay"}
             </span>
           </div>
         </CardHeader>
         <CardContent className="pt-6 space-y-6">
-          <p className="text-[#0F172A] text-lg leading-relaxed font-medium">
+          <p className="text-foreground text-lg leading-relaxed font-medium">
             {q.questionText}
           </p>
 
@@ -192,17 +192,17 @@ function StudentQuizView({ quiz }: { quiz: Quiz & { questions: Question[] } }) {
                     onClick={() => handleSelect(opt.id!)}
                     className={`w-full flex items-center gap-4 p-4 rounded-lg border-2 text-left transition-all duration-200 ${
                       selected
-                        ? "border-[#F97316] bg-[#F97316]/5 shadow-sm"
-                        : "border-[#94A3B8]/20 hover:border-[#F97316]/40 hover:bg-[#FDFBF0]"
+                        ? "border-primary bg-primary/5 shadow-sm"
+                        : "border-border/20 hover:border-primary/40 hover:bg-background"
                     }`}
                   >
                     {selected ? (
-                      <CheckCircle className="w-5 h-5 text-[#F97316] shrink-0" />
+                      <CheckCircle className="w-5 h-5 text-primary shrink-0" />
                     ) : (
-                      <Circle className="w-5 h-5 text-[#94A3B8] shrink-0" />
+                      <Circle className="w-5 h-5 text-muted-foreground shrink-0" />
                     )}
                     <span
-                      className={`text-sm ${selected ? "text-[#0F172A] font-medium" : "text-[#0F172A]"}`}
+                      className={`text-sm ${selected ? "text-foreground font-medium" : "text-foreground"}`}
                     >
                       {opt.optionText}
                     </span>
@@ -216,7 +216,7 @@ function StudentQuizView({ quiz }: { quiz: Quiz & { questions: Question[] } }) {
               onChange={(e) => handleEssay(e.target.value)}
               placeholder="Tulis jawaban kamu di sini..."
               rows={6}
-              className="w-full p-4 rounded-lg border-2 border-[#94A3B8]/20 bg-[#FFFFFF] text-[#0F172A] text-sm resize-none focus:outline-none focus:border-[#F97316] focus:ring-2 focus:ring-[#F97316]/20 transition-all placeholder:text-[#94A3B8]"
+              className="w-full p-4 rounded-lg border-2 border-border/20 bg-background text-foreground text-sm resize-none focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/20 transition-all placeholder:text-muted-foreground"
             />
           )}
         </CardContent>
@@ -227,21 +227,21 @@ function StudentQuizView({ quiz }: { quiz: Quiz & { questions: Question[] } }) {
         <Button
           onClick={() => setCurrent((c) => c - 1)}
           disabled={current === 0}
-          className="bg-transparent border-2 border-[#0F172A] text-[#0F172A] hover:bg-[#0F172A]/5 disabled:opacity-30 rounded-lg"
+          className="bg-transparent border-2 border-foreground text-foreground hover:bg-foreground/5 disabled:opacity-30 rounded-lg"
         >
           <ChevronLeft className="w-4 h-4 mr-2" /> Sebelumnya
         </Button>
         {current === total - 1 ? (
           <Button
             onClick={handleSubmit}
-            className="bg-[#10B981] hover:bg-[#059669] text-white rounded-lg px-6"
+            className="bg-primary hover:bg-primary/90 text-white rounded-lg px-6"
           >
             <Send className="w-4 h-4 mr-2" /> Kirim Jawaban
           </Button>
         ) : (
           <Button
             onClick={() => setCurrent((c) => c + 1)}
-            className="bg-[#F97316] hover:bg-[#EA580C] text-white rounded-lg"
+            className="bg-primary hover:bg-primary/90 text-white rounded-lg"
           >
             Selanjutnya <ChevronRight className="w-4 h-4 ml-2" />
           </Button>
@@ -432,10 +432,10 @@ function EditorMode() {
   if (!selectedQuiz) {
     return (
       <div className="space-y-6">
-        <Card className="border border-[#F97316]/20 bg-[#F97316]/5 shadow-[0px_4px_6px_-1px_rgba(0,0,0,0.1)] rounded-lg">
+        <Card className="border border-primary/20 bg-primary/5 shadow-[0px_4px_6px_-1px_rgba(0,0,0,0.1)] rounded-lg">
           <CardHeader>
-            <CardTitle className="font-serif text-xl font-bold text-[#0F172A] flex items-center gap-2">
-              <Plus className="h-5 w-5 text-[#F97316]" /> Buat Kuis Baru
+            <CardTitle className="font-serif text-xl font-bold text-foreground flex items-center gap-2">
+              <Plus className="h-5 w-5 text-primary" /> Buat Kuis Baru
             </CardTitle>
           </CardHeader>
           <CardContent className="space-y-4">
@@ -443,49 +443,49 @@ function EditorMode() {
               value={newTitle}
               onChange={(e) => setNewTitle(e.target.value)}
               placeholder="Judul kuis"
-              className="bg-white border-gray-300 focus:border-[#F97316] focus:ring-[#F97316]"
+              className="bg-background border-gray-300 focus:border-primary focus:ring-primary"
             />
             <Input
               value={newDesc}
               onChange={(e) => setNewDesc(e.target.value)}
               placeholder="Deskripsi (opsional)"
-              className="bg-white border-gray-300 focus:border-[#F97316] focus:ring-[#F97316]"
+              className="bg-background border-gray-300 focus:border-primary focus:ring-primary"
             />
             <Button
               onClick={createQuiz}
-              className="bg-[#F97316] hover:bg-[#EA580C] text-white rounded-lg"
+              className="bg-primary hover:bg-primary/90 text-white rounded-lg"
             >
               Buat Kuis
             </Button>
           </CardContent>
         </Card>
 
-        <Card className="border border-[#94A3B8]/20 bg-white shadow-[0px_4px_6px_-1px_rgba(0,0,0,0.1)] rounded-lg">
-          <CardHeader className="border-b border-[#94A3B8]/10">
-            <CardTitle className="font-serif text-xl font-bold text-[#0F172A]">
+        <Card className="border border-border/20 bg-background shadow-[0px_4px_6px_-1px_rgba(0,0,0,0.1)] rounded-lg">
+          <CardHeader className="border-b border-border/10">
+            <CardTitle className="font-serif text-xl font-bold text-foreground">
               Daftar Kuis
             </CardTitle>
           </CardHeader>
           <CardContent className="pt-6">
             {quizList.length === 0 ? (
-              <p className="text-[#94A3B8] text-center py-8">Belum ada kuis.</p>
+              <p className="text-muted-foreground text-center py-8">Belum ada kuis.</p>
             ) : (
               <div className="space-y-3">
                 {quizList.map((qz) => (
                   <div
                     key={qz.id}
-                    className="flex items-center justify-between p-4 rounded-lg border border-[#94A3B8]/20 hover:border-[#F97316]/30 hover:bg-[#FDFBF0] transition-all"
+                    className="flex items-center justify-between p-4 rounded-lg border border-border/20 hover:border-primary/30 hover:bg-background transition-all"
                   >
                     <div
                       className="flex items-center gap-3 cursor-pointer flex-1"
                       onClick={() => fetchQuizDetail(qz.id)}
                     >
-                      <ClipboardList className="w-5 h-5 text-[#F97316] shrink-0" />
+                      <ClipboardList className="w-5 h-5 text-primary shrink-0" />
                       <div>
-                        <p className="font-semibold text-[#0F172A]">
+                        <p className="font-semibold text-foreground">
                           {qz.title}
                         </p>
-                        <p className="text-xs text-[#94A3B8]">
+                        <p className="text-xs text-muted-foreground">
                           {qz.isPublished ? "✅ Dipublikasi" : "📝 Draft"}
                         </p>
                       </div>
@@ -495,7 +495,7 @@ function EditorMode() {
                         size="sm"
                         variant="outline"
                         onClick={() => togglePublish(qz)}
-                        className="text-xs border-[#94A3B8]/30 hover:bg-[#FDFBF0]"
+                        className="text-xs border-border/30 hover:bg-background"
                       >
                         {qz.isPublished ? "Sembunyikan" : "Publikasi"}
                       </Button>
@@ -537,25 +537,25 @@ function EditorMode() {
     <div className="space-y-6">
       <button
         onClick={() => setSelectedQuiz(null)}
-        className="flex items-center gap-2 text-sm text-[#F97316] hover:text-[#EA580C] font-medium transition-colors"
+        className="flex items-center gap-2 text-sm text-primary hover:text-primary/90 font-medium transition-colors"
       >
         <ChevronLeft className="w-4 h-4" /> Kembali ke Daftar Kuis
       </button>
 
-      <Card className="border border-[#94A3B8]/20 bg-white shadow-[0px_4px_6px_-1px_rgba(0,0,0,0.1)] rounded-lg">
-        <CardHeader className="border-b border-[#94A3B8]/10 bg-[#FDFBF0]">
-          <CardTitle className="font-serif text-xl font-bold text-[#0F172A]">
+      <Card className="border border-border/20 bg-background shadow-[0px_4px_6px_-1px_rgba(0,0,0,0.1)] rounded-lg">
+        <CardHeader className="border-b border-border/10 bg-background">
+          <CardTitle className="font-serif text-xl font-bold text-foreground">
             {selectedQuiz.title}
           </CardTitle>
           {selectedQuiz.description && (
-            <CardDescription className="text-[#94A3B8]">
+            <CardDescription className="text-muted-foreground">
               {selectedQuiz.description}
             </CardDescription>
           )}
         </CardHeader>
         <CardContent className="pt-6 space-y-4">
           <div className="flex items-center justify-between">
-            <span className="text-sm text-[#94A3B8]">
+            <span className="text-sm text-muted-foreground">
               {selectedQuiz.questions.length} soal
             </span>
             <Button
@@ -563,7 +563,7 @@ function EditorMode() {
                 resetQuestionForm();
                 setShowAddQuestion(true);
               }}
-              className="bg-[#F97316] hover:bg-[#EA580C] text-white rounded-lg text-sm"
+              className="bg-primary hover:bg-primary/90 text-white rounded-lg text-sm"
             >
               <Plus className="w-4 h-4 mr-2" /> Tambah Soal
             </Button>
@@ -573,16 +573,16 @@ function EditorMode() {
           {selectedQuiz.questions.map((q, idx) => (
             <div
               key={q.id}
-              className="p-4 rounded-lg border border-[#94A3B8]/20 bg-[#FDFBF0]/50 space-y-2"
+              className="p-4 rounded-lg border border-border/20 bg-background/50 space-y-2"
             >
               <div className="flex items-start justify-between gap-3">
                 <div className="flex-1">
                   <div className="flex items-center gap-2 mb-1">
-                    <span className="text-xs font-medium px-2 py-0.5 rounded-full bg-[#F97316]/10 text-[#F97316]">
+                    <span className="text-xs font-medium px-2 py-0.5 rounded-full bg-primary/10 text-primary">
                       {q.type === "multiple_choice" ? "PG" : "Essay"} #{idx + 1}
                     </span>
                   </div>
-                  <p className="text-sm text-[#0F172A] font-medium">
+                  <p className="text-sm text-foreground font-medium">
                     {q.questionText}
                   </p>
                   {q.type === "multiple_choice" && (
@@ -590,7 +590,7 @@ function EditorMode() {
                       {q.options.map((o) => (
                         <p
                           key={o.id}
-                          className={`text-xs pl-4 ${o.isCorrect ? "text-[#10B981] font-semibold" : "text-[#94A3B8]"}`}
+                          className={`text-xs pl-4 ${o.isCorrect ? "text-primary font-semibold" : "text-muted-foreground"}`}
                         >
                           {o.isCorrect ? "✓" : "○"} {o.optionText}
                         </p>
@@ -602,22 +602,22 @@ function EditorMode() {
                   <button
                     onClick={() => moveQuestion(idx, -1)}
                     disabled={idx === 0}
-                    className="p-1 rounded hover:bg-[#94A3B8]/10 disabled:opacity-20"
+                    className="p-1 rounded hover:bg-muted-foreground/10 disabled:opacity-20"
                   >
-                    <ChevronUp className="w-4 h-4 text-[#94A3B8]" />
+                    <ChevronUp className="w-4 h-4 text-muted-foreground" />
                   </button>
                   <button
                     onClick={() => moveQuestion(idx, 1)}
                     disabled={idx === selectedQuiz.questions.length - 1}
-                    className="p-1 rounded hover:bg-[#94A3B8]/10 disabled:opacity-20"
+                    className="p-1 rounded hover:bg-muted-foreground/10 disabled:opacity-20"
                   >
-                    <ChevronDown className="w-4 h-4 text-[#94A3B8]" />
+                    <ChevronDown className="w-4 h-4 text-muted-foreground" />
                   </button>
                   <button
                     onClick={() => startEdit(q)}
-                    className="p-1 rounded hover:bg-[#F97316]/10"
+                    className="p-1 rounded hover:bg-primary/10"
                   >
-                    <Edit className="w-4 h-4 text-[#F97316]" />
+                    <Edit className="w-4 h-4 text-primary" />
                   </button>
                   <button
                     onClick={() => confirmDelete("question", q.id)}
@@ -634,9 +634,9 @@ function EditorMode() {
 
       {/* Add/Edit Question Modal-like card */}
       {showAddQuestion && (
-        <Card className="border-2 border-[#F97316]/30 bg-white shadow-lg rounded-lg animate-scale-in">
-          <CardHeader className="bg-[#F97316]/5 border-b border-[#F97316]/10">
-            <CardTitle className="font-serif text-lg font-bold text-[#0F172A]">
+        <Card className="border-2 border-primary/30 bg-background shadow-lg rounded-lg animate-scale-in">
+          <CardHeader className="bg-primary/5 border-b border-primary/10">
+            <CardTitle className="font-serif text-lg font-bold text-foreground">
               {editingQuestion ? "Edit Soal" : "Tambah Soal Baru"}
             </CardTitle>
           </CardHeader>
@@ -644,13 +644,13 @@ function EditorMode() {
             <div className="flex gap-3">
               <button
                 onClick={() => setQType("multiple_choice")}
-                className={`px-4 py-2 rounded-lg text-sm font-medium transition-all ${qType === "multiple_choice" ? "bg-[#F97316] text-white" : "bg-[#94A3B8]/10 text-[#94A3B8] hover:text-[#0F172A]"}`}
+                className={`px-4 py-2 rounded-lg text-sm font-medium transition-all ${qType === "multiple_choice" ? "bg-primary text-white" : "bg-muted-foreground/10 text-muted-foreground hover:text-foreground"}`}
               >
                 Pilihan Ganda
               </button>
               <button
                 onClick={() => setQType("essay")}
-                className={`px-4 py-2 rounded-lg text-sm font-medium transition-all ${qType === "essay" ? "bg-[#F97316] text-white" : "bg-[#94A3B8]/10 text-[#94A3B8] hover:text-[#0F172A]"}`}
+                className={`px-4 py-2 rounded-lg text-sm font-medium transition-all ${qType === "essay" ? "bg-primary text-white" : "bg-muted-foreground/10 text-muted-foreground hover:text-foreground"}`}
               >
                 Essay
               </button>
@@ -660,14 +660,14 @@ function EditorMode() {
               onChange={(e) => setQText(e.target.value)}
               placeholder="Teks soal..."
               rows={3}
-              className="w-full p-3 rounded-lg border-2 border-[#94A3B8]/20 bg-[#FFFFFF] text-sm text-[#0F172A] resize-none focus:outline-none focus:border-[#F97316] focus:ring-2 focus:ring-[#F97316]/20 placeholder:text-[#94A3B8]"
+              className="w-full p-3 rounded-lg border-2 border-border/20 bg-background text-sm text-foreground resize-none focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/20 placeholder:text-muted-foreground"
             />
 
             {qType === "multiple_choice" && (
               <div className="space-y-3">
-                <p className="text-sm font-semibold text-[#0F172A]">
+                <p className="text-sm font-semibold text-foreground">
                   Pilihan Jawaban{" "}
-                  <span className="text-xs text-[#94A3B8] font-normal">
+                  <span className="text-xs text-muted-foreground font-normal">
                     (klik radio untuk jawaban benar)
                   </span>
                 </p>
@@ -679,7 +679,7 @@ function EditorMode() {
                           p.map((o, j) => ({ ...o, isCorrect: j === i })),
                         )
                       }
-                      className={`w-5 h-5 rounded-full border-2 shrink-0 flex items-center justify-center transition-all ${opt.isCorrect ? "border-[#10B981] bg-[#10B981]" : "border-[#94A3B8]/40"}`}
+                      className={`w-5 h-5 rounded-full border-2 shrink-0 flex items-center justify-center transition-all ${opt.isCorrect ? "border-primary bg-primary" : "border-border/40"}`}
                     >
                       {opt.isCorrect && (
                         <div className="w-2 h-2 rounded-full bg-white" />
@@ -695,7 +695,7 @@ function EditorMode() {
                         )
                       }
                       placeholder={`Pilihan ${String.fromCharCode(65 + i)}`}
-                      className="bg-white border-gray-300 focus:border-[#F97316] focus:ring-[#F97316]"
+                      className="bg-background border-gray-300 focus:border-primary focus:ring-primary"
                     />
                     {qOptions.length > 2 && (
                       <button
@@ -717,7 +717,7 @@ function EditorMode() {
                         { optionText: "", isCorrect: false },
                       ])
                     }
-                    className="text-sm text-[#F97316] hover:text-[#EA580C] font-medium flex items-center gap-1"
+                    className="text-sm text-primary hover:text-primary/90 font-medium flex items-center gap-1"
                   >
                     <Plus className="w-4 h-4" /> Tambah Pilihan
                   </button>
@@ -728,13 +728,13 @@ function EditorMode() {
             <div className="flex gap-3 pt-2">
               <Button
                 onClick={editingQuestion ? updateQuestion : addQuestion}
-                className="bg-[#F97316] hover:bg-[#EA580C] text-white rounded-lg"
+                className="bg-primary hover:bg-primary/90 text-white rounded-lg"
               >
                 {editingQuestion ? "Simpan Perubahan" : "Tambah Soal"}
               </Button>
               <Button
                 onClick={resetQuestionForm}
-                className="bg-transparent border-2 border-[#0F172A] text-[#0F172A] hover:bg-[#0F172A]/5 rounded-lg"
+                className="bg-transparent border-2 border-foreground text-foreground hover:bg-foreground/5 rounded-lg"
               >
                 Batal
               </Button>
@@ -804,16 +804,16 @@ function TeacherMode() {
       <div className="space-y-6">
         <button
           onClick={() => setDetail(null)}
-          className="flex items-center gap-2 text-sm text-[#F97316] hover:text-[#EA580C] font-medium"
+          className="flex items-center gap-2 text-sm text-primary hover:text-primary/90 font-medium"
         >
           <ChevronLeft className="w-4 h-4" /> Kembali
         </button>
-        <Card className="border border-[#94A3B8]/20 bg-white shadow-[0px_4px_6px_-1px_rgba(0,0,0,0.1)] rounded-lg">
-          <CardHeader className="border-b border-[#94A3B8]/10 bg-[#FDFBF0]">
-            <CardTitle className="font-serif text-xl font-bold text-[#0F172A]">
+        <Card className="border border-border/20 bg-background shadow-[0px_4px_6px_-1px_rgba(0,0,0,0.1)] rounded-lg">
+          <CardHeader className="border-b border-border/10 bg-background">
+            <CardTitle className="font-serif text-xl font-bold text-foreground">
               Jawaban: {detail.userName}
             </CardTitle>
-            <CardDescription className="text-[#94A3B8]">
+            <CardDescription className="text-muted-foreground">
               {detail.userEmail} •{" "}
               {new Date(detail.submittedAt).toLocaleString("id-ID")}
             </CardDescription>
@@ -822,9 +822,9 @@ function TeacherMode() {
             {detail.answers.map((a, i) => (
               <div
                 key={a.answerId}
-                className={`p-4 rounded-lg border ${a.questionType === "multiple_choice" ? (a.isCorrect ? "border-[#10B981]/30 bg-[#10B981]/5" : "border-red-200 bg-red-50/50") : "border-[#94A3B8]/20 bg-[#FDFBF0]/50"}`}
+                className={`p-4 rounded-lg border ${a.questionType === "multiple_choice" ? (a.isCorrect ? "border-primary/30 bg-primary/5" : "border-red-200 bg-red-50/50") : "border-border/20 bg-background/50"}`}
               >
-                <p className="text-sm font-medium text-[#0F172A] mb-2">
+                <p className="text-sm font-medium text-foreground mb-2">
                   {i + 1}. {a.questionText}
                 </p>
                 {a.questionType === "multiple_choice" ? (
@@ -832,7 +832,7 @@ function TeacherMode() {
                     <p>
                       Jawaban siswa:{" "}
                       <span
-                        className={`font-semibold ${a.isCorrect ? "text-[#10B981]" : "text-red-500"}`}
+                        className={`font-semibold ${a.isCorrect ? "text-primary" : "text-red-500"}`}
                       >
                         {a.selectedOptionText || "-"}
                       </span>
@@ -840,16 +840,16 @@ function TeacherMode() {
                     {!a.isCorrect && (
                       <p>
                         Jawaban benar:{" "}
-                        <span className="font-semibold text-[#10B981]">
+                        <span className="font-semibold text-primary">
                           {a.correctOptionText}
                         </span>
                       </p>
                     )}
                   </div>
                 ) : (
-                  <div className="mt-1 p-3 bg-white rounded border border-[#94A3B8]/10 text-sm text-[#0F172A]">
+                  <div className="mt-1 p-3 bg-background rounded border border-border/10 text-sm text-foreground">
                     {a.essayAnswer || (
-                      <span className="text-[#94A3B8] italic">
+                      <span className="text-muted-foreground italic">
                         Tidak dijawab
                       </span>
                     )}
@@ -873,56 +873,56 @@ function TeacherMode() {
             setSelectedQuizId(null);
             setSubmissions([]);
           }}
-          className="flex items-center gap-2 text-sm text-[#F97316] hover:text-[#EA580C] font-medium"
+          className="flex items-center gap-2 text-sm text-primary hover:text-primary/90 font-medium"
         >
           <ChevronLeft className="w-4 h-4" /> Kembali
         </button>
-        <Card className="border border-[#94A3B8]/20 bg-white shadow-[0px_4px_6px_-1px_rgba(0,0,0,0.1)] rounded-lg">
-          <CardHeader className="border-b border-[#94A3B8]/10 bg-[#FDFBF0]">
-            <CardTitle className="font-serif text-xl font-bold text-[#0F172A]">
+        <Card className="border border-border/20 bg-background shadow-[0px_4px_6px_-1px_rgba(0,0,0,0.1)] rounded-lg">
+          <CardHeader className="border-b border-border/10 bg-background">
+            <CardTitle className="font-serif text-xl font-bold text-foreground">
               Hasil Kuis: {qz?.title}
             </CardTitle>
-            <CardDescription className="text-[#94A3B8]">
+            <CardDescription className="text-muted-foreground">
               {submissions.length} pengumpulan
             </CardDescription>
           </CardHeader>
           <CardContent className="pt-6">
             {submissions.length === 0 ? (
-              <p className="text-[#94A3B8] text-center py-8">
+              <p className="text-muted-foreground text-center py-8">
                 Belum ada siswa yang mengumpulkan.
               </p>
             ) : (
-              <div className="rounded-lg border border-[#94A3B8]/20 overflow-hidden">
+              <div className="rounded-lg border border-border/20 overflow-hidden">
                 <table className="w-full text-sm">
-                  <thead className="bg-[#FDFBF0] border-b border-[#94A3B8]/20">
+                  <thead className="bg-background border-b border-border/20">
                     <tr>
-                      <th className="px-5 py-3 text-left font-semibold text-[#0F172A]">
+                      <th className="px-5 py-3 text-left font-semibold text-foreground">
                         Nama Siswa
                       </th>
-                      <th className="px-5 py-3 text-left font-semibold text-[#0F172A]">
+                      <th className="px-5 py-3 text-left font-semibold text-foreground">
                         Email
                       </th>
-                      <th className="px-5 py-3 text-left font-semibold text-[#0F172A]">
+                      <th className="px-5 py-3 text-left font-semibold text-foreground">
                         Waktu
                       </th>
-                      <th className="px-5 py-3 text-right font-semibold text-[#0F172A]">
+                      <th className="px-5 py-3 text-right font-semibold text-foreground">
                         Aksi
                       </th>
                     </tr>
                   </thead>
-                  <tbody className="divide-y divide-[#94A3B8]/10">
+                  <tbody className="divide-y divide-border/10">
                     {submissions.map((s) => (
                       <tr
                         key={s.submissionId}
-                        className="hover:bg-[#FDFBF0]/50 transition-colors"
+                        className="hover:bg-background/50 transition-colors"
                       >
-                        <td className="px-5 py-3 font-medium text-[#0F172A]">
+                        <td className="px-5 py-3 font-medium text-foreground">
                           {s.userName}
                         </td>
-                        <td className="px-5 py-3 text-[#94A3B8]">
+                        <td className="px-5 py-3 text-muted-foreground">
                           {s.userEmail}
                         </td>
-                        <td className="px-5 py-3 text-[#94A3B8]">
+                        <td className="px-5 py-3 text-muted-foreground">
                           {new Date(s.submittedAt).toLocaleString("id-ID")}
                         </td>
                         <td className="px-5 py-3 text-right">
@@ -930,7 +930,7 @@ function TeacherMode() {
                             size="sm"
                             variant="outline"
                             onClick={() => fetchDetail(s.submissionId)}
-                            className="text-xs border-[#F97316]/30 text-[#F97316] hover:bg-[#F97316]/5"
+                            className="text-xs border-primary/30 text-primary hover:bg-primary/5"
                           >
                             <FileText className="w-3.5 h-3.5 mr-1" /> Lihat
                           </Button>
@@ -949,28 +949,28 @@ function TeacherMode() {
 
   // Quiz picker
   return (
-    <Card className="border border-[#94A3B8]/20 bg-white shadow-[0px_4px_6px_-1px_rgba(0,0,0,0.1)] rounded-lg">
-      <CardHeader className="border-b border-[#94A3B8]/10 bg-[#FDFBF0]">
-        <CardTitle className="font-serif text-xl font-bold text-[#0F172A] flex items-center gap-2">
-          <GraduationCap className="w-5 h-5 text-[#F97316]" /> Pilih Kuis untuk
+    <Card className="border border-border/20 bg-background shadow-[0px_4px_6px_-1px_rgba(0,0,0,0.1)] rounded-lg">
+      <CardHeader className="border-b border-border/10 bg-background">
+        <CardTitle className="font-serif text-xl font-bold text-foreground flex items-center gap-2">
+          <GraduationCap className="w-5 h-5 text-primary" /> Pilih Kuis untuk
           Melihat Hasil
         </CardTitle>
       </CardHeader>
       <CardContent className="pt-6">
         {quizList.length === 0 ? (
-          <p className="text-[#94A3B8] text-center py-8">Belum ada kuis.</p>
+          <p className="text-muted-foreground text-center py-8">Belum ada kuis.</p>
         ) : (
           <div className="space-y-3">
             {quizList.map((qz) => (
               <button
                 key={qz.id}
                 onClick={() => fetchSubmissions(qz.id)}
-                className="w-full flex items-center gap-3 p-4 rounded-lg border border-[#94A3B8]/20 hover:border-[#F97316]/30 hover:bg-[#FDFBF0] transition-all text-left"
+                className="w-full flex items-center gap-3 p-4 rounded-lg border border-border/20 hover:border-primary/30 hover:bg-background transition-all text-left"
               >
-                <ClipboardList className="w-5 h-5 text-[#F97316] shrink-0" />
+                <ClipboardList className="w-5 h-5 text-primary shrink-0" />
                 <div>
-                  <p className="font-semibold text-[#0F172A]">{qz.title}</p>
-                  <p className="text-xs text-[#94A3B8]">
+                  <p className="font-semibold text-foreground">{qz.title}</p>
+                  <p className="text-xs text-muted-foreground">
                     {qz.isPublished ? "✅ Dipublikasi" : "📝 Draft"}
                   </p>
                 </div>
@@ -1017,7 +1017,7 @@ function PreviewMode({ user }: { user: User }) {
       <div className="space-y-6">
         <button
           onClick={() => setSelectedQuiz(null)}
-          className="flex items-center gap-2 text-sm text-[#F97316] hover:text-[#EA580C] font-medium"
+          className="flex items-center gap-2 text-sm text-primary hover:text-primary/90 font-medium"
         >
           <ChevronLeft className="w-4 h-4" /> Kembali ke Daftar Kuis
         </button>
@@ -1031,7 +1031,7 @@ function PreviewMode({ user }: { user: User }) {
   return (
     <div className="space-y-6">
       {quizList.length === 0 ? (
-        <p className="text-[#94A3B8] text-center py-12">
+        <p className="text-muted-foreground text-center py-12">
           Belum ada kuis yang tersedia.
         </p>
       ) : (
@@ -1040,21 +1040,21 @@ function PreviewMode({ user }: { user: User }) {
             <Card
               key={qz.id}
               onClick={() => selectQuiz(qz.id)}
-              className="border border-[#94A3B8]/20 bg-white shadow-[0px_4px_6px_-1px_rgba(0,0,0,0.1)] rounded-lg cursor-pointer hover:border-[#F97316]/30 hover:shadow-md transition-all group"
+              className="border border-border/20 bg-background shadow-[0px_4px_6px_-1px_rgba(0,0,0,0.1)] rounded-lg cursor-pointer hover:border-primary/30 hover:shadow-md transition-all group"
             >
               <CardContent className="p-6 space-y-3">
-                <div className="w-12 h-12 rounded-xl bg-linear-to-br from-[#F97316] to-[#F59E0B] flex items-center justify-center shadow-sm group-hover:scale-105 transition-transform">
+                <div className="w-12 h-12 rounded-xl bg-linear-to-br from-primary to-secondary flex items-center justify-center shadow-sm group-hover:scale-105 transition-transform">
                   <ClipboardList className="w-6 h-6 text-white" />
                 </div>
-                <h3 className="font-serif text-lg font-bold text-[#0F172A]">
+                <h3 className="font-serif text-lg font-bold text-foreground">
                   {qz.title}
                 </h3>
                 {qz.description && (
-                  <p className="text-sm text-[#94A3B8] line-clamp-2">
+                  <p className="text-sm text-muted-foreground line-clamp-2">
                     {qz.description}
                   </p>
                 )}
-                <div className="flex items-center gap-2 text-xs text-[#94A3B8]">
+                <div className="flex items-center gap-2 text-xs text-muted-foreground">
                   <span>
                     {new Date(qz.createdAt).toLocaleDateString("id-ID")}
                   </span>
@@ -1074,13 +1074,13 @@ export default function QuizPage({ user }: { user: User }) {
   const activeMode = user.role === "admin" ? mode : "preview";
 
   return (
-    <div className="mx-auto max-w-6xl space-y-8 pb-12 font-sans text-[#0F172A]">
+    <div className="mx-auto max-w-6xl space-y-8 pb-12 font-sans text-foreground">
       <ToastContainer />
 
       <header className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
         <div>
-          <h1 className="font-serif text-3xl font-bold text-[#0F172A]">Kuis</h1>
-          <p className="text-[#94A3B8] mt-2 text-lg">
+          <h1 className="font-serif text-3xl font-bold text-foreground">Kuis</h1>
+          <p className="text-muted-foreground mt-2 text-lg">
             {user.role === "admin"
               ? "Kelola dan pantau kuis untuk siswa."
               : "Kerjakan kuis yang tersedia."}
@@ -1088,12 +1088,12 @@ export default function QuizPage({ user }: { user: User }) {
         </div>
 
         {user.role === "admin" && (
-          <div className="flex bg-[#FDFBF0] p-1 rounded-lg border border-[#94A3B8]/20 shrink-0">
+          <div className="flex bg-background p-1 rounded-lg border border-border/20 shrink-0">
             {(["preview", "editor", "teacher"] as const).map((m) => (
               <button
                 key={m}
                 onClick={() => setMode(m)}
-                className={`flex items-center gap-2 px-4 py-2 rounded-md text-sm font-medium transition-colors ${mode === m ? "bg-[#FFFFFF] shadow-[0px_4px_6px_-1px_rgba(0,0,0,0.1)] text-[#F97316]" : "text-[#94A3B8] hover:text-[#0F172A]"}`}
+                className={`flex items-center gap-2 px-4 py-2 rounded-md text-sm font-medium transition-colors ${mode === m ? "bg-background shadow-[0px_4px_6px_-1px_rgba(0,0,0,0.1)] text-primary" : "text-muted-foreground hover:text-foreground"}`}
               >
                 {m === "preview" && <Eye className="w-4 h-4" />}
                 {m === "editor" && <Edit className="w-4 h-4" />}

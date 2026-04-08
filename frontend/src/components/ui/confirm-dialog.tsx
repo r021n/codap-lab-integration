@@ -22,16 +22,16 @@ const variantStyles = {
       "bg-red-500 hover:bg-red-600 text-white focus:ring-red-500/30",
   },
   warning: {
-    iconBg: "bg-[#F59E0B]/10",
-    iconWrap: <AlertTriangle className="h-6 w-6 text-[#F59E0B]" />,
+    iconBg: "bg-secondary/10",
+    iconWrap: <AlertTriangle className="h-6 w-6 text-secondary" />,
     confirmBtn:
-      "bg-[#F59E0B] hover:bg-[#D97706] text-white focus:ring-[#F59E0B]/30",
+      "bg-secondary hover:bg-secondary/90 text-white focus:ring-secondary/30",
   },
   default: {
-    iconBg: "bg-[#F97316]/10",
-    iconWrap: <AlertTriangle className="h-6 w-6 text-[#F97316]" />,
+    iconBg: "bg-primary/10",
+    iconWrap: <AlertTriangle className="h-6 w-6 text-primary" />,
     confirmBtn:
-      "bg-[#F97316] hover:bg-[#EA580C] text-white focus:ring-[#F97316]/30",
+      "bg-primary hover:bg-primary/90 text-white focus:ring-primary/30",
   },
 };
 
@@ -78,11 +78,11 @@ export default function ConfirmDialog({
       />
 
       {/* Dialog */}
-      <div className="relative bg-[#FFFFFF] rounded-xl shadow-[0px_20px_60px_-12px_rgba(0,0,0,0.25)] border border-[#94A3B8]/20 max-w-md w-full mx-4 p-6 animate-scale-in">
+      <div className="relative bg-background rounded-xl shadow-[0px_20px_60px_-12px_rgba(0,0,0,0.25)] border border-border/20 max-w-md w-full mx-4 p-6 animate-scale-in">
         {/* Close button */}
         <button
           onClick={onCancel}
-          className="absolute top-3 right-3 text-[#94A3B8] hover:text-[#0F172A] transition-colors"
+          className="absolute top-3 right-3 text-muted-foreground hover:text-foreground transition-colors"
           aria-label="Tutup"
         >
           <X className="h-5 w-5" />
@@ -98,10 +98,10 @@ export default function ConfirmDialog({
 
           {/* Text */}
           <div className="space-y-2">
-            <h3 className="font-serif text-lg font-bold text-[#0F172A]">
+            <h3 className="font-serif text-lg font-bold text-foreground">
               {title}
             </h3>
-            <p className="text-sm text-[#94A3B8] leading-relaxed">
+            <p className="text-sm text-muted-foreground leading-relaxed">
               {description}
             </p>
           </div>
@@ -110,7 +110,7 @@ export default function ConfirmDialog({
           <div className="flex items-center gap-3 w-full mt-2">
             <button
               onClick={onCancel}
-              className="flex-1 px-4 py-2.5 text-sm font-semibold rounded-lg border-2 border-[#0F172A] text-[#0F172A] hover:bg-[#0F172A]/5 active:scale-[0.98] transition-all"
+              className="flex-1 px-4 py-2.5 text-sm font-semibold rounded-lg border-2 border-foreground text-foreground hover:bg-foreground/5 active:scale-[0.98] transition-all"
             >
               {cancelText}
             </button>
