@@ -13,7 +13,11 @@ const router = Router();
 
 router.post('/register', async (req, res) => {
   try {
-    const { name, email, password } = req.body;
+    const { name, email, password, school, class: userClass, age, gender } = req.body;
+
+    if (!name || !email || !password || !school || !userClass || !age || !gender) {
+      return res.status(400).json({ error: 'Semua kolom wajib diisi' });
+    }
     
     // Check if user exists
     const existingUser = await db.select().from(users).where(eq(users.email, email));
@@ -29,7 +33,20 @@ router.post('/register', async (req, res) => {
       name,
       email,
       password: hashedPassword,
-    }).returning({ id: users.id, name: users.name, email: users.email, role: users.role });
+      school: req.body.school,
+      class: req.body.class,
+      age: req.body.age,
+      gender: req.body.gender,
+    }).returning({ 
+      id: users.id, 
+      name: users.name, 
+      email: users.email, 
+      role: users.role,
+      school: users.school,
+      class: users.class,
+      age: users.age,
+      gender: users.gender,
+    });
 
     res.status(201).json({ message: 'User registered successfully', user: newUser[0] });
   } catch (error) {
@@ -59,7 +76,16 @@ router.post('/login', async (req, res) => {
     res.json({
       message: 'Login successful',
       token,
-      user: { id: user.id, name: user.name, email: user.email, role: user.role }
+      user: { 
+        id: user.id, 
+        name: user.name, 
+        email: user.email, 
+        role: user.role,
+        school: user.school,
+        class: user.class,
+        age: user.age,
+        gender: user.gender,
+      }
     });
   } catch (error) {
     console.error(error);
@@ -77,6 +103,10 @@ router.get('/me', authenticateToken, async (req: AuthRequest, res) => {
       name: users.name,
       email: users.email,
       role: users.role,
+      school: users.school,
+      class: users.class,
+      age: users.age,
+      gender: users.gender,
       createdAt: users.createdAt,
     }).from(users).where(eq(users.id, req.user.id));
 
@@ -93,10 +123,10 @@ router.put('/profile', authenticateToken, async (req: AuthRequest, res) => {
   if (!req.user) return res.status(401).json({ error: 'Unauthenticated' });
 
   try {
-    const { name, email } = req.body;
+    const { name, email, school, class: userClass, age, gender } = req.body;
 
-    if (!name || !email) {
-      return res.status(400).json({ message: 'Nama dan email wajib diisi' });
+    if (!name || !email || !school || !userClass || !age || !gender) {
+      return res.status(400).json({ message: 'Semua kolom wajib diisi' });
     }
 
     // Check if the new email is already used by another user
@@ -111,9 +141,25 @@ router.put('/profile', authenticateToken, async (req: AuthRequest, res) => {
 
     const updated = await db
       .update(users)
-      .set({ name, email })
+      .set({ 
+        name, 
+        email, 
+        school, 
+        class: userClass, 
+        age, 
+        gender 
+      })
       .where(eq(users.id, req.user.id))
-      .returning({ id: users.id, name: users.name, email: users.email, role: users.role });
+      .returning({ 
+        id: users.id, 
+        name: users.name, 
+        email: users.email, 
+        role: users.role,
+        school: users.school,
+        class: users.class,
+        age: users.age,
+        gender: users.gender,
+      });
 
     if (updated.length === 0) {
       return res.status(404).json({ message: 'User tidak ditemukan' });

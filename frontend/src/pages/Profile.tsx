@@ -17,6 +17,10 @@ type UserType = {
   name: string;
   email: string;
   role: string;
+  school?: string;
+  class?: string;
+  age?: number;
+  gender?: string;
 };
 
 type ProfileProps = {
@@ -27,6 +31,10 @@ type ProfileProps = {
 export default function Profile({ user, setUser }: ProfileProps) {
   const [name, setName] = useState(user.name);
   const [email, setEmail] = useState(user.email);
+  const [school, setSchool] = useState(user.school || "");
+  const [userClass, setUserClass] = useState(user.class || "");
+  const [age, setAge] = useState(user.age?.toString() || "");
+  const [gender, setGender] = useState(user.gender || "");
 
   const [currentPassword, setCurrentPassword] = useState("");
   const [newPassword, setNewPassword] = useState("");
@@ -76,12 +84,23 @@ export default function Profile({ user, setUser }: ProfileProps) {
     setIsLoadingProfile(true);
 
     try {
-      const data = await updateProfile({ name, email });
+      const data = await updateProfile({ 
+        name, 
+        email,
+        school,
+        class: userClass,
+        age: age ? parseInt(age) : undefined,
+        gender
+      });
       showToast("success", "Berhasil", "Profil berhasil diperbarui!");
       setUser({
         ...user,
         name: data.user?.name || name,
         email: data.user?.email || email,
+        school: data.user?.school || school,
+        class: data.user?.class || userClass,
+        age: data.user?.age || (age ? parseInt(age) : undefined),
+        gender: data.user?.gender || gender,
       });
     } catch (err: unknown) {
       showToast("error", "Gagal", getApiErrorMessage(err, "Terjadi kesalahan"));
@@ -184,6 +203,68 @@ export default function Profile({ user, setUser }: ProfileProps) {
                 required
                 className="bg-background border-gray-300 focus:border-primary focus:ring-primary focus-visible:ring-primary"
               />
+            </div>
+
+            <div className="grid grid-cols-2 gap-4">
+              <div className="space-y-2">
+                <Label htmlFor="school" className="font-semibold text-foreground">
+                  Sekolah
+                </Label>
+                <Input
+                  id="school"
+                  value={school}
+                  onChange={(e) => setSchool(e.target.value)}
+                  placeholder="Nama Sekolah"
+                  required
+                  className="bg-background border-gray-300 focus:border-primary focus:ring-primary focus-visible:ring-primary"
+                />
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="class" className="font-semibold text-foreground">
+                  Kelas
+                </Label>
+                <Input
+                  id="class"
+                  value={userClass}
+                  onChange={(e) => setUserClass(e.target.value)}
+                  placeholder="Contoh: 10A"
+                  required
+                  className="bg-background border-gray-300 focus:border-primary focus:ring-primary focus-visible:ring-primary"
+                />
+              </div>
+            </div>
+
+            <div className="grid grid-cols-2 gap-4">
+              <div className="space-y-2">
+                <Label htmlFor="age" className="font-semibold text-foreground">
+                  Usia
+                </Label>
+                <Input
+                  id="age"
+                  type="number"
+                  value={age}
+                  onChange={(e) => setAge(e.target.value)}
+                  placeholder="15"
+                  required
+                  className="bg-background border-gray-300 focus:border-primary focus:ring-primary focus-visible:ring-primary"
+                />
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="gender" className="font-semibold text-foreground">
+                  Jenis Kelamin
+                </Label>
+                <select
+                  id="gender"
+                  value={gender}
+                  onChange={(e) => setGender(e.target.value)}
+                  required
+                  className="flex h-10 w-full rounded-md border border-gray-300 bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary disabled:cursor-not-allowed disabled:opacity-50"
+                >
+                  <option value="">Pilih...</option>
+                  <option value="Laki-laki">Laki-laki</option>
+                  <option value="Perempuan">Perempuan</option>
+                </select>
+              </div>
             </div>
             <div className="flex items-center gap-2 pt-2">
               <span className="inline-flex items-center rounded-md bg-primary/10 px-2.5 py-1 text-xs font-bold text-primary">

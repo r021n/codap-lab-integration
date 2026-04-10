@@ -21,6 +21,10 @@ export default function Register() {
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [school, setSchool] = useState("");
+  const [userClass, setUserClass] = useState("");
+  const [age, setAge] = useState("");
+  const [gender, setGender] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
@@ -32,7 +36,15 @@ export default function Register() {
     setLoading(true);
 
     try {
-      await register({ name, email, password });
+      await register({ 
+        name, 
+        email, 
+        password,
+        school,
+        class: userClass,
+        age: age ? parseInt(age) : undefined,
+        gender
+      });
 
       // Automatically login or redirect to login
       navigate("/login");
@@ -117,6 +129,68 @@ export default function Register() {
                     <Eye className="h-4 w-4" />
                   )}
                 </button>
+              </div>
+            </div>
+
+            <div className="grid grid-cols-2 gap-4">
+              <div className="space-y-2">
+                <Label htmlFor="school" className="font-semibold text-foreground">
+                  Sekolah
+                </Label>
+                <Input
+                  id="school"
+                  placeholder="Nama Sekolah"
+                  value={school}
+                  onChange={(e) => setSchool(e.target.value)}
+                  required
+                  className="bg-background border-gray-300 focus:border-primary focus:ring-primary focus-visible:ring-primary"
+                />
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="class" className="font-semibold text-foreground">
+                  Kelas
+                </Label>
+                <Input
+                  id="class"
+                  placeholder="Contoh: 10A"
+                  value={userClass}
+                  onChange={(e) => setUserClass(e.target.value)}
+                  required
+                  className="bg-background border-gray-300 focus:border-primary focus:ring-primary focus-visible:ring-primary"
+                />
+              </div>
+            </div>
+
+            <div className="grid grid-cols-2 gap-4">
+              <div className="space-y-2">
+                <Label htmlFor="age" className="font-semibold text-foreground">
+                  Usia
+                </Label>
+                <Input
+                  id="age"
+                  type="number"
+                  placeholder="15"
+                  value={age}
+                  onChange={(e) => setAge(e.target.value)}
+                  required
+                  className="bg-background border-gray-300 focus:border-primary focus:ring-primary focus-visible:ring-primary"
+                />
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="gender" className="font-semibold text-foreground">
+                  Jenis Kelamin
+                </Label>
+                <select
+                  id="gender"
+                  value={gender}
+                  onChange={(e) => setGender(e.target.value)}
+                  required
+                  className="flex h-10 w-full rounded-md border border-gray-300 bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary disabled:cursor-not-allowed disabled:opacity-50"
+                >
+                  <option value="">Pilih...</option>
+                  <option value="Laki-laki">Laki-laki</option>
+                  <option value="Perempuan">Perempuan</option>
+                </select>
               </div>
             </div>
           </CardContent>

@@ -4,6 +4,10 @@ export type User = {
   name: string;
   email: string;
   role: string;
+  school?: string;
+  class?: string;
+  age?: number;
+  gender?: string;
 };
 
 type LoginResponse = {
@@ -15,6 +19,10 @@ type RegisterPayload = {
   name: string;
   email: string;
   password: string;
+  school?: string;
+  class?: string;
+  age?: number;
+  gender?: string;
 };
 
 type LoginPayload = {
@@ -25,6 +33,10 @@ type LoginPayload = {
 type UpdateProfilePayload = {
   name: string;
   email: string;
+  school?: string;
+  class?: string;
+  age?: number;
+  gender?: string;
 };
 
 type UpdatePasswordPayload = {
