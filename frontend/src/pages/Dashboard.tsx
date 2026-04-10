@@ -7,6 +7,7 @@ import Investigasi from "./Investigasi";
 import VirtualLab from "./VirtualLab";
 import QuizPage from "./Quiz";
 import IntroductionPage from "./IntroductionPage";
+import GuidePage from "./GuidePage";
 
 type User = {
   name: string;
@@ -65,6 +66,7 @@ export default function Dashboard() {
   const isVirtualLab = location.pathname.startsWith("/dashboard/virtual-lab");
   const isKuis = location.pathname.startsWith("/dashboard/kuis");
   const isPendahuluan = location.pathname.startsWith("/dashboard/pendahuluan");
+  const isPetunjuk = location.pathname.startsWith("/dashboard/petunjuk");
 
   return (
     <div className="flex bg-background min-h-screen font-sans text-foreground">
@@ -87,6 +89,9 @@ export default function Dashboard() {
         </div>
         <div className={isPendahuluan ? "block p-4 md:p-8" : "hidden"}>
           <IntroductionPage user={user} />
+        </div>
+        <div className={isPetunjuk ? "block p-4 md:p-8" : "hidden"}>
+          <GuidePage user={user} />
         </div>
       </main>
     </div>

@@ -9,6 +9,7 @@ import {
   FlaskConical,
   ClipboardList,
   BookOpen,
+  HelpCircle,
 } from "lucide-react";
 import ConfirmDialog from "./ui/confirm-dialog";
 
@@ -102,6 +103,16 @@ export default function NavigationSidebar({
           >
             <ClipboardList className="h-4 w-4 shrink-0" />
             {isOpen && <span>Kuis</span>}
+          </NavLink>
+          <NavLink
+            to="/dashboard/petunjuk"
+            className={({ isActive }) =>
+              isActive ? activeClass : inactiveClass
+            }
+            title="Petunjuk Penggunaan"
+          >
+            <HelpCircle className="h-4 w-4 shrink-0" />
+            {isOpen && <span>Petunjuk Penggunaan</span>}
           </NavLink>
         </nav>
       </div>

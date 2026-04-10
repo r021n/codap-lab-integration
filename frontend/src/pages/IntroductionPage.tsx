@@ -90,8 +90,12 @@ export default function IntroductionPage({ user }: IntroductionPageProps) {
     <div className="max-w-4xl mx-auto py-8 px-4">
       <div className="flex justify-between items-center mb-8 border-b border-border/50 pb-4">
         <div>
-          <h1 className="text-3xl font-serif font-bold text-primary">Pendahuluan</h1>
-          <p className="text-muted-foreground mt-1">Capaian dan Tujuan Pembelajaran</p>
+          <h1 className="text-3xl font-serif font-bold text-primary">
+            Pendahuluan
+          </h1>
+          <p className="text-muted-foreground mt-1">
+            Capaian dan Tujuan Pembelajaran
+          </p>
         </div>
 
         {isAdmin && (
@@ -137,19 +141,19 @@ export default function IntroductionPage({ user }: IntroductionPageProps) {
       <div className="bg-white rounded-xl shadow-sm border border-border/50 overflow-hidden">
         {isEditing ? (
           <div className="p-4 bg-white editor-container">
-            <ReactQuill 
-              theme="snow" 
-              value={content} 
-              onChange={setContent} 
+            <ReactQuill
+              theme="snow"
+              value={content}
+              onChange={setContent}
               modules={modules}
               className="min-h-[400px]"
             />
           </div>
         ) : (
-          <div className="p-8 prose prose-slate max-w-none break-words">
-            <div 
+          <div className="p-8 prose prose-slate max-w-none wrap-break-word">
+            <div
               className="rich-text-content overflow-hidden"
-              dangerouslySetInnerHTML={{ __html: content }} 
+              dangerouslySetInnerHTML={{ __html: content }}
             />
           </div>
         )}
@@ -160,7 +164,7 @@ export default function IntroductionPage({ user }: IntroductionPageProps) {
           Belum ada konten pendahuluan yang ditambahkan oleh admin.
         </div>
       )}
-      
+
       <style>{`
         .rich-text-content { overflow-wrap: break-word; word-break: break-word; }
         .rich-text-content h1 { font-size: 2rem; font-weight: 700; margin-top: 1.5rem; margin-bottom: 1rem; color: var(--primary); }
