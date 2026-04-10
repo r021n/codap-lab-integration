@@ -5,6 +5,7 @@ import * as dotenv from 'dotenv';
 import authRoutes from './routes/auth.routes';
 import datasetsRoutes from './routes/datasets.routes';
 import quizRoutes from './routes/quiz.routes';
+import contentRoutes from './routes/content.routes';
 
 dotenv.config();
 
@@ -21,6 +22,7 @@ app.use('/uploads', express.static(path.join(process.cwd(), 'uploads')));
 app.use('/api/auth', authRoutes);
 app.use('/api/datasets', datasetsRoutes);
 app.use('/api/quizzes', quizRoutes);
+app.use('/api/contents', contentRoutes);
 
 app.get('/api/health', (req, res) => {
   res.json({ status: 'ok', message: 'API is running' });

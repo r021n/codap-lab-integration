@@ -8,6 +8,7 @@ import {
   ChevronLeft,
   FlaskConical,
   ClipboardList,
+  BookOpen,
 } from "lucide-react";
 import ConfirmDialog from "./ui/confirm-dialog";
 
@@ -51,6 +52,16 @@ export default function NavigationSidebar({
 
       <div className="flex-1 overflow-y-auto overflow-x-hidden py-4">
         <nav className="grid items-start gap-1 px-2 text-sm font-medium">
+          <NavLink
+            to="/dashboard/pendahuluan"
+            className={({ isActive }) =>
+              isActive ? activeClass : inactiveClass
+            }
+            title="Pendahuluan"
+          >
+            <BookOpen className="h-4 w-4 shrink-0" />
+            {isOpen && <span>Pendahuluan</span>}
+          </NavLink>
           <NavLink
             to="/dashboard"
             end

@@ -65,3 +65,11 @@ export const quizAnswers = pgTable('quiz_answers', {
   selectedOptionId: integer('selected_option_id').references(() => quizOptions.id),
   essayAnswer: text('essay_answer'),
 });
+
+export const siteContents = pgTable('site_contents', {
+  id: serial('id').primaryKey(),
+  slug: varchar('slug', { length: 255 }).notNull().unique(),
+  content: text('content').notNull(),
+  updatedAt: timestamp('updated_at').defaultNow().notNull(),
+  updatedBy: integer('updated_by').references(() => users.id),
+});
