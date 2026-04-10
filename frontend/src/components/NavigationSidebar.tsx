@@ -9,6 +9,7 @@ import {
   FlaskConical,
   ClipboardList,
   BookOpen,
+  Book,
   HelpCircle,
 } from "lucide-react";
 import ConfirmDialog from "./ui/confirm-dialog";
@@ -54,16 +55,6 @@ export default function NavigationSidebar({
       <div className="flex-1 overflow-y-auto overflow-x-hidden py-4">
         <nav className="grid items-start gap-1 px-2 text-sm font-medium">
           <NavLink
-            to="/dashboard/pendahuluan"
-            className={({ isActive }) =>
-              isActive ? activeClass : inactiveClass
-            }
-            title="Pendahuluan"
-          >
-            <BookOpen className="h-4 w-4 shrink-0" />
-            {isOpen && <span>Pendahuluan</span>}
-          </NavLink>
-          <NavLink
             to="/dashboard"
             end
             className={({ isActive }) =>
@@ -75,14 +66,34 @@ export default function NavigationSidebar({
             {isOpen && <span>Profil</span>}
           </NavLink>
           <NavLink
-            to="/dashboard/investigasi"
+            to="/dashboard/pendahuluan"
             className={({ isActive }) =>
               isActive ? activeClass : inactiveClass
             }
-            title="Investigasi"
+            title="Pendahuluan"
           >
-            <FileSearch className="h-4 w-4 shrink-0" />
-            {isOpen && <span>Investigasi</span>}
+            <BookOpen className="h-4 w-4 shrink-0" />
+            {isOpen && <span>Pendahuluan</span>}
+          </NavLink>
+          <NavLink
+            to="/dashboard/petunjuk"
+            className={({ isActive }) =>
+              isActive ? activeClass : inactiveClass
+            }
+            title="Petunjuk Penggunaan"
+          >
+            <HelpCircle className="h-4 w-4 shrink-0" />
+            {isOpen && <span>Petunjuk Penggunaan</span>}
+          </NavLink>
+          <NavLink
+            to="/dashboard/materi"
+            className={({ isActive }) =>
+              isActive ? activeClass : inactiveClass
+            }
+            title="Materi"
+          >
+            <Book className="h-4 w-4 shrink-0" />
+            {isOpen && <span>Materi</span>}
           </NavLink>
           <NavLink
             to="/dashboard/virtual-lab"
@@ -95,6 +106,16 @@ export default function NavigationSidebar({
             {isOpen && <span>Virtual Lab</span>}
           </NavLink>
           <NavLink
+            to="/dashboard/investigasi"
+            className={({ isActive }) =>
+              isActive ? activeClass : inactiveClass
+            }
+            title="Investigasi"
+          >
+            <FileSearch className="h-4 w-4 shrink-0" />
+            {isOpen && <span>Investigasi</span>}
+          </NavLink>
+          <NavLink
             to="/dashboard/kuis"
             className={({ isActive }) =>
               isActive ? activeClass : inactiveClass
@@ -103,16 +124,6 @@ export default function NavigationSidebar({
           >
             <ClipboardList className="h-4 w-4 shrink-0" />
             {isOpen && <span>Kuis</span>}
-          </NavLink>
-          <NavLink
-            to="/dashboard/petunjuk"
-            className={({ isActive }) =>
-              isActive ? activeClass : inactiveClass
-            }
-            title="Petunjuk Penggunaan"
-          >
-            <HelpCircle className="h-4 w-4 shrink-0" />
-            {isOpen && <span>Petunjuk Penggunaan</span>}
           </NavLink>
         </nav>
       </div>
