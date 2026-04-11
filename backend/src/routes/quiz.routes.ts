@@ -149,7 +149,7 @@ router.delete('/:id', authenticateToken, requireAdmin, async (req: AuthRequest, 
 router.post('/:quizId/questions', authenticateToken, requireAdmin, async (req: AuthRequest, res) => {
   try {
     const quizId = parseInt(parseParam(req.params.quizId));
-    const { type, questionText, options } = req.body;
+    const { type, questionText, maxScore, options } = req.body;
 
     if (!type || !questionText) {
       return res.status(400).json({ error: 'type and questionText are required' });
@@ -170,6 +170,7 @@ router.post('/:quizId/questions', authenticateToken, requireAdmin, async (req: A
         quizId,
         type,
         questionText,
+        maxScore: maxScore !== undefined ? maxScore : 1,
         orderIndex: nextOrder,
       })
       .returning();
@@ -209,13 +210,14 @@ router.post('/:quizId/questions', authenticateToken, requireAdmin, async (req: A
 router.put('/questions/:questionId', authenticateToken, requireAdmin, async (req: AuthRequest, res) => {
   try {
     const questionId = parseInt(parseParam(req.params.questionId));
-    const { questionText, type, options } = req.body;
+    const { questionText, type, maxScore, options } = req.body;
 
     const updated = await db
       .update(quizQuestions)
       .set({
         ...(questionText !== undefined ? { questionText } : {}),
         ...(type !== undefined ? { type } : {}),
+        ...(maxScore !== undefined ? { maxScore } : {}),
       })
       .where(eq(quizQuestions.id, questionId))
       .returning();
@@ -315,12 +317,35 @@ router.post('/:quizId/submit', authenticateToken, async (req: AuthRequest, res) 
       .values({ quizId, userId })
       .returning();
 
-    // Insert answers
-    const answerValues = answers.map((a: { questionId: number; selectedOptionId?: number; essayAnswer?: string }) => ({
-      submissionId: submission[0].id,
-      questionId: a.questionId,
-      selectedOptionId: a.selectedOptionId || null,
-      essayAnswer: a.essayAnswer || null,
+    // Get questions to check maxScore and correctness for MC
+    const questions = await db
+      .select()
+      .from(quizQuestions)
+      .where(eq(quizQuestions.quizId, quizId));
+
+    // Insert answers with auto-scoring for MC
+    const answerValues = await Promise.all(answers.map(async (a: { questionId: number; selectedOptionId?: number; essayAnswer?: string }) => {
+      const question = questions.find(q => q.id === a.questionId);
+      let score = 0;
+
+      if (question && question.type === 'multiple_choice' && a.selectedOptionId) {
+        const correctOption = await db
+          .select()
+          .from(quizOptions)
+          .where(eq(quizOptions.id, a.selectedOptionId));
+        
+        if (correctOption.length > 0 && correctOption[0].isCorrect) {
+          score = question.maxScore;
+        }
+      }
+
+      return {
+        submissionId: submission[0].id,
+        questionId: a.questionId,
+        selectedOptionId: a.selectedOptionId || null,
+        essayAnswer: a.essayAnswer || null,
+        score: score,
+      };
     }));
 
     await db.insert(quizAnswers).values(answerValues);
@@ -390,8 +415,10 @@ router.get('/submissions/:submissionId', authenticateToken, async (req: AuthRequ
         questionId: quizAnswers.questionId,
         questionText: quizQuestions.questionText,
         questionType: quizQuestions.type,
+        maxScore: quizQuestions.maxScore,
         selectedOptionId: quizAnswers.selectedOptionId,
         essayAnswer: quizAnswers.essayAnswer,
+        score: quizAnswers.score,
       })
       .from(quizAnswers)
       .innerJoin(quizQuestions, eq(quizAnswers.questionId, quizQuestions.id))
@@ -427,6 +454,29 @@ router.get('/submissions/:submissionId', authenticateToken, async (req: AuthRequ
   } catch (error) {
     console.error(error);
     res.status(500).json({ error: 'Failed to fetch submission details' });
+  }
+});
+
+// MANUALLY GRADE submission (Admin only)
+router.put('/submissions/:submissionId/scores', authenticateToken, requireAdmin, async (req: AuthRequest, res) => {
+  try {
+    const submissionId = parseInt(parseParam(req.params.submissionId));
+    const { scores } = req.body; // [{ answerId, score }]
+
+    if (!Array.isArray(scores)) {
+      return res.status(400).json({ error: 'scores array is required' });
+    }
+
+    await Promise.all(
+      scores.map((s: { answerId: number, score: number }) =>
+        db.update(quizAnswers).set({ score: s.score }).where(eq(quizAnswers.id, s.answerId))
+      )
+    );
+
+    res.json({ message: 'Scores updated successfully' });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: 'Failed to update scores' });
   }
 });
 

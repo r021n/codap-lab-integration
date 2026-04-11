@@ -39,6 +39,7 @@ export const quizQuestions = pgTable('quiz_questions', {
   quizId: integer('quiz_id').references(() => quizzes.id, { onDelete: 'cascade' }).notNull(),
   type: varchar('type', { length: 30 }).notNull(), // 'multiple_choice' | 'essay'
   questionText: text('question_text').notNull(),
+  maxScore: integer('max_score').notNull().default(1),
   orderIndex: integer('order_index').notNull().default(0),
   createdAt: timestamp('created_at').defaultNow().notNull(),
 });
@@ -64,6 +65,7 @@ export const quizAnswers = pgTable('quiz_answers', {
   questionId: integer('question_id').references(() => quizQuestions.id, { onDelete: 'cascade' }).notNull(),
   selectedOptionId: integer('selected_option_id').references(() => quizOptions.id),
   essayAnswer: text('essay_answer'),
+  score: integer('score').notNull().default(0),
 });
 
 export const siteContents = pgTable('site_contents', {

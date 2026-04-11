@@ -12,6 +12,7 @@ import {
   submitQuiz as submitQuizApi,
   updateQuestion as updateQuestionApi,
   updateQuiz as updateQuizApi,
+  updateSubmissionScores as updateSubmissionScoresApi,
 } from "../api/quiz.api";
 import { Button } from "../components/ui/button";
 import {
@@ -53,6 +54,7 @@ type Question = {
   quizId: number;
   type: string;
   questionText: string;
+  maxScore: number;
   orderIndex: number;
   options: Option[];
 };
@@ -79,11 +81,13 @@ type SubmissionDetail = Submission & {
     questionId: number;
     questionText: string;
     questionType: string;
+    maxScore: number;
     selectedOptionId: number | null;
     essayAnswer: string | null;
     selectedOptionText: string | null;
     correctOptionText: string | null;
     isCorrect: boolean | null;
+    score: number;
     allOptions: Option[];
   }[];
 };
@@ -147,9 +151,9 @@ function StudentQuizView({ quiz }: { quiz: Quiz & { questions: Question[] } }) {
     }
 
     if (result) {
-      const correctCount = result.answers.filter((a) => a.isCorrect === true).length;
-      const totalCount = result.answers.length;
-      const score = Math.round((correctCount / totalCount) * 100);
+      const totalObtained = result.answers.reduce((sum, a) => sum + a.score, 0);
+      const totalMax = result.answers.reduce((sum, a) => sum + a.maxScore, 0);
+      const score = totalMax > 0 ? Math.round((totalObtained / totalMax) * 100) : 0;
       const hasEssay = result.answers.some((a) => a.questionType === "essay");
 
       return (
@@ -204,11 +208,7 @@ function StudentQuizView({ quiz }: { quiz: Quiz & { questions: Question[] } }) {
               <div className="mt-8 pt-6 border-t border-border/10 flex flex-col sm:flex-row items-center gap-4 text-sm">
                 <div className="flex items-center gap-2 px-4 py-2 bg-background/50 rounded-lg border border-border/10">
                   <span className="w-2 h-2 rounded-full bg-primary" />
-                  <span className="text-foreground font-medium">{correctCount} Benar</span>
-                </div>
-                <div className="flex items-center gap-2 px-4 py-2 bg-background/50 rounded-lg border border-border/10">
-                  <span className="w-2 h-2 rounded-full bg-muted-foreground/30" />
-                  <span className="text-muted-foreground">{totalCount - correctCount} Salah/Belum Dinilai</span>
+                  <span className="text-foreground font-medium">{totalObtained} / {totalMax} Poin</span>
                 </div>
                 
                 {hasEssay ? (
@@ -232,7 +232,7 @@ function StudentQuizView({ quiz }: { quiz: Quiz & { questions: Question[] } }) {
             <div className="grid gap-4">
               {result.answers.map((a, i) => (
                 <Card key={a.answerId} className="border border-border/10 overflow-hidden hover:shadow-md transition-shadow">
-                  <div className={`h-1 w-full ${a.questionType === 'multiple_choice' ? (a.isCorrect ? 'bg-primary' : 'bg-red-400') : 'bg-amber-400'}`} />
+                  <div className={`h-1 w-full ${a.questionType === 'multiple_choice' ? (a.score === a.maxScore ? 'bg-primary' : 'bg-red-400') : 'bg-amber-400'}`} />
                   <CardContent className="p-5 space-y-4">
                     <div className="flex items-start justify-between gap-4">
                       <div className="flex-1">
@@ -243,6 +243,9 @@ function StudentQuizView({ quiz }: { quiz: Quiz & { questions: Question[] } }) {
                           <span className={`text-[10px] font-bold px-2 py-0.5 rounded uppercase tracking-wider ${a.questionType === 'multiple_choice' ? 'bg-primary/10 text-primary' : 'bg-amber-100 text-amber-600'}`}>
                             {a.questionType === 'multiple_choice' ? 'Pilihan Ganda' : 'Essay'}
                           </span>
+                           <span className="text-[10px] font-bold px-2 py-0.5 rounded bg-primary/5 text-primary uppercase tracking-wider border border-primary/10">
+                            {a.score} / {a.maxScore} Poin
+                          </span>
                         </div>
                         <p className="text-foreground font-medium leading-relaxed">
                           {a.questionText}
@@ -250,8 +253,8 @@ function StudentQuizView({ quiz }: { quiz: Quiz & { questions: Question[] } }) {
                       </div>
                       
                       {a.questionType === 'multiple_choice' && (
-                        <div className={`p-2 rounded-full ${a.isCorrect ? 'bg-primary/10 text-primary' : 'bg-red-50 text-red-500'}`}>
-                          {a.isCorrect ? <CheckCircle className="w-5 h-5" /> : <div className="w-5 h-5 flex items-center justify-center font-bold">✕</div>}
+                        <div className={`p-2 rounded-full ${a.score === a.maxScore ? 'bg-primary/10 text-primary' : 'bg-red-50 text-red-500'}`}>
+                          {a.score === a.maxScore ? <CheckCircle className="w-5 h-5" /> : <div className="w-5 h-5 flex items-center justify-center font-bold">✕</div>}
                         </div>
                       )}
                     </div>
@@ -260,7 +263,7 @@ function StudentQuizView({ quiz }: { quiz: Quiz & { questions: Question[] } }) {
                       <div className="space-y-1">
                         <p className="text-[10px] text-muted-foreground uppercase font-bold tracking-tighter">Jawaban Kamu</p>
                         {a.questionType === 'multiple_choice' ? (
-                          <p className={`text-sm font-semibold ${a.isCorrect ? 'text-primary' : 'text-red-500'}`}>
+                          <p className={`text-sm font-semibold ${a.score === a.maxScore ? 'text-primary' : 'text-red-500'}`}>
                             {a.selectedOptionText || '-'}
                           </p>
                         ) : (
@@ -270,7 +273,7 @@ function StudentQuizView({ quiz }: { quiz: Quiz & { questions: Question[] } }) {
                         )}
                       </div>
 
-                      {a.questionType === 'multiple_choice' && !a.isCorrect && (
+                      {a.questionType === 'multiple_choice' && a.score !== a.maxScore && (
                         <div className="space-y-1">
                           <p className="text-[10px] text-primary uppercase font-bold tracking-tighter">Jawaban Benar</p>
                           <p className="text-sm font-semibold text-primary">
@@ -279,7 +282,7 @@ function StudentQuizView({ quiz }: { quiz: Quiz & { questions: Question[] } }) {
                         </div>
                       )}
 
-                      {a.questionType === 'essay' && (
+                      {a.questionType === 'essay' && a.score === 0 && (
                         <div className="space-y-1">
                           <p className="text-[10px] text-amber-600 uppercase font-bold tracking-tighter">Status Penilaian</p>
                           <p className="text-sm font-semibold text-amber-600 flex items-center gap-1">
@@ -446,6 +449,7 @@ function EditorMode() {
     "multiple_choice",
   );
   const [qText, setQText] = useState("");
+  const [qMaxScore, setQMaxScore] = useState(1);
   const [qOptions, setQOptions] = useState<
     { optionText: string; isCorrect: boolean }[]
   >([
@@ -509,7 +513,7 @@ function EditorMode() {
   const addQuestion = async () => {
     if (!selectedQuiz || !qText.trim())
       return showToast("Teks soal harus diisi.", "error");
-    const body: any = { type: qType, questionText: qText };
+    const body: any = { type: qType, questionText: qText, maxScore: qMaxScore };
     if (qType === "multiple_choice")
       body.options = qOptions.filter((o) => o.optionText.trim());
     try {
@@ -524,7 +528,7 @@ function EditorMode() {
 
   const updateQuestion = async () => {
     if (!editingQuestion || !qText.trim()) return;
-    const body: any = { type: qType, questionText: qText };
+    const body: any = { type: qType, questionText: qText, maxScore: qMaxScore };
     if (qType === "multiple_choice")
       body.options = qOptions.filter((o) => o.optionText.trim());
     try {
@@ -581,6 +585,7 @@ function EditorMode() {
     setEditingQuestion(q);
     setQType(q.type as any);
     setQText(q.questionText);
+    setQMaxScore(q.maxScore || 1);
     if (q.type === "multiple_choice") {
       const opts =
         q.options.length > 0
@@ -601,6 +606,7 @@ function EditorMode() {
     setShowAddQuestion(false);
     setEditingQuestion(null);
     setQText("");
+    setQMaxScore(1);
     setQType("multiple_choice");
     setQOptions([
       { optionText: "", isCorrect: true },
@@ -767,6 +773,9 @@ function EditorMode() {
                   <p className="text-sm text-foreground font-medium">
                     {q.questionText}
                   </p>
+                  <p className="text-[10px] text-primary font-bold uppercase mt-1">
+                    Bobot: {q.maxScore} Poin
+                  </p>
                   {q.type === "multiple_choice" && (
                     <div className="mt-2 space-y-1">
                       {q.options.map((o) => (
@@ -844,6 +853,17 @@ function EditorMode() {
               rows={3}
               className="w-full p-3 rounded-lg border-2 border-border/20 bg-background text-sm text-foreground resize-none focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/20 placeholder:text-muted-foreground"
             />
+
+            <div className="space-y-2">
+              <label className="text-sm font-semibold text-foreground">Skor Maksimal (Bobot)</label>
+              <Input
+                type="number"
+                value={qMaxScore}
+                onChange={(e) => setQMaxScore(parseInt(e.target.value) || 0)}
+                placeholder="Contoh: 1, 5, 10..."
+                className="bg-background border-gray-300 focus:border-primary focus:ring-primary"
+              />
+            </div>
 
             {qType === "multiple_choice" && (
               <div className="space-y-3">
@@ -941,13 +961,14 @@ function EditorMode() {
     </div>
   );
 }
-
 // ─── TEACHER MODE ───────────────────────────────────────────────
 function TeacherMode() {
   const [quizList, setQuizList] = useState<Quiz[]>([]);
   const [selectedQuizId, setSelectedQuizId] = useState<number | null>(null);
   const [submissions, setSubmissions] = useState<Submission[]>([]);
   const [detail, setDetail] = useState<SubmissionDetail | null>(null);
+  const [editedScores, setEditedScores] = useState<Record<number, number>>({});
+  const [isSaving, setIsSaving] = useState(false);
 
   useEffect(() => {
     (async () => {
@@ -961,80 +982,177 @@ function TeacherMode() {
   }, []);
 
   const fetchSubmissions = async (quizId: number) => {
-    setSelectedQuizId(quizId);
-    setDetail(null);
     try {
-      const submissionList = await getSubmissionsApi(quizId);
-      setSubmissions(submissionList);
+      const data = await getSubmissionsApi(quizId);
+      setSubmissions(data);
+      setSelectedQuizId(quizId);
     } catch {
-      showToast("Gagal memuat data.", "error");
+      showToast("Gagal memuat pengumpulan.", "error");
     }
   };
 
-  const fetchDetail = async (submissionId: number) => {
+  const fetchDetail = async (id: number) => {
     try {
-      const submissionDetail = await getSubmissionDetailApi(submissionId);
-      setDetail(submissionDetail as SubmissionDetail);
+      const data = await getSubmissionDetailApi(id);
+      setDetail(data as SubmissionDetail);
+
+      // Initialize edited scores
+      const initial: Record<number, number> = {};
+      data.answers.forEach((a: any) => {
+        initial[a.answerId] = a.score;
+      });
+      setEditedScores(initial);
     } catch {
       showToast("Gagal memuat detail.", "error");
     }
   };
 
+  const handleSaveScores = async () => {
+    if (!detail) return;
+    setIsSaving(true);
+    try {
+      const payload = Object.entries(editedScores).map(([answerId, score]) => ({
+        answerId: parseInt(answerId),
+        score,
+      }));
+      await updateSubmissionScoresApi(detail.submissionId, payload);
+      showToast("Skor berhasil diperbarui!", "success");
+      fetchDetail(detail.submissionId);
+    } catch {
+      showToast("Gagal memperbarui skor.", "error");
+    } finally {
+      setIsSaving(false);
+    }
+  };
+
   // Detail view
   if (detail) {
+    const totalObtained = detail.answers.reduce(
+      (sum, a) => sum + (editedScores[a.answerId] ?? a.score),
+      0,
+    );
+    const totalMax = detail.answers.reduce((sum, a) => sum + a.maxScore, 0);
+    const grade = totalMax > 0 ? ((totalObtained / totalMax) * 100).toFixed(1) : 0;
+
     return (
       <div className="space-y-6">
-        <button
-          onClick={() => setDetail(null)}
-          className="flex items-center gap-2 text-sm text-primary hover:text-primary/90 font-medium"
-        >
-          <ChevronLeft className="w-4 h-4" /> Kembali
-        </button>
-        <Card className="border border-border/20 bg-background shadow-[0px_4px_6px_-1px_rgba(0,0,0,0.1)] rounded-lg">
-          <CardHeader className="border-b border-border/10 bg-background">
-            <CardTitle className="font-serif text-xl font-bold text-foreground">
-              Jawaban: {detail.userName}
-            </CardTitle>
-            <CardDescription className="text-muted-foreground">
-              {detail.userEmail} •{" "}
-              {new Date(detail.submittedAt).toLocaleString("id-ID")}
-            </CardDescription>
+        <div className="flex items-center justify-between">
+          <button
+            onClick={() => setDetail(null)}
+            className="flex items-center gap-2 text-sm text-primary hover:text-primary/90 font-medium"
+          >
+            <ChevronLeft className="w-4 h-4" /> Kembali ke Daftar
+          </button>
+          <Button
+            onClick={handleSaveScores}
+            disabled={isSaving}
+            className="bg-primary hover:bg-primary/90 text-white"
+          >
+            {isSaving ? "Menyimpan..." : "Simpan Perubahan Skor"}
+          </Button>
+        </div>
+
+        <Card className="border border-border/20 bg-background shadow-[0px_4px_6px_-1px_rgba(0,0,0,0.1)] rounded-lg overflow-hidden">
+          <CardHeader className="border-b border-border/10 bg-primary/5">
+            <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
+              <div>
+                <CardTitle className="font-serif text-2xl font-bold text-foreground">
+                  Jawaban: {detail.userName}
+                </CardTitle>
+                <CardDescription className="text-muted-foreground font-medium">
+                  {detail.userEmail} •{" "}
+                  {new Date(detail.submittedAt).toLocaleString("id-ID")}
+                </CardDescription>
+              </div>
+              <div className="bg-background px-6 py-4 rounded-xl border border-primary/20 shadow-sm text-center min-w-[140px]">
+                <p className="text-[10px] uppercase font-bold text-muted-foreground tracking-widest mb-1">
+                  Nilai Akhir
+                </p>
+                <p className="text-3xl font-serif font-bold text-primary">
+                  {grade}
+                </p>
+                <p className="text-[10px] text-muted-foreground mt-1">
+                  {totalObtained} / {totalMax} Poin
+                </p>
+              </div>
+            </div>
           </CardHeader>
-          <CardContent className="pt-6 space-y-4">
+          <CardContent className="pt-8 space-y-6 bg-background">
             {detail.answers.map((a, i) => (
               <div
                 key={a.answerId}
-                className={`p-4 rounded-lg border ${a.questionType === "multiple_choice" ? (a.isCorrect ? "border-primary/30 bg-primary/5" : "border-red-200 bg-red-50/50") : "border-border/20 bg-background/50"}`}
+                className={`p-6 rounded-xl border-2 transition-all ${
+                  a.questionType === "essay"
+                    ? "border-amber-100 bg-amber-50/20"
+                    : a.isCorrect
+                      ? "border-emerald-100 bg-emerald-50/20"
+                      : "border-red-100 bg-red-50/20"
+                }`}
               >
-                <p className="text-sm font-medium text-foreground mb-2">
-                  {i + 1}. {a.questionText}
-                </p>
-                {a.questionType === "multiple_choice" ? (
-                  <div className="space-y-1 text-xs">
-                    <p>
-                      Jawaban siswa:{" "}
-                      <span
-                        className={`font-semibold ${a.isCorrect ? "text-primary" : "text-red-500"}`}
-                      >
-                        {a.selectedOptionText || "-"}
-                      </span>
+                <div className="flex flex-col sm:flex-row justify-between items-start gap-4 mb-4">
+                  <div className="flex-1">
+                    <p className="text-sm font-bold text-foreground/80 mb-2 flex items-center gap-2">
+                       <span className="bg-foreground/10 px-2 py-0.5 rounded text-[10px]">SOAL {i+1}</span>
+                       <span className={`px-2 py-0.5 rounded text-[10px] uppercase ${a.questionType === 'essay' ? 'bg-amber-100 text-amber-700' : 'bg-primary/10 text-primary'}`}>
+                         {a.questionType === 'essay' ? 'Essay' : 'Pilihan Ganda'}
+                       </span>
                     </p>
-                    {!a.isCorrect && (
-                      <p>
-                        Jawaban benar:{" "}
-                        <span className="font-semibold text-primary">
-                          {a.correctOptionText}
-                        </span>
-                      </p>
-                    )}
+                    <p className="text-base text-foreground font-medium pr-4 leading-relaxed">
+                      {a.questionText}
+                    </p>
+                  </div>
+                  <div className="shrink-0 space-y-2 bg-background p-3 rounded-lg border border-border/10 shadow-sm min-w-[120px]">
+                    <label className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider block">
+                      Edit Skor
+                    </label>
+                    <div className="flex items-center gap-2">
+                      <Input
+                        type="number"
+                        value={editedScores[a.answerId] ?? 0}
+                        onChange={(e) =>
+                          setEditedScores((p) => ({
+                            ...p,
+                            [a.answerId]: parseInt(e.target.value) || 0,
+                          }))
+                        }
+                        className="h-8 w-16 text-center font-bold text-primary bg-background p-1"
+                      />
+                      <span className="text-xs font-bold text-muted-foreground">
+                        / {a.maxScore}
+                      </span>
+                    </div>
+                  </div>
+                </div>
+
+                {a.questionType === "multiple_choice" ? (
+                  <div className="mt-4 p-4 bg-background/50 rounded-lg border border-border/10">
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      <div>
+                        <p className="text-[10px] font-bold text-muted-foreground uppercase mb-1">Jawaban Siswa</p>
+                        <p className={`text-sm font-semibold ${a.isCorrect ? "text-emerald-600" : "text-red-500"}`}>
+                          {a.selectedOptionText || "-"}
+                        </p>
+                      </div>
+                      {!a.isCorrect && (
+                        <div>
+                          <p className="text-[10px] font-bold text-primary uppercase mb-1">Jawaban Benar</p>
+                          <p className="text-sm font-semibold text-primary">
+                            {a.correctOptionText}
+                          </p>
+                        </div>
+                      )}
+                    </div>
                   </div>
                 ) : (
-                  <div className="mt-1 p-3 bg-background rounded border border-border/10 text-sm text-foreground">
-                    {a.essayAnswer || (
-                      <span className="text-muted-foreground italic">
-                        Tidak dijawab
-                      </span>
-                    )}
+                  <div className="mt-4">
+                    <p className="text-[10px] font-bold text-muted-foreground uppercase mb-2">Jawaban Siswa</p>
+                    <div className="p-4 bg-background rounded-lg border border-border/20 text-sm text-foreground leading-relaxed whitespace-pre-wrap italic">
+                      {a.essayAnswer || (
+                        <span className="text-muted-foreground opacity-50">
+                          Tidak dijawab
+                        </span>
+                      )}
+                    </div>
                   </div>
                 )}
               </div>

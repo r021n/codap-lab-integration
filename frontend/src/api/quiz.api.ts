@@ -12,6 +12,7 @@ export type QuizQuestion = {
   quizId: number;
   type: string;
   questionText: string;
+  maxScore: number;
   orderIndex: number;
   options: QuizOption[];
 };
@@ -41,11 +42,13 @@ export type SubmissionDetail = Submission & {
     questionId: number;
     questionText: string;
     questionType: string;
+    maxScore: number;
     selectedOptionId: number | null;
     essayAnswer: string | null;
     selectedOptionText: string | null;
     correctOptionText: string | null;
     isCorrect: boolean | null;
+    score: number;
     allOptions: QuizOption[];
   }[];
 };
@@ -62,6 +65,7 @@ type UpdateQuizPayload = {
 type QuestionPayload = {
   type: "multiple_choice" | "essay";
   questionText: string;
+  maxScore?: number;
   options?: { optionText: string; isCorrect: boolean }[];
 };
 
@@ -152,4 +156,11 @@ export async function getSubmissionDetail(
     `/quizzes/submissions/${submissionId}`,
   );
   return data;
+}
+
+export async function updateSubmissionScores(
+  submissionId: number,
+  scores: { answerId: number; score: number }[],
+): Promise<void> {
+  await apiClient.put(`/quizzes/submissions/${submissionId}/scores`, { scores });
 }
