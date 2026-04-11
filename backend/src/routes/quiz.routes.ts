@@ -360,7 +360,7 @@ router.get('/:quizId/submissions', authenticateToken, requireAdmin, async (req: 
 });
 
 // GET a specific submission's answers
-router.get('/submissions/:submissionId', authenticateToken, requireAdmin, async (req: AuthRequest, res) => {
+router.get('/submissions/:submissionId', authenticateToken, async (req: AuthRequest, res) => {
   try {
     const submissionId = parseInt(parseParam(req.params.submissionId));
 
@@ -378,6 +378,11 @@ router.get('/submissions/:submissionId', authenticateToken, requireAdmin, async 
       .where(eq(quizSubmissions.id, submissionId));
 
     if (submission.length === 0) return res.status(404).json({ error: 'Submission not found' });
+
+    // Check if admin OR if the submission belongs to the requesting user
+    if (req.user!.role !== 'admin' && submission[0].userId !== req.user!.id) {
+      return res.status(403).json({ error: 'Access denied: You can only view your own results.' });
+    }
 
     const answers = await db
       .select({

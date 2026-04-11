@@ -105,8 +105,12 @@ export async function deleteQuiz(quizId: number): Promise<void> {
 export async function submitQuiz(
   quizId: number,
   payload: SubmitQuizPayload,
-): Promise<void> {
-  await apiClient.post(`/quizzes/${quizId}/submit`, payload);
+): Promise<{ message: string; submissionId: number }> {
+  const { data } = await apiClient.post<{ message: string; submissionId: number }>(
+    `/quizzes/${quizId}/submit`,
+    payload,
+  );
+  return data;
 }
 
 export async function addQuestion(
