@@ -1,0 +1,55 @@
+import {
+  FileText,
+  Search,
+  BarChart3,
+  Info,
+  Lightbulb,
+} from "lucide-react";
+
+export const INVESTIGASI_STEPS = [
+  {
+    id: 1,
+    title: "Persiapan & Investigasi Data",
+    description: "Unggah, unduh, dan lakukan analisis awal menggunakan CODAP.",
+    icon: FileText,
+    color: "text-blue-500",
+    bgColor: "bg-blue-500/10",
+    borderColor: "border-blue-500/20",
+  },
+  {
+    id: 2,
+    title: "Identifikasi Pola",
+    description: "Cari tren atau anomali yang menarik dalam dataset.",
+    icon: Search,
+    color: "text-purple-500",
+    bgColor: "bg-purple-500/10",
+    borderColor: "border-purple-500/20",
+  },
+  {
+    id: 3,
+    title: "Visualisasi Hubungan",
+    description: "Buat grafik multidimensi untuk melihat korelasi variabel.",
+    icon: BarChart3,
+    color: "text-orange-500",
+    bgColor: "bg-orange-500/10",
+    borderColor: "border-orange-500/20",
+  },
+  {
+    id: 4,
+    title: "Analisis Statistik",
+    description: "Gunakan perhitungan rata-rata, median, dan sebaran data.",
+    icon: Info,
+    color: "text-emerald-500",
+    bgColor: "bg-emerald-500/10",
+    borderColor: "border-emerald-500/20",
+  },
+  {
+    id: 5,
+    title: "Penyusunan Laporan",
+    description: "Rangkum temuanmu dan buat kesimpulan akhir investigasi.",
+    icon: Lightbulb,
+    color: "text-rose-500",
+    bgColor: "bg-rose-500/10",
+    borderColor: "border-rose-500/20",
+  },
+];
