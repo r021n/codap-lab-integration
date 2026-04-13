@@ -60,6 +60,13 @@ export default function EditorMode() {
     id: number;
   } | null>(null);
 
+  type QuestionFormPayload = {
+    type: "multiple_choice" | "essay";
+    questionText: string;
+    maxScore: number;
+    options?: { optionText: string; isCorrect: boolean }[];
+  };
+
   const fetchQuizzes = useCallback(async () => {
     try {
       const quizzes = await getQuizzesApi();
@@ -79,8 +86,17 @@ export default function EditorMode() {
   }, []);
 
   useEffect(() => {
-    fetchQuizzes();
-  }, [fetchQuizzes]);
+    const loadQuizzes = async () => {
+      try {
+        const quizzes = await getQuizzesApi();
+        setQuizList(quizzes);
+      } catch {
+        console.error("Failed to fetch quizzes");
+      }
+    };
+
+    void loadQuizzes();
+  }, []);
 
   const createQuiz = async () => {
     if (!newTitle.trim()) return showToast("Judul kuis harus diisi.", "error");
@@ -108,7 +124,11 @@ export default function EditorMode() {
   const addQuestion = async () => {
     if (!selectedQuiz || !qText.trim())
       return showToast("Teks soal harus diisi.", "error");
-    const body: any = { type: qType, questionText: qText, maxScore: qMaxScore };
+    const body: QuestionFormPayload = {
+      type: qType,
+      questionText: qText,
+      maxScore: qMaxScore,
+    };
     if (qType === "multiple_choice")
       body.options = qOptions.filter((o) => o.optionText.trim());
     try {
@@ -123,7 +143,11 @@ export default function EditorMode() {
 
   const updateQuestion = async () => {
     if (!editingQuestion || !qText.trim()) return;
-    const body: any = { type: qType, questionText: qText, maxScore: qMaxScore };
+    const body: QuestionFormPayload = {
+      type: qType,
+      questionText: qText,
+      maxScore: qMaxScore,
+    };
     if (qType === "multiple_choice")
       body.options = qOptions.filter((o) => o.optionText.trim());
     try {
@@ -178,7 +202,7 @@ export default function EditorMode() {
 
   const startEdit = (q: Question) => {
     setEditingQuestion(q);
-    setQType(q.type as any);
+    setQType(q.type === "essay" ? "essay" : "multiple_choice");
     setQText(q.questionText);
     setQMaxScore(q.maxScore || 1);
     if (q.type === "multiple_choice") {
@@ -250,7 +274,9 @@ export default function EditorMode() {
           </CardHeader>
           <CardContent className="pt-6">
             {quizList.length === 0 ? (
-              <p className="text-muted-foreground text-center py-8">Belum ada kuis.</p>
+              <p className="text-muted-foreground text-center py-8">
+                Belum ada kuis.
+              </p>
             ) : (
               <div className="space-y-3">
                 {quizList.map((qz) => (
@@ -449,7 +475,9 @@ export default function EditorMode() {
             />
 
             <div className="space-y-2">
-              <label className="text-sm font-semibold text-foreground">Skor Maksimal (Bobot)</label>
+              <label className="text-sm font-semibold text-foreground">
+                Skor Maksimal (Bobot)
+              </label>
               <Input
                 type="number"
                 value={qMaxScore}

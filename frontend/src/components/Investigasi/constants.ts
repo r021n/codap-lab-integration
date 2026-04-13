@@ -18,8 +18,8 @@ export const INVESTIGASI_STEPS = [
   },
   {
     id: 2,
-    title: "Identifikasi Pola",
-    description: "Cari tren atau anomali yang menarik dalam dataset.",
+    title: "Pencarian Data AI",
+    description: "Gunakan kecerdasan buatan untuk menemukan sumber data yang relevan.",
     icon: Search,
     color: "text-purple-500",
     bgColor: "bg-purple-500/10",

@@ -1,3 +1,4 @@
+/* eslint-disable react-refresh/only-export-components */
 import { useEffect, useState } from "react";
 import { X, CheckCircle2, AlertTriangle, XCircle, Info } from "lucide-react";
 
@@ -124,7 +125,9 @@ function ToastItem({
       role="alert"
     >
       {config.icon}
-      <p className={`text-sm font-medium ${config.text} flex-1 leading-relaxed`}>
+      <p
+        className={`text-sm font-medium ${config.text} flex-1 leading-relaxed`}
+      >
         {toast.message}
       </p>
       <button

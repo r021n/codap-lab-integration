@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
-import { getMe } from "../api/auth.api";
+import { getMe, type User } from "../api/auth.api";
 import NavigationSidebar from "../components/NavigationSidebar";
 import Profile from "./Profile";
 import Investigasi from "./Investigasi";
@@ -9,12 +9,6 @@ import QuizPage from "./Quiz";
 import IntroductionPage from "./IntroductionPage";
 import GuidePage from "./GuidePage";
 import MateriPage from "./MateriPage";
-
-type User = {
-  name: string;
-  email: string;
-  role: string;
-};
 
 export default function Dashboard() {
   const [user, setUser] = useState<User | null>(null);

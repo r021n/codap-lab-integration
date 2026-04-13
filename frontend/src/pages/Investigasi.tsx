@@ -2,6 +2,7 @@ import { useState } from "react";
 import { Button } from "../components/ui/button";
 import { showToast, ToastContainer } from "../components/ui/toast";
 import { ArrowRight } from "lucide-react";
+import type { User } from "../api/auth.api";
 
 import StepHeader, {
   type InvestigasiMode,
@@ -9,12 +10,7 @@ import StepHeader, {
 import StepSelectionList from "../components/Investigasi/StepSelectionList";
 import StepPlaceholder from "../components/Investigasi/StepPlaceholder";
 import Step1 from "../components/Investigasi/steps/Step1";
-
-type User = {
-  name: string;
-  email: string;
-  role: string;
-};
+import Step2 from "../components/Investigasi/steps/Step2";
 
 export default function Investigasi({ user }: { user: User }) {
   const [mode, setMode] = useState<InvestigasiMode>("preview");
@@ -59,9 +55,9 @@ export default function Investigasi({ user }: { user: User }) {
         />
       ) : (
         <div className="space-y-8 animate-in fade-in duration-500">
-          {activeStep === 1 ? (
-            <Step1 mode={activeMode} />
-          ) : (
+          {activeStep === 1 && <Step1 mode={activeMode} />}
+          {activeStep === 2 && <Step2 mode={activeMode} user={user} />}
+          {activeStep !== 1 && activeStep !== 2 && (
             <StepPlaceholder stepId={activeStep} />
           )}
 

@@ -59,7 +59,7 @@ export default function TeacherMode() {
 
       // Initialize edited scores
       const initial: Record<number, number> = {};
-      data.answers.forEach((a: any) => {
+      data.answers.forEach((a: SubmissionDetail["answers"][number]) => {
         initial[a.answerId] = a.score;
       });
       setEditedScores(initial);

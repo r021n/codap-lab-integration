@@ -1,14 +1,6 @@
 import { apiClient } from "./client";
-
-export type User = {
-  name: string;
-  email: string;
-  role: string;
-  school?: string;
-  class?: string;
-  age?: number;
-  gender?: string;
-};
+export type { User } from "../types/user";
+import type { User } from "../types/user";
 
 type LoginResponse = {
   token: string;

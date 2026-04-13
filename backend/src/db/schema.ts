@@ -75,3 +75,25 @@ export const siteContents = pgTable('site_contents', {
   updatedAt: timestamp('updated_at').defaultNow().notNull(),
   updatedBy: integer('updated_by').references(() => users.id),
 });
+
+// ─── Investigasi Tables ──────────────────────────────────────────
+
+export const investigationSubmissions = pgTable('investigation_submissions', {
+  id: serial('id').primaryKey(),
+  userId: integer('user_id').references(() => users.id, { onDelete: 'cascade' }).notNull(),
+  stepId: integer('step_id').notNull().default(2),
+  originalName: varchar('original_name', { length: 255 }).notNull(),
+  storedName: varchar('stored_name', { length: 255 }).notNull().unique(),
+  fileData: text('file_data').notNull(),
+  createdAt: timestamp('created_at').defaultNow().notNull(),
+});
+
+export const chatMessages = pgTable('chat_messages', {
+  id: serial('id').primaryKey(),
+  userId: integer('user_id').references(() => users.id, { onDelete: 'cascade' }).notNull(),
+  stepId: integer('step_id').notNull().default(2),
+  role: varchar('role', { length: 20 }).notNull(), // 'user' | 'model'
+  content: text('content').notNull(),
+  createdAt: timestamp('created_at').defaultNow().notNull(),
+});
+

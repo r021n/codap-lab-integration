@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef, useMemo } from "react";
+import { useState, useEffect, useRef, useMemo, useCallback } from "react";
 import { getContent, updateContent } from "../api/content.api";
 import { Edit2, Eye, Save, AlertCircle, HelpCircle } from "lucide-react";
 import ReactQuill from "react-quill-new";
@@ -65,7 +65,62 @@ export default function GuidePage({ user }: GuidePageProps) {
     }
   };
 
-  const imageHandler = () => {
+  const compressImage = useCallback(
+    (file: File, maxKB: number): Promise<string> => {
+      return new Promise((resolve, reject) => {
+        const reader = new FileReader();
+        reader.readAsDataURL(file);
+        reader.onload = (e) => {
+          const img = new Image();
+          img.src = e.target?.result as string;
+          img.onload = () => {
+            const canvas = document.createElement("canvas");
+            let width = img.width;
+            let height = img.height;
+
+            // Initial resize if huge
+            if (width > 1200) {
+              height = (1200 / width) * height;
+              width = 1200;
+            }
+
+            canvas.width = width;
+            canvas.height = height;
+            const ctx = canvas.getContext("2d");
+            ctx?.drawImage(img, 0, 0, width, height);
+
+            let quality = 0.8;
+            let dataUrl = canvas.toDataURL("image/jpeg", quality);
+
+            // Loop to reduce quality and/or resolution until below maxKB
+            while (dataUrl.length / 1024 > maxKB && quality > 0.1) {
+              quality -= 0.1;
+              dataUrl = canvas.toDataURL("image/jpeg", quality);
+
+              if (quality <= 0.2 && dataUrl.length / 1024 > maxKB) {
+                // If still too big at low quality, reduce resolution
+                width *= 0.7;
+                height *= 0.7;
+                canvas.width = width;
+                canvas.height = height;
+                ctx?.drawImage(img, 0, 0, width, height);
+                quality = 0.5; // Reset quality to try again at lower res
+              }
+
+              // Safety break to prevent infinite loop
+              if (width < 100) break;
+            }
+            resolve(dataUrl);
+          };
+          img.onerror = reject;
+        };
+        reader.onerror = reject;
+      });
+    },
+    [],
+  );
+
+  const imageHandler = useCallback(() => {
     const input = document.createElement("input");
     input.setAttribute("type", "file");
     input.setAttribute("accept", "image/*");
@@ -89,75 +144,26 @@ export default function GuidePage({ user }: GuidePageProps) {
         }
       }
     };
-  };
+  }, [compressImage]);
 
-  const compressImage = (file: File, maxKB: number): Promise<string> => {
-    return new Promise((resolve, reject) => {
-      const reader = new FileReader();
-      reader.readAsDataURL(file);
-      reader.onload = (e) => {
-        const img = new Image();
-        img.src = e.target?.result as string;
-        img.onload = () => {
-          const canvas = document.createElement("canvas");
-          let width = img.width;
-          let height = img.height;
-
-          // Initial resize if huge
-          if (width > 1200) {
-            height = (1200 / width) * height;
-            width = 1200;
-          }
-
-          canvas.width = width;
-          canvas.height = height;
-          const ctx = canvas.getContext("2d");
-          ctx?.drawImage(img, 0, 0, width, height);
-
-          let quality = 0.8;
-          let dataUrl = canvas.toDataURL("image/jpeg", quality);
-
-          // Loop to reduce quality and/or resolution until below maxKB
-          while (dataUrl.length / 1024 > maxKB && quality > 0.1) {
-            quality -= 0.1;
-            dataUrl = canvas.toDataURL("image/jpeg", quality);
-
-            if (quality <= 0.2 && dataUrl.length / 1024 > maxKB) {
-              // If still too big at low quality, reduce resolution
-              width *= 0.7;
-              height *= 0.7;
-              canvas.width = width;
-              canvas.height = height;
-              ctx?.drawImage(img, 0, 0, width, height);
-              quality = 0.5; // Reset quality to try again at lower res
-            }
-            
-            // Safety break to prevent infinite loop
-            if (width < 100) break;
-          }
-          resolve(dataUrl);
-        };
-        img.onerror = reject;
-      };
-      reader.onerror = reject;
-    });
-  };
-
-  const modules = useMemo(() => ({
-    toolbar: {
-      container: [
-        [{ header: [1, 2, 3, false] }],
-        ["bold", "italic", "underline", "strike"],
-        [{ list: "ordered" }, { list: "bullet" }],
-        [{ color: [] }, { background: [] }],
-        ["image"],
-        ["clean"],
-      ],
-      handlers: {
-        image: imageHandler,
+  const modules = useMemo(
+    () => ({
+      toolbar: {
+        container: [
+          [{ header: [1, 2, 3, false] }],
+          ["bold", "italic", "underline", "strike"],
+          [{ list: "ordered" }, { list: "bullet" }],
+          [{ color: [] }, { background: [] }],
+          ["image"],
+          ["clean"],
+        ],
+        handlers: {
+          image: imageHandler,
+        },
       },
-    },
-  }), []);
+    }),
+    [imageHandler],
+  );
 
   if (loading) {
     return (

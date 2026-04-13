@@ -1,6 +1,6 @@
 import { useState, useRef, useEffect } from "react";
 import { Eye, EyeOff, Loader2, CheckCircle2, XCircle } from "lucide-react";
-import { updatePassword, updateProfile } from "../api/auth.api";
+import { updatePassword, updateProfile, type User } from "../api/auth.api";
 import { getApiErrorMessage } from "../api/errors";
 import { Button } from "../components/ui/button";
 import { Input } from "../components/ui/input";
@@ -13,19 +13,9 @@ import {
   CardTitle,
 } from "../components/ui/card";
 
-type UserType = {
-  name: string;
-  email: string;
-  role: string;
-  school?: string;
-  class?: string;
-  age?: number;
-  gender?: string;
-};
-
 type ProfileProps = {
-  user: UserType;
-  setUser: (user: UserType) => void;
+  user: User;
+  setUser: (user: User) => void;
 };
 
 export default function Profile({ user, setUser }: ProfileProps) {
@@ -84,13 +74,13 @@ export default function Profile({ user, setUser }: ProfileProps) {
     setIsLoadingProfile(true);
 
     try {
-      const data = await updateProfile({ 
-        name, 
+      const data = await updateProfile({
+        name,
         email,
         school,
         class: userClass,
         age: age ? parseInt(age) : undefined,
-        gender
+        gender,
       });
       showToast("success", "Berhasil", "Profil berhasil diperbarui!");
       setUser({
@@ -207,7 +197,10 @@ export default function Profile({ user, setUser }: ProfileProps) {
 
             <div className="grid grid-cols-2 gap-4">
               <div className="space-y-2">
-                <Label htmlFor="school" className="font-semibold text-foreground">
+                <Label
+                  htmlFor="school"
+                  className="font-semibold text-foreground"
+                >
                   Sekolah
                 </Label>
                 <Input
@@ -220,7 +213,10 @@ export default function Profile({ user, setUser }: ProfileProps) {
                 />
               </div>
               <div className="space-y-2">
-                <Label htmlFor="class" className="font-semibold text-foreground">
+                <Label
+                  htmlFor="class"
+                  className="font-semibold text-foreground"
+                >
                   Kelas
                 </Label>
                 <Input
@@ -250,7 +246,10 @@ export default function Profile({ user, setUser }: ProfileProps) {
                 />
               </div>
               <div className="space-y-2">
-                <Label htmlFor="gender" className="font-semibold text-foreground">
+                <Label
+                  htmlFor="gender"
+                  className="font-semibold text-foreground"
+                >
                   Jenis Kelamin
                 </Label>
                 <select

@@ -1,15 +1,15 @@
 import { useState, useEffect, useRef, useMemo, useCallback } from "react";
 import { getContent, updateContent } from "../api/content.api";
-import { 
-  Edit2, 
-  Eye, 
-  Save, 
-  AlertCircle, 
-  Book, 
-  ChevronLeft, 
-  ChevronRight, 
-  Plus, 
-  Trash2 
+import {
+  Edit2,
+  Eye,
+  Save,
+  AlertCircle,
+  Book,
+  ChevronLeft,
+  ChevronRight,
+  Plus,
+  Trash2,
 } from "lucide-react";
 import ReactQuill from "react-quill-new";
 import "react-quill-new/dist/quill.snow.css";
@@ -45,7 +45,7 @@ export default function MateriPage({ user }: MateriPageProps) {
             } else {
               setSlides([data.content]); // Fallback if it's not JSON array
             }
-          } catch (e) {
+          } catch {
             setSlides([data.content]); // Fallback for old content format
           }
         }
@@ -74,13 +74,16 @@ export default function MateriPage({ user }: MateriPageProps) {
     }
   };
 
-  const updateCurrentSlideContent = useCallback((content: string) => {
-    setSlides((prev) => {
-      const newSlides = [...prev];
-      newSlides[currentIndex] = content;
-      return newSlides;
-    });
-  }, [currentIndex]);
+  const updateCurrentSlideContent = useCallback(
+    (content: string) => {
+      setSlides((prev) => {
+        const newSlides = [...prev];
+        newSlides[currentIndex] = content;
+        return newSlides;
+      });
+    },
+    [currentIndex],
+  );
 
   const addSlide = () => {
     const newSlides = [...slides, ""];
@@ -97,7 +100,57 @@ export default function MateriPage({ user }: MateriPageProps) {
     }
   };
 
-  const imageHandler = () => {
+  const compressImage = useCallback(
+    (file: File, maxKB: number): Promise<string> => {
+      return new Promise((resolve, reject) => {
+        const reader = new FileReader();
+        reader.readAsDataURL(file);
+        reader.onload = (e) => {
+          const img = new Image();
+          img.src = e.target?.result as string;
+          img.onload = () => {
+            const canvas = document.createElement("canvas");
+            let width = img.width;
+            let height = img.height;
+
+            if (width > 1200) {
+              height = (1200 / width) * height;
+              width = 1200;
+            }
+
+            canvas.width = width;
+            canvas.height = height;
+            const ctx = canvas.getContext("2d");
+            ctx?.drawImage(img, 0, 0, width, height);
+
+            let quality = 0.8;
+            let dataUrl = canvas.toDataURL("image/jpeg", quality);
+
+            while (dataUrl.length / 1024 > maxKB && quality > 0.1) {
+              quality -= 0.1;
+              dataUrl = canvas.toDataURL("image/jpeg", quality);
+
+              if (quality <= 0.2 && dataUrl.length / 1024 > maxKB) {
+                width *= 0.7;
+                height *= 0.7;
+                canvas.width = width;
+                canvas.height = height;
+                ctx?.drawImage(img, 0, 0, width, height);
+                quality = 0.5;
+              }
+              if (width < 100) break;
+            }
+            resolve(dataUrl);
+          };
+          img.onerror = reject;
+        };
+        reader.onerror = reject;
+      });
+    },
+    [],
+  );
+
+  const imageHandler = useCallback(() => {
     const input = document.createElement("input");
     input.setAttribute("type", "file");
     input.setAttribute("accept", "image/*");
@@ -121,70 +174,26 @@ export default function MateriPage({ user }: MateriPageProps) {
         }
       }
     };
-  };
+  }, [compressImage]);
 
-  const compressImage = (file: File, maxKB: number): Promise<string> => {
-    return new Promise((resolve, reject) => {
-      const reader = new FileReader();
-      reader.readAsDataURL(file);
-      reader.onload = (e) => {
-        const img = new Image();
-        img.src = e.target?.result as string;
-        img.onload = () => {
-          const canvas = document.createElement("canvas");
-          let width = img.width;
-          let height = img.height;
-
-          if (width > 1200) {
-            height = (1200 / width) * height;
-            width = 1200;
-          }
-
-          canvas.width = width;
-          canvas.height = height;
-          const ctx = canvas.getContext("2d");
-          ctx?.drawImage(img, 0, 0, width, height);
-
-          let quality = 0.8;
-          let dataUrl = canvas.toDataURL("image/jpeg", quality);
-
-          while (dataUrl.length / 1024 > maxKB && quality > 0.1) {
-            quality -= 0.1;
-            dataUrl = canvas.toDataURL("image/jpeg", quality);
-
-            if (quality <= 0.2 && dataUrl.length / 1024 > maxKB) {
-              width *= 0.7;
-              height *= 0.7;
-              canvas.width = width;
-              canvas.height = height;
-              ctx?.drawImage(img, 0, 0, width, height);
-              quality = 0.5;
-            }
-            if (width < 100) break;
-          }
-          resolve(dataUrl);
-        };
-        img.onerror = reject;
-      };
-      reader.onerror = reject;
-    });
-  };
-
-  const modules = useMemo(() => ({
-    toolbar: {
-      container: [
-        [{ header: [1, 2, 3, false] }],
-        ["bold", "italic", "underline", "strike"],
-        [{ list: "ordered" }, { list: "bullet" }],
-        [{ color: [] }, { background: [] }],
-        ["image"],
-        ["clean"],
-      ],
-      handlers: {
-        image: imageHandler,
+  const modules = useMemo(
+    () => ({
+      toolbar: {
+        container: [
+          [{ header: [1, 2, 3, false] }],
+          ["bold", "italic", "underline", "strike"],
+          [{ list: "ordered" }, { list: "bullet" }],
+          [{ color: [] }, { background: [] }],
+          ["image"],
+          ["clean"],
+        ],
+        handlers: {
+          image: imageHandler,
+        },
       },
-    },
-  }), []);
+    }),
+    [imageHandler],
+  );
 
   if (loading) {
     return (
@@ -257,14 +266,16 @@ export default function MateriPage({ user }: MateriPageProps) {
       {/* Slide Navigation - Editor Mode */}
       {isEditing && (
         <div className="flex flex-wrap items-center gap-2 mb-4 bg-muted/30 p-3 rounded-xl border border-border/50">
-          <span className="text-sm font-medium mr-2 text-muted-foreground">Slide:</span>
+          <span className="text-sm font-medium mr-2 text-muted-foreground">
+            Slide:
+          </span>
           {slides.map((_, idx) => (
             <div key={idx} className="group relative">
               <button
                 onClick={() => setCurrentIndex(idx)}
                 className={`w-10 h-10 rounded-lg font-bold transition-all ${
-                  currentIndex === idx 
-                    ? "bg-primary text-white shadow-md scale-105" 
+                  currentIndex === idx
+                    ? "bg-primary text-white shadow-md scale-105"
                     : "bg-white border border-border text-muted-foreground hover:border-primary/50"
                 }`}
               >
@@ -272,7 +283,10 @@ export default function MateriPage({ user }: MateriPageProps) {
               </button>
               {slides.length > 1 && (
                 <button
-                  onClick={(e) => { e.stopPropagation(); removeSlide(idx); }}
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    removeSlide(idx);
+                  }}
                   className="absolute -top-2 -right-2 bg-red-500 text-white p-1 rounded-full opacity-0 group-hover:opacity-100 transition-opacity shadow-sm hover:bg-red-600"
                   title="Hapus Slide"
                 >
@@ -320,24 +334,28 @@ export default function MateriPage({ user }: MateriPageProps) {
                 </div>
               )}
             </div>
-            
+
             {/* Slide Navigation - Preview Mode */}
             <div className="bg-muted/30 border-t border-border/50 p-6 flex justify-between items-center">
               <button
-                onClick={() => setCurrentIndex(prev => Math.max(0, prev - 1))}
+                onClick={() => setCurrentIndex((prev) => Math.max(0, prev - 1))}
                 disabled={currentIndex === 0}
                 className="flex items-center gap-2 px-5 py-2.5 rounded-xl border border-border bg-white text-foreground hover:bg-muted transition-all disabled:opacity-30 disabled:cursor-not-allowed font-medium shadow-sm"
               >
                 <ChevronLeft className="h-5 w-5" />
                 Sebelumnya
               </button>
-              
+
               <div className="px-4 py-1.5 rounded-full bg-primary/10 text-primary font-bold text-sm border border-primary/20">
                 Slide {currentIndex + 1} dari {slides.length}
               </div>
-              
+
               <button
-                onClick={() => setCurrentIndex(prev => Math.min(slides.length - 1, prev + 1))}
+                onClick={() =>
+                  setCurrentIndex((prev) =>
+                    Math.min(slides.length - 1, prev + 1),
+                  )
+                }
                 disabled={currentIndex === slides.length - 1}
                 className="flex items-center gap-2 px-5 py-2.5 rounded-xl bg-primary text-white hover:bg-primary/90 transition-all disabled:opacity-30 disabled:cursor-not-allowed font-medium shadow-md"
               >

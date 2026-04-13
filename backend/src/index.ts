@@ -6,6 +6,7 @@ import authRoutes from './routes/auth.routes';
 import datasetsRoutes from './routes/datasets.routes';
 import quizRoutes from './routes/quiz.routes';
 import contentRoutes from './routes/content.routes';
+import investigasiRoutes from './routes/investigasi.routes';
 
 dotenv.config();
 
@@ -24,6 +25,7 @@ app.use('/api/auth', authRoutes);
 app.use('/api/datasets', datasetsRoutes);
 app.use('/api/quizzes', quizRoutes);
 app.use('/api/contents', contentRoutes);
+app.use('/api/investigasi', investigasiRoutes);
 
 app.get('/api/health', (req, res) => {
   res.json({ status: 'ok', message: 'API is running' });
@@ -32,4 +34,3 @@ app.get('/api/health', (req, res) => {
 app.listen(PORT, () => {
   console.log(`Server is running on port ${PORT}`);
 });
-
