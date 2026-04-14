@@ -36,6 +36,8 @@ const upload = multer({
 
 router.get('/', authenticateToken, async (req: AuthRequest, res: Response) => {
   try {
+    const stepId = req.query.stepId ? parseInt(req.query.stepId as string, 10) : 1;
+    
     const allDatasets = await db
       .select({
         id: datasets.id,
@@ -44,6 +46,7 @@ router.get('/', authenticateToken, async (req: AuthRequest, res: Response) => {
         uploadDate: datasets.createdAt,
       })
       .from(datasets)
+      .where(eq(datasets.stepId, isNaN(stepId) ? 1 : stepId))
       .orderBy(datasets.createdAt);
 
     const forwardedProto = req.headers['x-forwarded-proto'];
@@ -85,6 +88,7 @@ router.post(
       const fileData = req.file.buffer.toString('utf-8');
       const sanitized = req.file.originalname.replace(/[^a-zA-Z0-9._-]/g, '_');
       const storedName = `${Date.now()}_${sanitized}`;
+      const stepId = req.body.stepId ? parseInt(req.body.stepId, 10) : 1;
 
       const inserted = await db
         .insert(datasets)
@@ -93,6 +97,7 @@ router.post(
           storedName: storedName,
           fileData: fileData,
           uploadedBy: req.user!.id,
+          stepId: isNaN(stepId) ? 1 : stepId,
         })
         .returning({ id: datasets.id, originalName: datasets.originalName });
 

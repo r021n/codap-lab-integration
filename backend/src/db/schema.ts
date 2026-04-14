@@ -19,6 +19,7 @@ export const datasets = pgTable('datasets', {
   storedName: varchar('stored_name', { length: 255 }).notNull().unique(),
   fileData: text('file_data').notNull(),
   uploadedBy: integer('uploaded_by').references(() => users.id).notNull(),
+  stepId: integer('step_id').notNull().default(1),
   createdAt: timestamp('created_at').defaultNow().notNull(),
 });
 

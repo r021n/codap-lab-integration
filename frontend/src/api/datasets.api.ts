@@ -7,14 +7,17 @@ export type Dataset = {
   uploadDate: string;
 };
 
-export async function getDatasets(): Promise<Dataset[]> {
-  const { data } = await apiClient.get<Dataset[]>("/datasets");
+export async function getDatasets(stepId: number = 1): Promise<Dataset[]> {
+  const { data } = await apiClient.get<Dataset[]>("/datasets", {
+    params: { stepId },
+  });
   return data;
 }
 
-export async function uploadDataset(file: File): Promise<void> {
+export async function uploadDataset(file: File, stepId: number = 1): Promise<void> {
   const formData = new FormData();
   formData.append("file", file);
+  formData.append("stepId", stepId.toString());
   await apiClient.post("/datasets/upload", formData, {
     headers: {
       "Content-Type": "multipart/form-data",

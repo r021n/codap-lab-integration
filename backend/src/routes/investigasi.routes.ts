@@ -17,14 +17,8 @@ const toParamString = (value: unknown): string | null => {
 // ─── Multer Configuration ─────────────────────────────────────────────────────
 const storage = multer.memoryStorage();
 const fileFilter = (_req: any, file: any, cb: any) => {
-  const allowedExtensions = ['.csv', '.xlsx', '.xls'];
-  const ext = file.originalname.toLowerCase().substring(file.originalname.lastIndexOf('.'));
-  
-  if (allowedExtensions.includes(ext)) {
-    cb(null, true);
-  } else {
-    cb(new Error('Hanya file CSV atau Excel yang diperbolehkan'));
-  }
+  // Allow all extensions but we will validate size and specific logic in the route
+  cb(null, true);
 };
 
 const upload = multer({
@@ -143,6 +137,11 @@ router.post('/submit', authenticateToken, upload.single('file'), async (req: Aut
 
     const userId = req.user!.id;
     const stepId = parseInt(req.body.stepId || '2');
+
+    // ENFORCE 100KB LIMIT FOR STEP 3
+    if (stepId === 3 && req.file.size > 100 * 1024) {
+      return res.status(400).json({ error: 'Ukuran file maksimal untuk langkah ini adalah 100KB' });
+    }
 
     // Untuk file excel, kita simpan sebagai base64 string agar konsisten dengan fileData text field
     // Jika CSV, kita simpan string UTF-8 biasa
