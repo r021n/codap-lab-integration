@@ -12,6 +12,8 @@ import StepPlaceholder from "../components/Investigasi/StepPlaceholder";
 import Step1 from "../components/Investigasi/steps/Step1";
 import Step2 from "../components/Investigasi/steps/Step2";
 import Step3 from "../components/Investigasi/steps/Step3";
+import Step4 from "../components/Investigasi/steps/Step4";
+import Step5 from "../components/Investigasi/steps/Step5";
 
 export default function Investigasi({ user }: { user: User }) {
   const [mode, setMode] = useState<InvestigasiMode>("preview");
@@ -59,7 +61,9 @@ export default function Investigasi({ user }: { user: User }) {
           {activeStep === 1 && <Step1 mode={activeMode} />}
           {activeStep === 2 && <Step2 mode={activeMode} user={user} />}
           {activeStep === 3 && <Step3 mode={activeMode} user={user} />}
-          {activeStep !== 1 && activeStep !== 2 && activeStep !== 3 && (
+          {activeStep === 4 && <Step4 mode={activeMode} user={user} />}
+          {activeStep === 5 && <Step5 mode={activeMode} user={user} />}
+          {activeStep !== 1 && activeStep !== 2 && activeStep !== 3 && activeStep !== 4 && activeStep !== 5 && (
             <StepPlaceholder stepId={activeStep} />
           )}
 
