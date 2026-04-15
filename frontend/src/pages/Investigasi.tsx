@@ -1,8 +1,13 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Button } from "../components/ui/button";
 import { showToast, ToastContainer } from "../components/ui/toast";
 import { ArrowRight } from "lucide-react";
 import type { User } from "../api/auth.api";
+import {
+  completeInvestigasiStep,
+  getInvestigasiProgress,
+} from "../api/investigasi.api";
+import { getApiErrorMessage } from "../api/errors";
 
 import StepHeader, {
   type InvestigasiMode,
@@ -19,13 +24,71 @@ export default function Investigasi({ user }: { user: User }) {
   const [mode, setMode] = useState<InvestigasiMode>("preview");
   const [activeStep, setActiveStep] = useState<number | null>(null);
   const [completedSteps, setCompletedSteps] = useState<number[]>([]);
+  const [isProgressLoading, setIsProgressLoading] = useState(
+    user.role !== "admin",
+  );
+  const [completingStepId, setCompletingStepId] = useState<number | null>(null);
 
-  const handleCompleteStep = (stepId: number) => {
-    if (!completedSteps.includes(stepId)) {
-      setCompletedSteps([...completedSteps, stepId]);
+  useEffect(() => {
+    if (user.role === "admin") {
+      setIsProgressLoading(false);
+      return;
     }
-    setActiveStep(null); // Return to list after completion
-    showToast(`Step ${stepId} selesai!`, "success");
+
+    let isMounted = true;
+
+    const loadProgress = async () => {
+      setIsProgressLoading(true);
+      try {
+        const progress = await getInvestigasiProgress();
+        if (isMounted) {
+          setCompletedSteps(progress.completedSteps);
+        }
+      } catch (err) {
+        showToast(
+          getApiErrorMessage(err, "Gagal memuat progress investigasi."),
+          "error",
+        );
+      } finally {
+        if (isMounted) {
+          setIsProgressLoading(false);
+        }
+      }
+    };
+
+    void loadProgress();
+
+    return () => {
+      isMounted = false;
+    };
+  }, [user.id, user.role]);
+
+  const handleCompleteStep = async (stepId: number) => {
+    if (completingStepId !== null) {
+      return;
+    }
+
+    setCompletingStepId(stepId);
+    try {
+      if (user.role === "admin") {
+        setCompletedSteps((prev) =>
+          prev.includes(stepId) ? prev : [...prev, stepId],
+        );
+      } else {
+        const progress = await completeInvestigasiStep(stepId);
+        setCompletedSteps(progress.completedSteps);
+      }
+
+      setActiveStep(null); // Return to list after completion
+      showToast(`Step ${stepId} selesai!`, "success");
+    } catch (err) {
+      showToast(
+        getApiErrorMessage(err, "Gagal menyimpan progress langkah."),
+        "error",
+      );
+    } finally {
+      setCompletingStepId(null);
+    }
   };
 
   const isStepLocked = (stepId: number) => {
@@ -51,11 +114,17 @@ export default function Investigasi({ user }: { user: User }) {
       />
 
       {activeStep === null ? (
-        <StepSelectionList
-          completedSteps={completedSteps}
-          isStepLocked={isStepLocked}
-          onSelectStep={setActiveStep}
-        />
+        isProgressLoading ? (
+          <div className="rounded-2xl border border-border/30 bg-background/60 p-6 text-sm text-muted-foreground">
+            Memuat progress investigasi...
+          </div>
+        ) : (
+          <StepSelectionList
+            completedSteps={completedSteps}
+            isStepLocked={isStepLocked}
+            onSelectStep={setActiveStep}
+          />
+        )
       ) : (
         <div className="space-y-8 animate-in fade-in duration-500">
           {activeStep === 1 && <Step1 mode={activeMode} />}
@@ -63,9 +132,11 @@ export default function Investigasi({ user }: { user: User }) {
           {activeStep === 3 && <Step3 mode={activeMode} user={user} />}
           {activeStep === 4 && <Step4 mode={activeMode} user={user} />}
           {activeStep === 5 && <Step5 mode={activeMode} user={user} />}
-          {activeStep !== 1 && activeStep !== 2 && activeStep !== 3 && activeStep !== 4 && activeStep !== 5 && (
-            <StepPlaceholder stepId={activeStep} />
-          )}
+          {activeStep !== 1 &&
+            activeStep !== 2 &&
+            activeStep !== 3 &&
+            activeStep !== 4 &&
+            activeStep !== 5 && <StepPlaceholder stepId={activeStep} />}
 
           {/* ACTION FOOTER */}
           <div className="pt-8 border-t border-border/10 flex justify-between items-center">
@@ -80,10 +151,15 @@ export default function Investigasi({ user }: { user: User }) {
             {activeStep !== null && !completedSteps.includes(activeStep) && (
               <Button
                 onClick={() => handleCompleteStep(activeStep)}
+                disabled={completingStepId === activeStep}
                 className="bg-emerald-600 hover:bg-emerald-700 text-white px-8 rounded-full shadow-lg shadow-emerald-500/20"
               >
-                Selesaikan Langkah {activeStep}
-                <ArrowRight className="ml-2 w-4 h-4" />
+                {completingStepId === activeStep
+                  ? "Menyimpan Progress..."
+                  : `Selesaikan Langkah ${activeStep}`}
+                {completingStepId !== activeStep && (
+                  <ArrowRight className="ml-2 w-4 h-4" />
+                )}
               </Button>
             )}
           </div>

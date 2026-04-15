@@ -15,6 +15,13 @@
       "when": 1774242813001,
       "tag": "0001_funny_thunderbolt",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1776234481427,
+      "tag": "0002_striped_ultimatum",
+      "breakpoints": true
     }
   ]
 }
