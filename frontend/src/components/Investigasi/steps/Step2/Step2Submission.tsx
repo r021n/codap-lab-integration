@@ -220,7 +220,7 @@ export default function Step2Submission({
                   <tr>
                     <td
                       colSpan={role === "admin" ? 5 : 4}
-                      className="px-6 py-16 text-center text-muted-foreground h-[200px]"
+                      className="px-6 py-16 text-center text-muted-foreground h-50"
                     >
                       <div className="flex flex-col items-center justify-center space-y-3 opacity-40">
                         <FileText className="h-12 w-12" />
@@ -256,7 +256,7 @@ export default function Step2Submission({
                             <FileText className="h-5 w-5 text-blue-500" />
                           )}
                           <span
-                            className="truncate max-w-[200px]"
+                            className="truncate max-w-50"
                             title={sub.originalName}
                           >
                             {sub.originalName}

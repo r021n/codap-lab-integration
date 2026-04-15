@@ -127,7 +127,7 @@ export default function Investigasi({ user }: { user: User }) {
         )
       ) : (
         <div className="space-y-8 animate-in fade-in duration-500">
-          {activeStep === 1 && <Step1 mode={activeMode} />}
+          {activeStep === 1 && <Step1 mode={activeMode} user={user} />}
           {activeStep === 2 && <Step2 mode={activeMode} user={user} />}
           {activeStep === 3 && <Step3 mode={activeMode} user={user} />}
           {activeStep === 4 && <Step4 mode={activeMode} user={user} />}

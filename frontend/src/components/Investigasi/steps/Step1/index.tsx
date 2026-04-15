@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import {
   deleteDataset,
   downloadDataset,
@@ -9,19 +9,29 @@ import {
 import { getApiErrorMessage } from "../../../../api/errors";
 import { showToast } from "../../../ui/toast";
 import ConfirmDialog from "../../../ui/confirm-dialog";
+import {
+  getAllSubmissions,
+  getMySubmissions,
+  downloadSubmission,
+  type Submission,
+} from "../../../../api/investigasi.api";
 import Step1Editor from "./Step1Editor";
 import Step1Preview from "./Step1Preview";
 import Step1Submission from "./Step1Submission";
 import { type InvestigasiMode } from "../../StepHeader";
+import type { User } from "../../../../api/auth.api";
 
 interface Step1Props {
   mode: InvestigasiMode;
+  user: User;
 }
 
-export default function Step1({ mode }: Step1Props) {
+export default function Step1({ mode, user }: Step1Props) {
   const [datasets, setDatasets] = useState<Dataset[]>([]);
   const [file, setFile] = useState<File | null>(null);
   const [isUploading, setIsUploading] = useState(false);
+  const [submissions, setSubmissions] = useState<Submission[]>([]);
+  const [isSubmissionsLoading, setIsSubmissionsLoading] = useState(false);
 
   // State untuk confirm dialog
   const [confirmOpen, setConfirmOpen] = useState(false);
@@ -30,6 +40,27 @@ export default function Step1({ mode }: Step1Props) {
   useEffect(() => {
     fetchDatasets();
   }, []);
+
+  const fetchSubmissions = useCallback(async () => {
+    setIsSubmissionsLoading(true);
+    try {
+      const data =
+        user.role === "admin"
+          ? await getAllSubmissions(1)
+          : await getMySubmissions(1);
+      setSubmissions(data);
+    } catch (err) {
+      console.error("Gagal mengambil submission langkah 1:", err);
+    } finally {
+      setIsSubmissionsLoading(false);
+    }
+  }, [user.role]);
+
+  useEffect(() => {
+    if (mode === "submission") {
+      void fetchSubmissions();
+    }
+  }, [mode, fetchSubmissions]);
 
   const fetchDatasets = async () => {
     try {
@@ -79,6 +110,23 @@ export default function Step1({ mode }: Step1Props) {
       const a = document.createElement("a");
       a.href = downloadUrl;
       a.download = dataset.name;
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
+      window.URL.revokeObjectURL(downloadUrl);
+    } catch (err) {
+      console.error("Download error:", err);
+      showToast(getApiErrorMessage(err, "Gagal mengunduh file."), "error");
+    }
+  };
+
+  const handleSubmissionDownload = async (submission: Submission) => {
+    try {
+      const blob = await downloadSubmission(submission.storedName);
+      const downloadUrl = window.URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = downloadUrl;
+      a.download = submission.originalName;
       document.body.appendChild(a);
       a.click();
       a.remove();
@@ -144,7 +192,15 @@ export default function Step1({ mode }: Step1Props) {
         {mode === "preview" && (
           <Step1Preview datasets={datasets} onDownload={handleDownload} />
         )}
-        {mode === "submission" && <Step1Submission />}
+        {mode === "submission" && (
+          <Step1Submission
+            submissions={submissions}
+            role={user.role}
+            onRefresh={fetchSubmissions}
+            onDownload={handleSubmissionDownload}
+            isLoading={isSubmissionsLoading}
+          />
+        )}
       </div>
     </>
   );

@@ -1,27 +1,307 @@
-import { FileBox, History } from "lucide-react";
-import { Card } from "../../../ui/card";
+import { useState } from "react";
+import {
+  Upload,
+  FileText,
+  Download,
+  CheckCircle2,
+  History,
+  Loader2,
+  FileSpreadsheet,
+} from "lucide-react";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "../../../ui/card";
+import { Button } from "../../../ui/button";
+import { Input } from "../../../ui/input";
+import {
+  type Submission,
+  submitInvestigationFile,
+} from "../../../../api/investigasi.api";
+import { showToast } from "../../../ui/toast";
+import { getApiErrorMessage } from "../../../../api/errors";
 
-export default function Step1Submission() {
+interface Step1SubmissionProps {
+  submissions: Submission[];
+  role: string;
+  onRefresh: () => void;
+  onDownload: (submission: Submission) => void;
+  isLoading: boolean;
+}
+
+const STEP_ID = 1;
+
+export default function Step1Submission({
+  submissions,
+  role,
+  onRefresh,
+  onDownload,
+  isLoading,
+}: Step1SubmissionProps) {
+  const [file, setFile] = useState<File | null>(null);
+  const [isUploading, setIsUploading] = useState(false);
+
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (e.target.files && e.target.files.length > 0) {
+      const selectedFile = e.target.files[0];
+      const validExtensions = [".csv", ".xlsx", ".xls"];
+      const ext = selectedFile.name
+        .toLowerCase()
+        .substring(selectedFile.name.lastIndexOf("."));
+
+      if (!validExtensions.includes(ext)) {
+        showToast("Hanya file CSV atau Excel yang diperbolehkan.", "error");
+        e.target.value = "";
+        return;
+      }
+
+      setFile(selectedFile);
+    }
+  };
+
+  const handleUpload = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!file) return;
+
+    setIsUploading(true);
+    try {
+      await submitInvestigationFile(file, STEP_ID);
+      showToast("Data berhasil dikumpulkan!", "success");
+      setFile(null);
+      onRefresh();
+
+      const fileInput = document.getElementById(
+        "step1-file-upload",
+      ) as HTMLInputElement;
+      if (fileInput) fileInput.value = "";
+    } catch (err) {
+      showToast(getApiErrorMessage(err, "Gagal mengunggah data."), "error");
+    } finally {
+      setIsUploading(false);
+    }
+  };
+
+  const isExcel = (filename: string) => {
+    return (
+      filename.toLowerCase().endsWith(".xlsx") ||
+      filename.toLowerCase().endsWith(".xls")
+    );
+  };
+
   return (
-    <Card className="border-dashed border-2 border-border/40 bg-muted/5 rounded-2xl h-[400px] flex items-center justify-center text-center p-12">
-      <div className="max-w-md space-y-4">
-        <div className="mx-auto w-20 h-20 rounded-full flex items-center justify-center bg-blue-500/10 text-blue-500">
-          <FileBox className="w-10 h-10" />
-        </div>
-        <h2 className="font-serif text-2xl font-bold text-foreground">
-          Ruang Pengumpulan Tugas
-        </h2>
-        <p className="text-muted-foreground">
-          Tab ini akan digunakan untuk melihat riwayat dan hasil pengumpulan
-          tugas dari siswa untuk langkah investigasi ini.
-        </p>
-        <div className="pt-4">
-          <div className="flex items-center justify-center gap-2 text-primary font-medium">
-            <History className="w-4 h-4" />
-            <span>Sedang Dikembangkan</span>
+    <div className="space-y-8">
+      {role !== "admin" && (
+        <Card className="border border-emerald-500/20 bg-emerald-500/5 shadow-sm rounded-3xl overflow-hidden">
+          <CardHeader>
+            <div className="flex items-center justify-between">
+              <div>
+                <CardTitle className="font-serif text-2xl font-bold text-foreground flex items-center gap-3">
+                  <div className="p-2 rounded-xl bg-emerald-500/10 text-emerald-600">
+                    <Upload className="h-6 w-6" />
+                  </div>
+                  Kumpulkan Hasil Langkah 1
+                </CardTitle>
+                <CardDescription className="text-muted-foreground mt-1 ml-11">
+                  Unggah file dataset yang kamu gunakan pada langkah ini. Format
+                  yang diperbolehkan adalah CSV atau Excel.
+                </CardDescription>
+              </div>
+              {submissions.length > 0 && (
+                <div className="flex items-center gap-2 bg-emerald-100 text-emerald-700 px-4 py-2 rounded-full text-sm font-semibold border border-emerald-200 shadow-sm animate-in zoom-in">
+                  <CheckCircle2 className="h-4 w-4" />
+                  Terkumpul ({submissions.length})
+                </div>
+              )}
+            </div>
+          </CardHeader>
+          <CardContent className="pt-2">
+            <form
+              onSubmit={handleUpload}
+              className="flex flex-col sm:flex-row items-end gap-4 p-4 rounded-2xl bg-background/50 border border-border/10"
+            >
+              <div className="flex-1 w-full space-y-2">
+                <label
+                  htmlFor="step1-file-upload"
+                  className="text-xs font-semibold text-muted-foreground uppercase tracking-wider ml-1"
+                >
+                  Pilih File (CSV, XLSX, XLS)
+                </label>
+                <Input
+                  id="step1-file-upload"
+                  type="file"
+                  accept=".csv, .xlsx, .xls"
+                  onChange={handleFileChange}
+                  className="bg-background border-border/20 focus:ring-emerald-500 h-11 rounded-xl cursor-pointer"
+                  required
+                />
+              </div>
+              <Button
+                type="submit"
+                disabled={isUploading || !file}
+                className="h-11 px-8 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-bold shadow-lg shadow-emerald-500/20 transition-all hover:scale-105 active:scale-95 disabled:opacity-50"
+              >
+                {isUploading ? (
+                  <>
+                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                    Mengunggah...
+                  </>
+                ) : (
+                  "Kumpulkan Data"
+                )}
+              </Button>
+            </form>
+          </CardContent>
+        </Card>
+      )}
+
+      <Card className="border border-border/20 bg-background/50 backdrop-blur-sm shadow-xl rounded-3xl overflow-hidden">
+        <CardHeader className="border-b border-border/10 bg-muted/20">
+          <div className="flex items-center justify-between">
+            <div>
+              <CardTitle className="font-serif text-xl font-bold text-foreground flex items-center gap-3">
+                <div
+                  className={`p-2 rounded-xl ${role === "admin" ? "bg-blue-500/10 text-blue-600" : "bg-purple-500/10 text-purple-600"}`}
+                >
+                  <History className="h-5 w-5" />
+                </div>
+                {role === "admin"
+                  ? "Daftar Pengumpulan Langkah 1"
+                  : "Riwayat Pengumpulan Kamu"}
+              </CardTitle>
+              <CardDescription className="text-muted-foreground mt-1 ml-11">
+                {role === "admin"
+                  ? "Pantau dan unduh data yang telah dikirimkan oleh seluruh siswa untuk langkah ini."
+                  : "Daftar data yang telah berhasil kamu kirimkan ke sistem."}
+              </CardDescription>
+            </div>
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={onRefresh}
+              disabled={isLoading}
+              className="rounded-full hover:bg-muted"
+            >
+              <Loader2
+                className={`h-4 w-4 mr-2 ${isLoading ? "animate-spin" : ""}`}
+              />
+              Segarkan
+            </Button>
           </div>
-        </div>
-      </div>
-    </Card>
+        </CardHeader>
+        <CardContent className="p-0">
+          <div className="overflow-x-auto">
+            <table className="w-full text-sm text-left">
+              <thead className="bg-muted/50 border-b border-border/10">
+                <tr>
+                  {role === "admin" && (
+                    <th className="px-6 py-4 font-bold text-foreground uppercase tracking-tight">
+                      Siswa
+                    </th>
+                  )}
+                  <th className="px-6 py-4 font-bold text-foreground uppercase tracking-tight">
+                    Nama File
+                  </th>
+                  <th className="px-6 py-4 font-bold text-foreground uppercase tracking-tight">
+                    Format
+                  </th>
+                  <th className="px-6 py-4 font-bold text-foreground uppercase tracking-tight">
+                    Tanggal
+                  </th>
+                  <th className="px-6 py-4 font-bold text-foreground uppercase tracking-tight text-right">
+                    Aksi
+                  </th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-border/5">
+                {submissions.length === 0 ? (
+                  <tr>
+                    <td
+                      colSpan={role === "admin" ? 5 : 4}
+                      className="px-6 py-16 text-center text-muted-foreground h-[200px]"
+                    >
+                      <div className="flex flex-col items-center justify-center space-y-3 opacity-40">
+                        <FileText className="h-12 w-12" />
+                        <p className="font-medium">
+                          Belum ada data yang dikumpulkan.
+                        </p>
+                      </div>
+                    </td>
+                  </tr>
+                ) : (
+                  submissions.map((sub) => (
+                    <tr
+                      key={sub.id}
+                      className="hover:bg-muted/30 transition-colors group"
+                    >
+                      {role === "admin" && (
+                        <td className="px-6 py-4">
+                          <div className="flex flex-col">
+                            <span className="font-bold text-foreground">
+                              {sub.userName}
+                            </span>
+                            <span className="text-[10px] text-muted-foreground">
+                              {sub.userEmail}
+                            </span>
+                          </div>
+                        </td>
+                      )}
+                      <td className="px-6 py-4 font-medium text-foreground">
+                        <div className="flex items-center gap-3">
+                          {isExcel(sub.originalName) ? (
+                            <FileSpreadsheet className="h-5 w-5 text-emerald-500" />
+                          ) : (
+                            <FileText className="h-5 w-5 text-blue-500" />
+                          )}
+                          <span
+                            className="truncate max-w-[200px]"
+                            title={sub.originalName}
+                          >
+                            {sub.originalName}
+                          </span>
+                        </div>
+                      </td>
+                      <td className="px-6 py-4">
+                        <span
+                          className={`px-2 py-1 rounded-md text-[10px] font-bold uppercase ${
+                            isExcel(sub.originalName)
+                              ? "bg-emerald-100 text-emerald-700"
+                              : "bg-blue-100 text-blue-700"
+                          }`}
+                        >
+                          {sub.originalName.split(".").pop()}
+                        </span>
+                      </td>
+                      <td className="px-6 py-4 text-muted-foreground">
+                        {new Date(sub.createdAt).toLocaleDateString("id-ID", {
+                          day: "numeric",
+                          month: "short",
+                          year: "numeric",
+                          hour: "2-digit",
+                          minute: "2-digit",
+                        })}
+                      </td>
+                      <td className="px-6 py-4 text-right">
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          onClick={() => onDownload(sub)}
+                          className="rounded-xl border-border/20 hover:bg-primary hover:text-white transition-all group-hover:shadow-md"
+                        >
+                          <Download className="h-4 w-4 mr-2" />
+                          Unduh
+                        </Button>
+                      </td>
+                    </tr>
+                  ))
+                )}
+              </tbody>
+            </table>
+          </div>
+        </CardContent>
+      </Card>
+    </div>
   );
 }
