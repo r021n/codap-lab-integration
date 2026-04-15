@@ -6,14 +6,16 @@ import {
   type PointerEvent as ReactPointerEvent,
 } from "react";
 
-type PortId = "B" | "C";
+type PortId = "B" | "C" | "D" | "J";
 
 type InventoryItem =
   | "thermoA"
   | "thermoB"
+  | "thermoD"
   | "stopperA"
   | "stopperB"
   | "stopperC"
+  | "stopperD"
   | "plant"
   | "bakingSoda"
   | "vinegar"
@@ -21,7 +23,14 @@ type InventoryItem =
   | "sun"
   | "stopwatch";
 
-type DropZone = "flaskA" | "flaskB" | "flaskC" | "scale" | "environment";
+type DropZone =
+  | "flaskA"
+  | "flaskB"
+  | "flaskC"
+  | "flaskD"
+  | "jar"
+  | "scale"
+  | "environment";
 
 type PortCoords = Record<PortId, { x: number; y: number }>;
 
@@ -29,6 +38,7 @@ type LabLog = {
   time: number;
   tempA: string;
   tempB: string;
+  tempD: string;
 };
 
 type LabState = {
@@ -40,13 +50,16 @@ type LabState = {
   };
   flaskB: { hasThermo: boolean; hasStopper: boolean; temp: number };
   flaskC: { hasSoda: boolean; hasVinegar: boolean; hasStopper: boolean };
+  flaskD: { hasThermo: boolean; hasStopper: boolean; temp: number };
+  jar: { hasPlant: boolean; hasWrap: boolean };
   scale: { hasCylinder: boolean; sodaAmount: number };
   inventory: Record<InventoryItem, boolean>;
   isSunny: boolean;
   isRunning: boolean;
   time: number;
   logs: LabLog[];
-  hoseConnected: boolean;
+  hoseBCConnected: boolean;
+  hoseDJConnected: boolean;
   duration: number;
 };
 
@@ -82,19 +95,28 @@ type TimbanganProps = {
   value: number;
 };
 
+type ToplesProps = {
+  hasPlant: boolean;
+  hasWrap: boolean;
+};
+
 const DEFAULT_DURATION = 5;
 
 const initialState: LabState = {
   flaskA: { hasThermo: false, hasStopper: false, hasPlant: false, temp: 28 },
   flaskB: { hasThermo: false, hasStopper: false, temp: 28 },
   flaskC: { hasSoda: false, hasVinegar: false, hasStopper: false },
+  flaskD: { hasThermo: false, hasStopper: false, temp: 28 },
+  jar: { hasPlant: false, hasWrap: false },
   scale: { hasCylinder: false, sodaAmount: 0 },
   inventory: {
     thermoA: true,
     thermoB: true,
+    thermoD: true,
     stopperA: true,
     stopperB: true,
     stopperC: true,
+    stopperD: true,
     plant: true,
     bakingSoda: true,
     vinegar: true,
@@ -106,7 +128,8 @@ const initialState: LabState = {
   isRunning: false,
   time: 0,
   logs: [],
-  hoseConnected: false,
+  hoseBCConnected: false,
+  hoseDJConnected: false,
   duration: DEFAULT_DURATION,
 };
 
@@ -127,6 +150,30 @@ const initialHoseDrawing: HoseDrawing = {
 const initialPortCoords: PortCoords = {
   B: { x: 0, y: 0 },
   C: { x: 0, y: 0 },
+  D: { x: 0, y: 0 },
+  J: { x: 0, y: 0 },
+};
+
+const isPortId = (value: string | null | undefined): value is PortId => {
+  return value === "B" || value === "C" || value === "D" || value === "J";
+};
+
+const getHosePair = (a: PortId, b: PortId): "BC" | "DJ" | null => {
+  if ((a === "B" && b === "C") || (a === "C" && b === "B")) {
+    return "BC";
+  }
+  if ((a === "D" && b === "J") || (a === "J" && b === "D")) {
+    return "DJ";
+  }
+  return null;
+};
+
+const isPairConnected = (labState: LabState, pair: "BC" | "DJ"): boolean => {
+  return pair === "BC" ? labState.hoseBCConnected : labState.hoseDJConnected;
+};
+
+const hasMeasuredPortCoords = (coords: PortCoords, port: PortId): boolean => {
+  return coords[port].x !== 0 || coords[port].y !== 0;
 };
 
 const getClientPoint = (
@@ -407,6 +454,57 @@ const TimbanganSVG = ({ value }: TimbanganProps) => (
   </svg>
 );
 
+const ToplesSVG = ({ hasPlant, hasWrap }: ToplesProps) => (
+  <svg viewBox="0 0 120 160" className="w-full h-full drop-shadow-md">
+    <rect
+      x="25"
+      y="35"
+      width="70"
+      height="105"
+      rx="10"
+      fill="rgba(255,255,255,0.4)"
+      stroke="#475569"
+      strokeWidth="2.5"
+    />
+    <rect
+      x="35"
+      y="26"
+      width="50"
+      height="10"
+      rx="3"
+      fill="#94a3b8"
+      stroke="#64748b"
+      strokeWidth="1.5"
+    />
+    {hasWrap && (
+      <path
+        d="M 32 28 Q 60 18 88 28"
+        fill="none"
+        stroke="#e2e8f0"
+        strokeWidth="4"
+        strokeLinecap="round"
+      />
+    )}
+    {hasPlant && (
+      <g transform="translate(60, 130)">
+        <path d="M 0 0 Q -12 -25 -6 -45 Q 6 -20 0 0" fill="#22c55e" />
+        <path d="M 0 0 Q 14 -16 22 -34 Q 8 -12 0 0" fill="#16a34a" />
+        <path d="M 0 0 Q -18 -12 -24 -28 Q -8 -8 0 0" fill="#15803d" />
+      </g>
+    )}
+    <text
+      x="60"
+      y="152"
+      textAnchor="middle"
+      fontSize="10"
+      fill="#334155"
+      fontWeight="600"
+    >
+      Toples
+    </text>
+  </svg>
+);
+
 // --- Komponen Utama Aplikasi ---
 
 export default function App() {
@@ -422,13 +520,24 @@ export default function App() {
   const workspaceRef = useRef<HTMLDivElement | null>(null);
   const portBRef = useRef<HTMLDivElement | null>(null);
   const portCRef = useRef<HTMLDivElement | null>(null);
+  const portDRef = useRef<HTMLDivElement | null>(null);
+  const portJRef = useRef<HTMLDivElement | null>(null);
   const [portCoords, setPortCoords] = useState<PortCoords>(initialPortCoords);
 
   const updatePortCoords = useCallback(() => {
-    if (!workspaceRef.current || !portBRef.current || !portCRef.current) return;
+    if (
+      !workspaceRef.current ||
+      !portBRef.current ||
+      !portCRef.current ||
+      !portDRef.current ||
+      !portJRef.current
+    )
+      return;
     const workspaceRect = workspaceRef.current.getBoundingClientRect();
     const rectB = portBRef.current.getBoundingClientRect();
     const rectC = portCRef.current.getBoundingClientRect();
+    const rectD = portDRef.current.getBoundingClientRect();
+    const rectJ = portJRef.current.getBoundingClientRect();
 
     setPortCoords({
       B: {
@@ -439,8 +548,46 @@ export default function App() {
         x: rectC.left - workspaceRect.left + rectC.width / 2,
         y: rectC.top - workspaceRect.top + rectC.height / 2,
       },
+      D: {
+        x: rectD.left - workspaceRect.left + rectD.width / 2,
+        y: rectD.top - workspaceRect.top + rectD.height / 2,
+      },
+      J: {
+        x: rectJ.left - workspaceRect.left + rectJ.width / 2,
+        y: rectJ.top - workspaceRect.top + rectJ.height / 2,
+      },
     });
   }, []);
+
+  const isPortLocked = useCallback((port: PortId, labState: LabState) => {
+    const pair = port === "B" || port === "C" ? "BC" : "DJ";
+    return isPairConnected(labState, pair);
+  }, []);
+
+  const tryConnectPorts = useCallback(
+    (startPort: PortId, targetPort: PortId) => {
+      const pair = getHosePair(startPort, targetPort);
+      if (!pair) {
+        return false;
+      }
+
+      setState((prev) => {
+        if (isPairConnected(prev, pair)) {
+          return prev;
+        }
+
+        if (pair === "BC") {
+          return { ...prev, hoseBCConnected: true };
+        }
+
+        return { ...prev, hoseDJConnected: true };
+      });
+      setHoseDrawing(initialHoseDrawing);
+      setTimeout(updatePortCoords, 50);
+      return true;
+    },
+    [updatePortCoords],
+  );
 
   useEffect(() => {
     window.addEventListener("resize", updatePortCoords);
@@ -455,7 +602,11 @@ export default function App() {
         setState((prev) => {
           const newTime = prev.time + 1;
           const newTempA = prev.flaskA.temp + 1.0;
-          const newTempB = prev.flaskB.temp + (prev.hoseConnected ? 2.5 : 1.0);
+          const newTempB =
+            prev.flaskB.temp + (prev.hoseBCConnected ? 2.5 : 1.0);
+          // Tabung D dibuat sebagai profil suhu terendah (efek pendinginan oleh tanaman/toples).
+          const newTempD =
+            prev.flaskD.temp + (prev.hoseDJConnected ? 0.3 : 0.5);
 
           const newLogs = [
             ...prev.logs,
@@ -463,6 +614,7 @@ export default function App() {
               time: newTime,
               tempA: newTempA.toFixed(1),
               tempB: newTempB.toFixed(1),
+              tempD: newTempD.toFixed(1),
             },
           ];
           return {
@@ -470,6 +622,7 @@ export default function App() {
             time: newTime,
             flaskA: { ...prev.flaskA, temp: newTempA },
             flaskB: { ...prev.flaskB, temp: newTempB },
+            flaskD: { ...prev.flaskD, temp: newTempD },
             logs: newLogs,
             isRunning: newTime < prev.duration,
           };
@@ -477,7 +630,13 @@ export default function App() {
       }, 2000);
     }
     return () => clearInterval(interval);
-  }, [state.isRunning, state.time, state.hoseConnected, state.duration]);
+  }, [
+    state.isRunning,
+    state.time,
+    state.hoseBCConnected,
+    state.hoseDJConnected,
+    state.duration,
+  ]);
 
   const isSetupComplete = useCallback((s: LabState) => {
     return (
@@ -485,10 +644,15 @@ export default function App() {
       s.flaskA.hasStopper &&
       s.flaskB.hasThermo &&
       s.flaskB.hasStopper &&
-      s.hoseConnected &&
+      s.flaskD.hasThermo &&
+      s.flaskD.hasStopper &&
       s.flaskC.hasSoda &&
       s.flaskC.hasVinegar &&
-      s.flaskC.hasStopper
+      s.flaskC.hasStopper &&
+      s.jar.hasPlant &&
+      s.jar.hasWrap &&
+      s.hoseBCConnected &&
+      s.hoseDJConnected
     );
   }, []);
 
@@ -524,6 +688,8 @@ export default function App() {
           flaskA: { ...prev.flaskA },
           flaskB: { ...prev.flaskB },
           flaskC: { ...prev.flaskC },
+          flaskD: { ...prev.flaskD },
+          jar: { ...prev.jar },
           scale: { ...prev.scale },
           inventory: { ...prev.inventory },
           logs: [...prev.logs],
@@ -538,10 +704,6 @@ export default function App() {
           if (item === "stopperA" && !newState.flaskA.hasStopper) {
             newState.flaskA.hasStopper = true;
             inv.stopperA = false;
-          }
-          if (item === "plant" && !newState.flaskA.hasPlant) {
-            newState.flaskA.hasPlant = true;
-            inv.plant = false;
           }
         }
 
@@ -580,6 +742,25 @@ export default function App() {
           if (item === "stopperC" && !newState.flaskC.hasStopper) {
             newState.flaskC.hasStopper = true;
             inv.stopperC = false;
+          }
+        }
+
+        if (zone === "flaskD") {
+          if (item === "thermoD" && !newState.flaskD.hasThermo) {
+            newState.flaskD.hasThermo = true;
+            inv.thermoD = false;
+          }
+          if (item === "stopperD" && !newState.flaskD.hasStopper) {
+            newState.flaskD.hasStopper = true;
+            inv.stopperD = false;
+          }
+        }
+
+        if (zone === "jar") {
+          if (item === "plant" && !newState.jar.hasPlant) {
+            newState.jar.hasPlant = true;
+            newState.jar.hasWrap = true;
+            inv.plant = false;
           }
         }
 
@@ -688,18 +869,22 @@ export default function App() {
 
         const element = document.elementFromPoint(clientX, clientY);
         const portEl = element?.closest("[data-port]");
-        const targetPort = portEl?.getAttribute("data-port");
+        const targetPortValue = portEl?.getAttribute("data-port");
 
         if (hoseOverlay) hoseOverlay.style.visibility = "visible";
 
-        // Jika drag tepat ke port lain -> Hubungkan!
-        if (targetPort && targetPort !== hoseDrawing.startPort) {
-          setState((prev) => ({ ...prev, hoseConnected: true }));
-          setHoseDrawing(initialHoseDrawing);
-          setTimeout(updatePortCoords, 50);
+        // Hanya pasangan port B<->C dan D<->J yang valid.
+        if (
+          hoseDrawing.startPort &&
+          isPortId(targetPortValue) &&
+          targetPortValue !== hoseDrawing.startPort
+        ) {
+          if (!tryConnectPorts(hoseDrawing.startPort, targetPortValue)) {
+            setHoseDrawing(initialHoseDrawing);
+          }
         }
         // Jika lepas jari di ruang kosong tapi cukup jauh dari awal (Batal Dragging)
-        else if (!targetPort) {
+        else if (!targetPortValue) {
           const startX = hoseDrawing.startPort
             ? portCoords[hoseDrawing.startPort].x
             : 0;
@@ -742,7 +927,7 @@ export default function App() {
     hoseDrawing.startPort,
     hoseDrawing.currentX,
     hoseDrawing.currentY,
-    updatePortCoords,
+    tryConnectPorts,
     portCoords,
     processAction,
   ]);
@@ -753,14 +938,18 @@ export default function App() {
   ) => {
     e.preventDefault();
     e.stopPropagation();
-    if (state.hoseConnected) return;
+
+    // Pastikan koordinat port terbaru tersedia saat mode drag selang dimulai.
+    updatePortCoords();
+
+    if (isPortLocked(portId, state)) return;
 
     // Perbaikan Bug Selang: Mode Klik-ke-Klik (Jika selang sudah mulai ditarik dan kita klik port lain)
     if (hoseDrawing.isDrawing && hoseDrawing.startPort) {
       if (hoseDrawing.startPort !== portId) {
-        setState((prev) => ({ ...prev, hoseConnected: true }));
-        setHoseDrawing(initialHoseDrawing);
-        setTimeout(updatePortCoords, 50);
+        if (!tryConnectPorts(hoseDrawing.startPort, portId)) {
+          setHoseDrawing(initialHoseDrawing);
+        }
       } else {
         // Klik port yang sama = batal
         setHoseDrawing(initialHoseDrawing);
@@ -788,30 +977,34 @@ export default function App() {
 
   const getInstruction = () => {
     if (!state.flaskA.hasThermo || !state.flaskA.hasStopper)
-      return "1. Tarik Termometer A dan Gabus A ke Tabung A. (Opsional: Masukkan Tanaman)";
+      return "1. Siapkan Tabung A: tarik Termometer A dan Gabus A ke Tabung A.";
     if (!state.flaskB.hasThermo || !state.flaskB.hasStopper)
-      return "2. Tarik Termometer B dan Gabus B ke Tabung B.";
+      return "2. Siapkan Tabung B: tarik Termometer B dan Gabus B ke Tabung B.";
 
     if (!state.flaskC.hasSoda) {
       if (!state.scale.hasCylinder)
         return "3. Tarik Gelas Ukur ke atas Timbangan.";
       if (state.scale.sodaAmount === 0)
-        return "4. Tarik Baking Soda ke Timbangan atau Gelas Ukur untuk menimbang 10g.";
+        return "4. Tarik Baking Soda ke Timbangan atau Gelas Ukur untuk menimbang 10 ml.";
       return "5. Tarik Gelas Ukur (yang berisi soda) ke Tabung C untuk menuangkannya.";
     }
 
-    if (!state.flaskC.hasVinegar)
-      return "6. Tarik Asam Cuka ke Tabung C untuk bereaksi.";
+    if (!state.flaskC.hasVinegar) return "6. Tarik Asam Cuka ke Tabung C.";
     if (!state.flaskC.hasStopper) return "7. Tutup Tabung C dengan Gabus C.";
-    if (!state.hoseConnected)
-      return "8. Hubungkan selang: Tekan titik Tabung B, lalu tekan titik Tabung C.";
+    if (!state.hoseBCConnected)
+      return "8. Hubungkan selang 1: tekan titik Tabung B, lalu tekan titik Tabung C.";
+    if (!state.flaskD.hasThermo || !state.flaskD.hasStopper)
+      return "9. Siapkan Tabung D: tarik Termometer D dan Gabus D ke Tabung D.";
+    if (!state.jar.hasPlant) return "10. Tarik Tanaman ke Toples.";
+    if (!state.hoseDJConnected)
+      return "11. Hubungkan selang 2: tekan titik Tabung D, lalu tekan titik Toples.";
     if (!state.isSunny)
-      return "9. Tarik Matahari ke area kosong untuk memindahkan set alat ke luar ruangan.";
+      return "12. Tarik Matahari ke area kosong untuk memindahkan set alat ke luar ruangan.";
     if (!state.isRunning && state.time === 0)
-      return "10. Tarik Stopwatch ke area kerja untuk mulai mengamati suhu!";
+      return "13. Tarik Stopwatch ke area kerja untuk mulai mengamati suhu A dan B!";
     if (state.time < state.duration)
       return "Mengamati... (Perhatikan suhu di Tabung B naik lebih cepat karena CO2 dari Tabung C)";
-    return "Praktikum Selesai! Gas CO2 (Efek Rumah Kaca) memerangkap panas lebih banyak.";
+    return "Praktikum selesai! LKPD menampilkan perbandingan suhu Tabung A dan B tiap menit.";
   };
 
   const renderInvItem = (
@@ -865,17 +1058,21 @@ export default function App() {
               renderInvItem("thermoA", "🌡️", "Thermo A")}
             {state.inventory.thermoB &&
               renderInvItem("thermoB", "🌡️", "Thermo B")}
+            {state.inventory.thermoD &&
+              renderInvItem("thermoD", "🌡️", "Thermo D")}
             {state.inventory.stopperA &&
               renderInvItem("stopperA", "🟫", "Gabus A")}
             {state.inventory.stopperB &&
               renderInvItem("stopperB", "🟫", "Gabus B")}
             {state.inventory.stopperC &&
               renderInvItem("stopperC", "🟫", "Gabus C")}
+            {state.inventory.stopperD &&
+              renderInvItem("stopperD", "🟫", "Gabus D")}
             {state.inventory.plant && renderInvItem("plant", "🌱", "Tanaman")}
             {state.inventory.cylinder &&
               renderInvItem("cylinder", "🧪", "Gelas Ukur")}
             {state.inventory.bakingSoda &&
-              renderInvItem("bakingSoda", "🧂", "Soda (10g)")}
+              renderInvItem("bakingSoda", "🧂", "Soda (10 ml)")}
             {state.inventory.vinegar && renderInvItem("vinegar", "🧴", "Cuka")}
             {state.inventory.sun &&
               isSetupComplete(state) &&
@@ -927,19 +1124,33 @@ export default function App() {
             id="hose-overlay"
             className="absolute inset-0 w-full h-full pointer-events-none z-30"
           >
-            {state.hoseConnected && portCoords.B.x !== 0 && (
-              <path
-                d={`M ${portCoords.B.x} ${portCoords.B.y} Q ${(portCoords.B.x + portCoords.C.x) / 2} ${Math.min(portCoords.B.y, portCoords.C.y) - 80} ${portCoords.C.x} ${portCoords.C.y}`}
-                fill="none"
-                stroke="#22c55e"
-                strokeWidth="8"
-                strokeLinecap="round"
-                style={{ filter: "drop-shadow(0 3px 2px rgba(0,0,0,0.3))" }}
-              />
-            )}
+            {state.hoseBCConnected &&
+              hasMeasuredPortCoords(portCoords, "B") &&
+              hasMeasuredPortCoords(portCoords, "C") && (
+                <path
+                  d={`M ${portCoords.B.x} ${portCoords.B.y} Q ${(portCoords.B.x + portCoords.C.x) / 2} ${Math.min(portCoords.B.y, portCoords.C.y) - 80} ${portCoords.C.x} ${portCoords.C.y}`}
+                  fill="none"
+                  stroke="#22c55e"
+                  strokeWidth="8"
+                  strokeLinecap="round"
+                  style={{ filter: "drop-shadow(0 3px 2px rgba(0,0,0,0.3))" }}
+                />
+              )}
+            {state.hoseDJConnected &&
+              hasMeasuredPortCoords(portCoords, "D") &&
+              hasMeasuredPortCoords(portCoords, "J") && (
+                <path
+                  d={`M ${portCoords.D.x} ${portCoords.D.y} Q ${(portCoords.D.x + portCoords.J.x) / 2} ${Math.min(portCoords.D.y, portCoords.J.y) - 70} ${portCoords.J.x} ${portCoords.J.y}`}
+                  fill="none"
+                  stroke="#0ea5e9"
+                  strokeWidth="8"
+                  strokeLinecap="round"
+                  style={{ filter: "drop-shadow(0 3px 2px rgba(0,0,0,0.25))" }}
+                />
+              )}
             {hoseDrawing.isDrawing &&
               hoseDrawing.startPort &&
-              portCoords[hoseDrawing.startPort].x !== 0 && (
+              hasMeasuredPortCoords(portCoords, hoseDrawing.startPort) && (
                 <path
                   d={`M ${portCoords[hoseDrawing.startPort].x} ${portCoords[hoseDrawing.startPort].y} Q ${(portCoords[hoseDrawing.startPort].x + hoseDrawing.currentX) / 2} ${Math.min(portCoords[hoseDrawing.startPort].y, hoseDrawing.currentY) - 50} ${hoseDrawing.currentX} ${hoseDrawing.currentY}`}
                   fill="none"
@@ -989,12 +1200,12 @@ export default function App() {
               />
 
               {/* Port Selang B */}
-                <div
+              <div
                 ref={portBRef}
                 data-port="B"
                 onPointerDown={(e) => handlePortPointerDown(e, "B")}
                 className={`absolute top-[12%] left-1/2 w-8 h-8 rounded-full border-[3px] transform -translate-x-1/2 -translate-y-1/2 touch-none z-40 cursor-pointer shadow-sm
-                  ${state.hoseConnected ? "bg-primary border-foreground" : "bg-background border-foreground hover:bg-primary/30 hover:scale-125 animate-pulse"}`}
+                  ${state.hoseBCConnected ? "bg-primary border-foreground" : "bg-background border-foreground hover:bg-primary/30 hover:scale-125 animate-pulse"}`}
               ></div>
             </div>
 
@@ -1012,13 +1223,65 @@ export default function App() {
               />
 
               {/* Port Selang C */}
-                <div
+              <div
                 ref={portCRef}
                 data-port="C"
                 onPointerDown={(e) => handlePortPointerDown(e, "C")}
                 className={`absolute top-[12%] left-1/2 w-8 h-8 rounded-full border-[3px] transform -translate-x-1/2 -translate-y-1/2 touch-none z-40 cursor-pointer shadow-sm
-                  ${state.hoseConnected ? "bg-primary border-foreground" : "bg-background border-foreground hover:bg-primary/30 hover:scale-125 animate-pulse"}`}
+                  ${state.hoseBCConnected ? "bg-primary border-foreground" : "bg-background border-foreground hover:bg-primary/30 hover:scale-125 animate-pulse"}`}
               ></div>
+            </div>
+
+            {/* Tabung D */}
+            <div
+              className={`w-16 sm:w-24 md:w-32 flex flex-col items-center relative transition-transform ${activeDropZone === "flaskD" ? "scale-110 drop-shadow-[0_0_10px_rgba(59,130,246,0.8)]" : ""}`}
+              data-dropzone="flaskD"
+            >
+              {state.flaskD.hasThermo && (
+                <div className="absolute -top-6 bg-slate-900/90 text-white px-2 py-0.5 rounded text-[10px] md:text-xs font-mono border border-slate-700 whitespace-nowrap">
+                  {state.flaskD.temp.toFixed(1)}°C
+                </div>
+              )}
+              <ErlenmeyerSVG
+                label="D"
+                hasThermo={state.flaskD.hasThermo}
+                hasStopper={state.flaskD.hasStopper}
+              />
+
+              {/* Port Selang D */}
+              <div
+                ref={portDRef}
+                data-port="D"
+                onPointerDown={(e) => handlePortPointerDown(e, "D")}
+                className={`absolute top-[12%] left-1/2 w-8 h-8 rounded-full border-[3px] transform -translate-x-1/2 -translate-y-1/2 touch-none z-40 cursor-pointer shadow-sm
+                  ${state.hoseDJConnected ? "bg-primary border-foreground" : "bg-background border-foreground hover:bg-primary/30 hover:scale-125 animate-pulse"}`}
+              ></div>
+            </div>
+
+            {/* Toples Tanaman */}
+            <div
+              className={`w-20 sm:w-28 md:w-36 flex flex-col items-center relative transition-transform ${activeDropZone === "jar" ? "scale-105 drop-shadow-[0_0_10px_rgba(59,130,246,0.8)]" : ""}`}
+              data-dropzone="jar"
+            >
+              <ToplesSVG
+                hasPlant={state.jar.hasPlant}
+                hasWrap={state.jar.hasWrap}
+              />
+
+              {/* Port Selang Toples */}
+              <div
+                ref={portJRef}
+                data-port="J"
+                onPointerDown={(e) => handlePortPointerDown(e, "J")}
+                className={`absolute top-[24%] right-[16%] w-8 h-8 rounded-full border-[3px] touch-none z-40 cursor-pointer shadow-sm
+                  ${state.hoseDJConnected ? "bg-primary border-foreground" : "bg-background border-foreground hover:bg-primary/30 hover:scale-125 animate-pulse"}`}
+              ></div>
+
+              <p className="text-[10px] md:text-xs text-muted-foreground font-semibold mt-1 text-center">
+                {state.jar.hasPlant
+                  ? "Tanaman siap, wrap terpasang"
+                  : "Drop Tanaman ke Toples"}
+              </p>
             </div>
 
             {/* Area Timbangan & Gelas Ukur */}
@@ -1093,10 +1356,13 @@ export default function App() {
                 <tr>
                   <th className="p-1.5 md:p-2 pl-4 font-semibold">Menit ke-</th>
                   <th className="p-1.5 md:p-2 font-semibold">
-                    Tabung A (Tanaman)
+                    Tabung A (Kontrol)
                   </th>
                   <th className="p-1.5 md:p-2 font-semibold">
                     Tabung B (+CO2)
+                  </th>
+                  <th className="p-1.5 md:p-2 font-semibold">
+                    Tabung D (Toples)
                   </th>
                 </tr>
               </thead>
@@ -1104,7 +1370,7 @@ export default function App() {
                 {state.logs.length === 0 ? (
                   <tr>
                     <td
-                      colSpan={3}
+                      colSpan={4}
                       className="p-3 text-center text-muted-foreground italic"
                     >
                       Mulai stopwatch untuk mencatat data.
@@ -1127,6 +1393,9 @@ export default function App() {
                         {parseFloat(log.tempB) > parseFloat(log.tempA)
                           ? "🔥"
                           : ""}
+                      </td>
+                      <td className="p-1.5 md:p-2 text-muted-foreground font-sans">
+                        {log.tempD} °C
                       </td>
                     </tr>
                   ))
@@ -1161,12 +1430,15 @@ export default function App() {
         >
           <div className="bg-background p-3 rounded-xl border-2 border-primary shadow-[0_0_15px_rgba(16,185,129,0.3)]">
             <span className="text-4xl">
-              {dragInfo.item === "thermoA" || dragInfo.item === "thermoB"
+              {dragInfo.item === "thermoA" ||
+              dragInfo.item === "thermoB" ||
+              dragInfo.item === "thermoD"
                 ? "🌡️"
                 : ""}
               {dragInfo.item === "stopperA" ||
               dragInfo.item === "stopperB" ||
-              dragInfo.item === "stopperC"
+              dragInfo.item === "stopperC" ||
+              dragInfo.item === "stopperD"
                 ? "🟫"
                 : ""}
               {dragInfo.item === "plant" ? "🌱" : ""}
