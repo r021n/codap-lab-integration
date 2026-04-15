@@ -63,6 +63,9 @@ export default function Dashboard() {
   const isPendahuluan = location.pathname.startsWith("/dashboard/pendahuluan");
   const isPetunjuk = location.pathname.startsWith("/dashboard/petunjuk");
   const isMateri = location.pathname.startsWith("/dashboard/materi");
+  const investigasiContainerClass = isInvestigasi
+    ? "block p-4 md:p-8"
+    : "invisible h-0 overflow-hidden p-0 pointer-events-none";
 
   return (
     <div className="flex bg-background min-h-screen font-sans text-foreground">
@@ -74,7 +77,7 @@ export default function Dashboard() {
         <div className={isProfile ? "block p-4 md:p-8" : "hidden"}>
           <Profile user={user} setUser={handleUserUpdate} />
         </div>
-        <div className={isInvestigasi ? "block p-4 md:p-8" : "hidden"}>
+        <div className={investigasiContainerClass} aria-hidden={!isInvestigasi}>
           <Investigasi user={user} />
         </div>
         <div className={isVirtualLab ? "block w-full h-full" : "hidden"}>

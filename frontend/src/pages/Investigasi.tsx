@@ -20,14 +20,80 @@ import Step3 from "../components/Investigasi/steps/Step3";
 import Step4 from "../components/Investigasi/steps/Step4";
 import Step5 from "../components/Investigasi/steps/Step5";
 
+const INVESTIGASI_UI_STATE_KEY_PREFIX = "investigasi-ui-state";
+const MIN_STEP_ID = 1;
+const MAX_STEP_ID = 5;
+
+type StoredInvestigasiUiState = {
+  mode?: InvestigasiMode;
+  activeStep?: number | null;
+};
+
+const isValidStep = (value: unknown): value is number =>
+  typeof value === "number" &&
+  Number.isInteger(value) &&
+  value >= MIN_STEP_ID &&
+  value <= MAX_STEP_ID;
+
+const readStoredUiState = (userId: number): StoredInvestigasiUiState | null => {
+  try {
+    const raw = sessionStorage.getItem(
+      `${INVESTIGASI_UI_STATE_KEY_PREFIX}:${userId}`,
+    );
+    if (!raw) return null;
+
+    const parsed = JSON.parse(raw) as StoredInvestigasiUiState;
+    return parsed ?? null;
+  } catch {
+    return null;
+  }
+};
+
+const getInitialMode = (userId: number, role: string): InvestigasiMode => {
+  const storedMode = readStoredUiState(userId)?.mode;
+
+  if (
+    storedMode === "editor" ||
+    storedMode === "preview" ||
+    storedMode === "submission"
+  ) {
+    if (role !== "admin" && storedMode === "editor") {
+      return "preview";
+    }
+    return storedMode;
+  }
+
+  return "preview";
+};
+
+const getInitialStep = (userId: number): number | null => {
+  const storedStep = readStoredUiState(userId)?.activeStep;
+  return isValidStep(storedStep) ? storedStep : null;
+};
+
 export default function Investigasi({ user }: { user: User }) {
-  const [mode, setMode] = useState<InvestigasiMode>("preview");
-  const [activeStep, setActiveStep] = useState<number | null>(null);
+  const [mode, setMode] = useState<InvestigasiMode>(() =>
+    getInitialMode(user.id, user.role),
+  );
+  const [activeStep, setActiveStep] = useState<number | null>(() =>
+    getInitialStep(user.id),
+  );
   const [completedSteps, setCompletedSteps] = useState<number[]>([]);
   const [isProgressLoading, setIsProgressLoading] = useState(
     user.role !== "admin",
   );
   const [completingStepId, setCompletingStepId] = useState<number | null>(null);
+
+  useEffect(() => {
+    const storageKey = `${INVESTIGASI_UI_STATE_KEY_PREFIX}:${user.id}`;
+    const persistedMode =
+      user.role === "admin" ? mode : mode === "editor" ? "preview" : mode;
+
+    sessionStorage.setItem(
+      storageKey,
+      JSON.stringify({ mode: persistedMode, activeStep }),
+    );
+  }, [activeStep, mode, user.id, user.role]);
 
   useEffect(() => {
     if (user.role === "admin") {

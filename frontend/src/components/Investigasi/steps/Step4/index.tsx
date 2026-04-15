@@ -35,8 +35,6 @@ export default function Step4({ mode, user }: Step4Props) {
   const [instructions, setInstructions] = useState<string>("");
   const [submissions, setSubmissions] = useState<Submission[]>([]);
 
-  const [isFilesLoading, setIsFilesLoading] = useState(true);
-  const [isInstructionsLoading, setIsInstructionsLoading] = useState(true);
   const [isSubmissionsLoading, setIsSubmissionsLoading] = useState(false);
 
   const [file, setFile] = useState<File | null>(null);
@@ -54,26 +52,20 @@ export default function Step4({ mode, user }: Step4Props) {
   }, [user.role]);
 
   const fetchDatasets = async () => {
-    setIsFilesLoading(true);
     try {
       const data = await getDatasets(STEP_ID);
       setDatasets(data);
     } catch (err) {
       console.error("Gagal mengambil daftar dataset:", err);
-    } finally {
-      setIsFilesLoading(false);
     }
   };
 
   const fetchInstructions = async () => {
-    setIsInstructionsLoading(true);
     try {
       const data = await getContent(INSTRUCTIONS_SLUG);
       setInstructions(data.content || "");
     } catch (err) {
       console.error("Gagal mengambil petunjuk:", err);
-    } finally {
-      setIsInstructionsLoading(false);
     }
   };
 
@@ -219,13 +211,20 @@ export default function Step4({ mode, user }: Step4Props) {
             onRequestDelete={requestDelete}
           />
         )}
-        {mode === "preview" && (
+        <div
+          className={
+            mode === "preview"
+              ? "block"
+              : "invisible h-0 overflow-hidden pointer-events-none"
+          }
+          aria-hidden={mode !== "preview"}
+        >
           <Step4Preview
             datasets={datasets}
             instructions={instructions}
             onDownload={handleDownload}
           />
-        )}
+        </div>
         {mode === "submission" && (
           <Step4Submission
             submissions={submissions}

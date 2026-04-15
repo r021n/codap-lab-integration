@@ -189,9 +189,16 @@ export default function Step1({ mode, user }: Step1Props) {
             onRequestDelete={requestDelete}
           />
         )}
-        {mode === "preview" && (
+        <div
+          className={
+            mode === "preview"
+              ? "block"
+              : "invisible h-0 overflow-hidden pointer-events-none"
+          }
+          aria-hidden={mode !== "preview"}
+        >
           <Step1Preview datasets={datasets} onDownload={handleDownload} />
-        )}
+        </div>
         {mode === "submission" && (
           <Step1Submission
             submissions={submissions}
