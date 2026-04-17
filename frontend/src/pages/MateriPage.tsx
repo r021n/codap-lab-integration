@@ -204,15 +204,15 @@ export default function MateriPage({ user }: MateriPageProps) {
   }
 
   return (
-    <div className="max-w-5xl mx-auto py-8 px-4">
-      <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-8 border-b border-border/50 pb-6 gap-4">
+    <div className="max-w-5xl mx-auto py-6 sm:py-8 px-3 sm:px-4">
+      <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-6 sm:mb-8 border-b border-border/50 pb-5 sm:pb-6 gap-4">
         <div className="flex items-center gap-3">
-          <Book className="h-8 w-8 text-primary" />
+          <Book className="h-6 w-6 sm:h-8 sm:w-8 text-primary shrink-0" />
           <div>
-            <h1 className="text-3xl font-serif font-bold text-primary">
+            <h1 className="text-2xl sm:text-3xl font-serif font-bold text-primary">
               Materi Pembelajaran
             </h1>
-            <p className="text-muted-foreground mt-1">
+            <p className="text-muted-foreground mt-1 text-sm sm:text-base">
               Bacaan literasi dan materi pembelajaran terstruktur
             </p>
           </div>
@@ -234,7 +234,7 @@ export default function MateriPage({ user }: MateriPageProps) {
                 <div className="flex flex-1 md:flex-none gap-2">
                   <button
                     onClick={() => setIsEditing(false)}
-                    className="flex flex-1 md:flex-none items-center justify-center gap-2 px-4 py-2 bg-background border border-border rounded-lg hover:bg-muted transition-colors shadow-sm"
+                    className="flex flex-1 md:flex-none items-center justify-center gap-2 px-3 sm:px-4 py-2 bg-background border border-border rounded-lg hover:bg-muted transition-colors shadow-sm"
                     id="btn-preview-materi"
                   >
                     <Eye className="h-4 w-4" />
@@ -243,7 +243,7 @@ export default function MateriPage({ user }: MateriPageProps) {
                   <button
                     onClick={handleSave}
                     disabled={saving}
-                    className="flex flex-1 md:flex-none items-center justify-center gap-2 px-4 py-2 bg-primary text-white rounded-lg hover:bg-primary/90 transition-colors disabled:opacity-50 shadow-md"
+                    className="flex flex-1 md:flex-none items-center justify-center gap-2 px-3 sm:px-4 py-2 bg-primary text-white rounded-lg hover:bg-primary/90 transition-colors disabled:opacity-50 shadow-md"
                     id="btn-save-materi"
                   >
                     <Save className="h-4 w-4" />
@@ -257,7 +257,7 @@ export default function MateriPage({ user }: MateriPageProps) {
       </div>
 
       {error && (
-        <div className="mb-6 p-4 bg-red-50 border border-red-200 text-red-700 rounded-lg flex items-center gap-3 shadow-sm">
+        <div className="mb-6 p-4 bg-red-50 border border-red-200 text-red-700 rounded-lg flex items-start gap-3 shadow-sm">
           <AlertCircle className="h-5 w-5" />
           {error}
         </div>
@@ -265,15 +265,15 @@ export default function MateriPage({ user }: MateriPageProps) {
 
       {/* Slide Navigation - Editor Mode */}
       {isEditing && (
-        <div className="flex flex-wrap items-center gap-2 mb-4 bg-muted/30 p-3 rounded-xl border border-border/50">
-          <span className="text-sm font-medium mr-2 text-muted-foreground">
+        <div className="flex items-center gap-2 mb-4 bg-muted/30 p-3 rounded-xl border border-border/50 overflow-x-auto pb-3">
+          <span className="text-sm font-medium mr-1 sm:mr-2 text-muted-foreground shrink-0">
             Slide:
           </span>
           {slides.map((_, idx) => (
-            <div key={idx} className="group relative">
+            <div key={idx} className="group relative shrink-0">
               <button
                 onClick={() => setCurrentIndex(idx)}
-                className={`w-10 h-10 rounded-lg font-bold transition-all ${
+                className={`w-9 h-9 sm:w-10 sm:h-10 rounded-lg font-bold text-xs sm:text-sm transition-all ${
                   currentIndex === idx
                     ? "bg-primary text-white shadow-md scale-105"
                     : "bg-white border border-border text-muted-foreground hover:border-primary/50"
@@ -287,7 +287,7 @@ export default function MateriPage({ user }: MateriPageProps) {
                     e.stopPropagation();
                     removeSlide(idx);
                   }}
-                  className="absolute -top-2 -right-2 bg-red-500 text-white p-1 rounded-full opacity-0 group-hover:opacity-100 transition-opacity shadow-sm hover:bg-red-600"
+                  className="absolute -top-2 -right-2 bg-red-500 text-white p-1 rounded-full opacity-100 sm:opacity-0 sm:group-hover:opacity-100 transition-opacity shadow-sm hover:bg-red-600"
                   title="Hapus Slide"
                 >
                   <Trash2 className="h-3 w-3" />
@@ -297,7 +297,7 @@ export default function MateriPage({ user }: MateriPageProps) {
           ))}
           <button
             onClick={addSlide}
-            className="w-10 h-10 rounded-lg border border-dashed border-primary/50 text-primary flex items-center justify-center hover:bg-primary/5 transition-colors"
+            className="w-9 h-9 sm:w-10 sm:h-10 rounded-lg border border-dashed border-primary/50 text-primary flex items-center justify-center hover:bg-primary/5 transition-colors shrink-0"
             title="Tambah Slide Baru"
           >
             <Plus className="h-5 w-5" />
@@ -306,9 +306,9 @@ export default function MateriPage({ user }: MateriPageProps) {
       )}
 
       {/* Content Area */}
-      <div className="bg-white rounded-2xl shadow-xl border border-border/50 overflow-hidden min-h-[500px] flex flex-col">
+      <div className="bg-white rounded-2xl shadow-xl border border-border/50 overflow-hidden min-h-125 flex flex-col">
         {isEditing ? (
-          <div className="p-4 flex-1 flex flex-col">
+          <div className="p-3 sm:p-4 flex-1 flex flex-col">
             <ReactQuill
               key={currentIndex}
               ref={quillRef}
@@ -316,12 +316,12 @@ export default function MateriPage({ user }: MateriPageProps) {
               value={slides[currentIndex] || ""}
               onChange={updateCurrentSlideContent}
               modules={modules}
-              className="flex-1 flex flex-col"
+              className="flex-1 flex flex-col min-h-62.5 sm:min-h-75 md:min-h-100"
             />
           </div>
         ) : (
           <div className="flex-1 flex flex-col">
-            <div className="p-8 md:p-12 prose prose-slate max-w-none flex-1 overflow-x-hidden">
+            <div className="p-4 sm:p-6 md:p-8 lg:p-12 prose prose-slate max-w-none flex-1 overflow-x-hidden">
               {slides[currentIndex] ? (
                 <div
                   className="rich-text-content animate-in fade-in duration-500"
@@ -336,17 +336,17 @@ export default function MateriPage({ user }: MateriPageProps) {
             </div>
 
             {/* Slide Navigation - Preview Mode */}
-            <div className="bg-muted/30 border-t border-border/50 p-6 flex justify-between items-center">
+            <div className="bg-muted/30 border-t border-border/50 p-4 md:p-6 flex flex-col sm:flex-row sm:justify-between sm:items-center gap-3">
               <button
                 onClick={() => setCurrentIndex((prev) => Math.max(0, prev - 1))}
                 disabled={currentIndex === 0}
-                className="flex items-center gap-2 px-5 py-2.5 rounded-xl border border-border bg-white text-foreground hover:bg-muted transition-all disabled:opacity-30 disabled:cursor-not-allowed font-medium shadow-sm"
+                className="flex items-center justify-center gap-2 px-4 py-2 md:px-5 md:py-2.5 rounded-xl border border-border bg-white text-foreground hover:bg-muted transition-all disabled:opacity-30 disabled:cursor-not-allowed font-medium shadow-sm w-full sm:w-auto text-sm md:text-base"
               >
                 <ChevronLeft className="h-5 w-5" />
                 Sebelumnya
               </button>
 
-              <div className="px-4 py-1.5 rounded-full bg-primary/10 text-primary font-bold text-sm border border-primary/20">
+              <div className="px-3 py-1 sm:px-4 sm:py-1.5 rounded-full bg-primary/10 text-primary font-bold text-xs sm:text-sm border border-primary/20 order-2 sm:order-0">
                 Slide {currentIndex + 1} dari {slides.length}
               </div>
 
@@ -357,7 +357,7 @@ export default function MateriPage({ user }: MateriPageProps) {
                   )
                 }
                 disabled={currentIndex === slides.length - 1}
-                className="flex items-center gap-2 px-5 py-2.5 rounded-xl bg-primary text-white hover:bg-primary/90 transition-all disabled:opacity-30 disabled:cursor-not-allowed font-medium shadow-md"
+                className="flex items-center justify-center gap-2 px-4 py-2 md:px-5 md:py-2.5 rounded-xl bg-primary text-white hover:bg-primary/90 transition-all disabled:opacity-30 disabled:cursor-not-allowed font-medium shadow-md w-full sm:w-auto text-sm md:text-base"
               >
                 Selanjutnya
                 <ChevronRight className="h-5 w-5" />
@@ -375,20 +375,92 @@ export default function MateriPage({ user }: MateriPageProps) {
           font-size: 1.125rem;
           color: #334155;
         }
-        .rich-text-content h1 { font-size: 2.5rem; font-weight: 800; margin-top: 2rem; margin-bottom: 1.5rem; color: #1e293b; font-family: serif; border-left: 6px solid var(--primary); padding-left: 1rem; }
-        .rich-text-content h2 { font-size: 1.875rem; font-weight: 700; margin-top: 1.75rem; margin-bottom: 1rem; color: #334155; font-family: serif; }
-        .rich-text-content h3 { font-size: 1.5rem; font-weight: 600; margin-top: 1.5rem; margin-bottom: 0.75rem; color: #475569; }
+
+        .rich-text-content h1 {
+          font-size: 2.5rem;
+          font-weight: 800;
+          margin-top: 2rem;
+          margin-bottom: 1.5rem;
+          color: #1e293b;
+          font-family: serif;
+          border-left: 6px solid var(--primary);
+          padding-left: 1rem;
+        }
+
+        .rich-text-content h2 {
+          font-size: 1.875rem;
+          font-weight: 700;
+          margin-top: 1.75rem;
+          margin-bottom: 1rem;
+          color: #334155;
+          font-family: serif;
+        }
+
+        .rich-text-content h3 {
+          font-size: 1.5rem;
+          font-weight: 600;
+          margin-top: 1.5rem;
+          margin-bottom: 0.75rem;
+          color: #475569;
+        }
+
         .rich-text-content p { margin-bottom: 1.25rem; }
         .rich-text-content ul { list-style-type: disc; padding-left: 2rem; margin-bottom: 1.25rem; }
         .rich-text-content ol { list-style-type: decimal; padding-left: 2rem; margin-bottom: 1.25rem; }
         .rich-text-content li { margin-bottom: 0.5rem; }
-        .rich-text-content img { max-width: 100%; height: auto; border-radius: 1rem; margin: 2rem auto; display: block; shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1); }
+        .rich-text-content img { max-width: 100%; height: auto; border-radius: 1rem; margin: 2rem auto; display: block; box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1); }
         
         /* Quill adjustments */
         .ql-container.ql-snow { border: none !important; }
         .ql-toolbar.ql-snow { border: none !important; border-bottom: 1px solid #e2e8f0 !important; background-color: #f8fafc; border-radius: 1rem 1rem 0 0; }
-        .ql-editor { min-height: 400px; padding: 2rem !important; font-size: 1.125rem !important; }
+        .ql-editor { min-height: 250px; padding: 1rem !important; font-size: 1rem !important; }
         .ql-editor img { max-width: 100%; border-radius: 0.5rem; }
+
+        @media (min-width: 640px) {
+          .ql-editor {
+            min-height: 400px;
+            padding: 1.5rem !important;
+            font-size: 1.125rem !important;
+          }
+        }
+
+        @media (max-width: 639px) {
+          .rich-text-content {
+            font-size: 1rem;
+            line-height: 1.6;
+          }
+
+          .rich-text-content h1 {
+            font-size: 1.75rem;
+            margin-top: 1rem;
+            margin-bottom: 0.75rem;
+            border-left-width: 4px;
+            padding-left: 0.75rem;
+          }
+
+          .rich-text-content h2 {
+            font-size: 1.375rem;
+            margin-top: 0.75rem;
+            margin-bottom: 0.5rem;
+          }
+
+          .rich-text-content h3 {
+            font-size: 1.125rem;
+            margin-top: 0.75rem;
+            margin-bottom: 0.5rem;
+          }
+
+          .rich-text-content ul,
+          .rich-text-content ol {
+            padding-left: 1rem;
+            margin-bottom: 0.75rem;
+          }
+
+          .rich-text-content img {
+            margin: 1rem auto;
+            border-radius: 0.75rem;
+          }
+        }
         
         .animate-in {
           animation: fadeIn 0.5s ease-out;

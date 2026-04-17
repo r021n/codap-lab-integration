@@ -18,8 +18,7 @@ const variantStyles = {
   danger: {
     iconBg: "bg-red-100",
     iconWrap: <AlertTriangle className="h-6 w-6 text-red-500" />,
-    confirmBtn:
-      "bg-red-500 hover:bg-red-600 text-white focus:ring-red-500/30",
+    confirmBtn: "bg-red-500 hover:bg-red-600 text-white focus:ring-red-500/30",
   },
   warning: {
     iconBg: "bg-secondary/10",
@@ -78,7 +77,7 @@ export default function ConfirmDialog({
       />
 
       {/* Dialog */}
-      <div className="relative bg-background rounded-xl shadow-[0px_20px_60px_-12px_rgba(0,0,0,0.25)] border border-border/20 max-w-md w-full mx-4 p-6 animate-scale-in">
+      <div className="relative bg-background rounded-xl shadow-[0px_20px_60px_-12px_rgba(0,0,0,0.25)] border border-border/20 max-w-md w-full mx-4 p-5 sm:p-6 animate-scale-in">
         {/* Close button */}
         <button
           onClick={onCancel}
@@ -107,17 +106,17 @@ export default function ConfirmDialog({
           </div>
 
           {/* Actions */}
-          <div className="flex items-center gap-3 w-full mt-2">
+          <div className="flex flex-col sm:flex-row items-center gap-3 w-full mt-2">
             <button
               onClick={onCancel}
-              className="flex-1 px-4 py-2.5 text-sm font-semibold rounded-lg border-2 border-foreground text-foreground hover:bg-foreground/5 active:scale-[0.98] transition-all"
+              className="w-full sm:flex-1 px-4 py-2.5 text-sm font-semibold rounded-lg border-2 border-foreground text-foreground hover:bg-foreground/5 active:scale-[0.98] transition-all"
             >
               {cancelText}
             </button>
             <button
               ref={confirmRef}
               onClick={onConfirm}
-              className={`flex-1 px-4 py-2.5 text-sm font-semibold rounded-lg active:scale-[0.98] transition-all focus:outline-none focus:ring-2 ${styles.confirmBtn}`}
+              className={`w-full sm:flex-1 px-4 py-2.5 text-sm font-semibold rounded-lg active:scale-[0.98] transition-all focus:outline-none focus:ring-2 ${styles.confirmBtn}`}
             >
               {confirmText}
             </button>
@@ -125,6 +124,6 @@ export default function ConfirmDialog({
         </div>
       </div>
     </div>,
-    document.body
+    document.body,
   );
 }

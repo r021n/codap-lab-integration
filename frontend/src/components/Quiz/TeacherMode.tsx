@@ -98,17 +98,17 @@ export default function TeacherMode() {
 
     return (
       <div className="space-y-6">
-        <div className="flex items-center justify-between">
+        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
           <button
             onClick={() => setDetail(null)}
-            className="flex items-center gap-2 text-sm text-primary hover:text-primary/90 font-medium"
+            className="flex items-center gap-2 text-sm text-primary hover:text-primary/90 font-medium min-h-10"
           >
             <ChevronLeft className="w-4 h-4" /> Kembali ke Daftar
           </button>
           <Button
             onClick={handleSaveScores}
             disabled={isSaving}
-            className="bg-primary hover:bg-primary/90 text-white"
+            className="bg-primary hover:bg-primary/90 text-white w-full sm:w-auto"
           >
             {isSaving ? "Menyimpan..." : "Simpan Perubahan Skor"}
           </Button>
@@ -121,12 +121,12 @@ export default function TeacherMode() {
                 <CardTitle className="font-serif text-2xl font-bold text-foreground">
                   Jawaban: {detail.userName}
                 </CardTitle>
-                <CardDescription className="text-muted-foreground font-medium">
+                <CardDescription className="text-muted-foreground font-medium text-xs sm:text-sm">
                   {detail.userEmail} •{" "}
                   {new Date(detail.submittedAt).toLocaleString("id-ID")}
                 </CardDescription>
               </div>
-              <div className="bg-background px-6 py-4 rounded-xl border border-primary/20 shadow-sm text-center min-w-[140px]">
+              <div className="bg-background px-4 sm:px-6 py-3 sm:py-4 rounded-xl border border-primary/20 shadow-sm text-center min-w-35 w-full sm:w-auto">
                 <p className="text-[10px] uppercase font-bold text-muted-foreground tracking-widest mb-1">
                   Nilai Akhir
                 </p>
@@ -143,7 +143,7 @@ export default function TeacherMode() {
             {detail.answers.map((a, i) => (
               <div
                 key={a.answerId}
-                className={`p-6 rounded-xl border-2 transition-all ${
+                className={`p-4 sm:p-6 rounded-xl border-2 transition-all ${
                   a.questionType === "essay"
                     ? "border-amber-100 bg-amber-50/20"
                     : a.isCorrect
@@ -167,7 +167,7 @@ export default function TeacherMode() {
                       {a.questionText}
                     </p>
                   </div>
-                  <div className="shrink-0 space-y-2 bg-background p-3 rounded-lg border border-border/10 shadow-sm min-w-[120px]">
+                  <div className="w-full sm:w-auto shrink-0 space-y-2 bg-background p-3 rounded-lg border border-border/10 shadow-sm min-w-30">
                     <label className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider block">
                       Edit Skor
                     </label>
@@ -181,7 +181,7 @@ export default function TeacherMode() {
                             [a.answerId]: parseInt(e.target.value) || 0,
                           }))
                         }
-                        className="h-8 w-16 text-center font-bold text-primary bg-background p-1"
+                        className="h-10 sm:h-8 w-20 sm:w-16 text-center font-bold text-primary bg-background p-1"
                       />
                       <span className="text-xs font-bold text-muted-foreground">
                         / {a.maxScore}
@@ -192,7 +192,7 @@ export default function TeacherMode() {
 
                 {a.questionType === "multiple_choice" ? (
                   <div className="mt-4 p-4 bg-background/50 rounded-lg border border-border/10">
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-3 sm:gap-4">
                       <div>
                         <p className="text-[10px] font-bold text-muted-foreground uppercase mb-1">
                           Jawaban Siswa
@@ -247,7 +247,7 @@ export default function TeacherMode() {
             setSelectedQuizId(null);
             setSubmissions([]);
           }}
-          className="flex items-center gap-2 text-sm text-primary hover:text-primary/90 font-medium"
+          className="flex items-center gap-2 text-sm text-primary hover:text-primary/90 font-medium min-h-10"
         >
           <ChevronLeft className="w-4 h-4" /> Kembali
         </button>
@@ -266,20 +266,20 @@ export default function TeacherMode() {
                 Belum ada siswa yang mengumpulkan.
               </p>
             ) : (
-              <div className="rounded-lg border border-border/20 overflow-hidden">
-                <table className="w-full text-sm">
+              <div className="rounded-lg border border-border/20 overflow-hidden overflow-x-auto">
+                <table className="w-full min-w-170 text-sm">
                   <thead className="bg-background border-b border-border/20">
                     <tr>
-                      <th className="px-5 py-3 text-left font-semibold text-foreground">
+                      <th className="px-3 sm:px-5 py-3 text-left font-semibold text-foreground">
                         Nama Siswa
                       </th>
-                      <th className="px-5 py-3 text-left font-semibold text-foreground">
+                      <th className="px-3 sm:px-5 py-3 text-left font-semibold text-foreground">
                         Email
                       </th>
-                      <th className="px-5 py-3 text-left font-semibold text-foreground">
+                      <th className="px-3 sm:px-5 py-3 text-left font-semibold text-foreground">
                         Waktu
                       </th>
-                      <th className="px-5 py-3 text-right font-semibold text-foreground">
+                      <th className="px-3 sm:px-5 py-3 text-right font-semibold text-foreground">
                         Aksi
                       </th>
                     </tr>
@@ -290,16 +290,16 @@ export default function TeacherMode() {
                         key={s.submissionId}
                         className="hover:bg-background/50 transition-colors"
                       >
-                        <td className="px-5 py-3 font-medium text-foreground">
+                        <td className="px-3 sm:px-5 py-3 font-medium text-foreground">
                           {s.userName}
                         </td>
-                        <td className="px-5 py-3 text-muted-foreground">
+                        <td className="px-3 sm:px-5 py-3 text-muted-foreground">
                           {s.userEmail}
                         </td>
-                        <td className="px-5 py-3 text-muted-foreground">
+                        <td className="px-3 sm:px-5 py-3 text-muted-foreground">
                           {new Date(s.submittedAt).toLocaleString("id-ID")}
                         </td>
-                        <td className="px-5 py-3 text-right">
+                        <td className="px-3 sm:px-5 py-3 text-right">
                           <Button
                             size="sm"
                             variant="outline"

@@ -6,7 +6,8 @@ import {
 import { Card, CardContent } from "../ui/card";
 import { showToast } from "../ui/toast";
 import { ChevronLeft, ClipboardList } from "lucide-react";
-import type { Quiz, Question, User } from "./types";
+import type { Quiz, Question } from "./types";
+import type { User } from "../../api/auth.api";
 import StudentQuizView from "./StudentQuizView";
 
 export default function PreviewMode({ user }: { user: User }) {
@@ -42,7 +43,7 @@ export default function PreviewMode({ user }: { user: User }) {
       <div className="space-y-6">
         <button
           onClick={() => setSelectedQuiz(null)}
-          className="flex items-center gap-2 text-sm text-primary hover:text-primary/90 font-medium"
+          className="flex items-center gap-2 text-sm text-primary hover:text-primary/90 font-medium min-h-10"
         >
           <ChevronLeft className="w-4 h-4" /> Kembali ke Daftar Kuis
         </button>
@@ -67,11 +68,11 @@ export default function PreviewMode({ user }: { user: User }) {
               onClick={() => selectQuiz(qz.id)}
               className="border border-border/20 bg-background shadow-[0px_4px_6px_-1px_rgba(0,0,0,0.1)] rounded-lg cursor-pointer hover:border-primary/30 hover:shadow-md transition-all group"
             >
-              <CardContent className="p-6 space-y-3">
-                <div className="w-12 h-12 rounded-xl bg-linear-to-br from-primary to-secondary flex items-center justify-center shadow-sm group-hover:scale-105 transition-transform">
-                  <ClipboardList className="w-6 h-6 text-white" />
+              <CardContent className="p-4 sm:p-6 space-y-3">
+                <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-xl bg-linear-to-br from-primary to-secondary flex items-center justify-center shadow-sm group-hover:scale-105 transition-transform">
+                  <ClipboardList className="w-5 h-5 sm:w-6 sm:h-6 text-white" />
                 </div>
-                <h3 className="font-serif text-lg font-bold text-foreground">
+                <h3 className="font-serif text-base sm:text-lg font-bold text-foreground">
                   {qz.title}
                 </h3>
                 {qz.description && (

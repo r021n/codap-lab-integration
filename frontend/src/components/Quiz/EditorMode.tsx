@@ -249,17 +249,17 @@ export default function EditorMode() {
               value={newTitle}
               onChange={(e) => setNewTitle(e.target.value)}
               placeholder="Judul kuis"
-              className="bg-background border-gray-300 focus:border-primary focus:ring-primary"
+              className="h-10 bg-background border-gray-300 focus:border-primary focus:ring-primary"
             />
             <Input
               value={newDesc}
               onChange={(e) => setNewDesc(e.target.value)}
               placeholder="Deskripsi (opsional)"
-              className="bg-background border-gray-300 focus:border-primary focus:ring-primary"
+              className="h-10 bg-background border-gray-300 focus:border-primary focus:ring-primary"
             />
             <Button
               onClick={createQuiz}
-              className="bg-primary hover:bg-primary/90 text-white rounded-lg"
+              className="bg-primary hover:bg-primary/90 text-white rounded-lg w-full sm:w-auto h-10"
             >
               Buat Kuis
             </Button>
@@ -282,7 +282,7 @@ export default function EditorMode() {
                 {quizList.map((qz) => (
                   <div
                     key={qz.id}
-                    className="flex items-center justify-between p-4 rounded-lg border border-border/20 hover:border-primary/30 hover:bg-background transition-all"
+                    className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 p-4 rounded-lg border border-border/20 hover:border-primary/30 hover:bg-background transition-all"
                   >
                     <div
                       className="flex items-center gap-3 cursor-pointer flex-1"
@@ -298,12 +298,12 @@ export default function EditorMode() {
                         </p>
                       </div>
                     </div>
-                    <div className="flex gap-2">
+                    <div className="flex gap-2 w-full sm:w-auto">
                       <Button
                         size="sm"
                         variant="outline"
                         onClick={() => togglePublish(qz)}
-                        className="text-xs border-border/30 hover:bg-background"
+                        className="text-xs border-border/30 hover:bg-background flex-1 sm:flex-none min-h-9"
                       >
                         {qz.isPublished ? "Sembunyikan" : "Publikasi"}
                       </Button>
@@ -311,7 +311,7 @@ export default function EditorMode() {
                         size="sm"
                         variant="destructive"
                         onClick={() => confirmDelete("quiz", qz.id)}
-                        className="bg-red-500 hover:bg-red-600"
+                        className="bg-red-500 hover:bg-red-600 min-h-9"
                       >
                         <Trash2 className="w-3.5 h-3.5" />
                       </Button>
@@ -345,7 +345,7 @@ export default function EditorMode() {
     <div className="space-y-6">
       <button
         onClick={() => setSelectedQuiz(null)}
-        className="flex items-center gap-2 text-sm text-primary hover:text-primary/90 font-medium transition-colors"
+        className="flex items-center gap-2 text-sm text-primary hover:text-primary/90 font-medium transition-colors min-h-10"
       >
         <ChevronLeft className="w-4 h-4" /> Kembali ke Daftar Kuis
       </button>
@@ -362,7 +362,7 @@ export default function EditorMode() {
           )}
         </CardHeader>
         <CardContent className="pt-6 space-y-4">
-          <div className="flex items-center justify-between">
+          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
             <span className="text-sm text-muted-foreground">
               {selectedQuiz.questions.length} soal
             </span>
@@ -371,7 +371,7 @@ export default function EditorMode() {
                 resetQuestionForm();
                 setShowAddQuestion(true);
               }}
-              className="bg-primary hover:bg-primary/90 text-white rounded-lg text-sm"
+              className="bg-primary hover:bg-primary/90 text-white rounded-lg text-sm w-full sm:w-auto"
             >
               <Plus className="w-4 h-4 mr-2" /> Tambah Soal
             </Button>
@@ -383,7 +383,7 @@ export default function EditorMode() {
               key={q.id}
               className="p-4 rounded-lg border border-border/20 bg-background/50 space-y-2"
             >
-              <div className="flex items-start justify-between gap-3">
+              <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-3">
                 <div className="flex-1">
                   <div className="flex items-center gap-2 mb-1">
                     <span className="text-xs font-medium px-2 py-0.5 rounded-full bg-primary/10 text-primary">
@@ -409,7 +409,7 @@ export default function EditorMode() {
                     </div>
                   )}
                 </div>
-                <div className="flex flex-col gap-1">
+                <div className="flex flex-row sm:flex-col gap-1 self-end sm:self-auto">
                   <button
                     onClick={() => moveQuestion(idx, -1)}
                     disabled={idx === 0}
@@ -452,16 +452,16 @@ export default function EditorMode() {
             </CardTitle>
           </CardHeader>
           <CardContent className="pt-6 space-y-4">
-            <div className="flex gap-3">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 sm:gap-3">
               <button
                 onClick={() => setQType("multiple_choice")}
-                className={`px-4 py-2 rounded-lg text-sm font-medium transition-all ${qType === "multiple_choice" ? "bg-primary text-white" : "bg-muted-foreground/10 text-muted-foreground hover:text-foreground"}`}
+                className={`px-4 py-2 rounded-lg text-sm font-medium transition-all min-h-10 ${qType === "multiple_choice" ? "bg-primary text-white" : "bg-muted-foreground/10 text-muted-foreground hover:text-foreground"}`}
               >
                 Pilihan Ganda
               </button>
               <button
                 onClick={() => setQType("essay")}
-                className={`px-4 py-2 rounded-lg text-sm font-medium transition-all ${qType === "essay" ? "bg-primary text-white" : "bg-muted-foreground/10 text-muted-foreground hover:text-foreground"}`}
+                className={`px-4 py-2 rounded-lg text-sm font-medium transition-all min-h-10 ${qType === "essay" ? "bg-primary text-white" : "bg-muted-foreground/10 text-muted-foreground hover:text-foreground"}`}
               >
                 Essay
               </button>
@@ -483,7 +483,7 @@ export default function EditorMode() {
                 value={qMaxScore}
                 onChange={(e) => setQMaxScore(parseInt(e.target.value) || 0)}
                 placeholder="Contoh: 1, 5, 10..."
-                className="bg-background border-gray-300 focus:border-primary focus:ring-primary"
+                className="h-10 bg-background border-gray-300 focus:border-primary focus:ring-primary"
               />
             </div>
 
@@ -496,7 +496,7 @@ export default function EditorMode() {
                   </span>
                 </p>
                 {qOptions.map((opt, i) => (
-                  <div key={i} className="flex items-center gap-3">
+                  <div key={i} className="flex items-center gap-2 sm:gap-3">
                     <button
                       onClick={() =>
                         setQOptions((p) =>
@@ -519,7 +519,7 @@ export default function EditorMode() {
                         )
                       }
                       placeholder={`Pilihan ${String.fromCharCode(65 + i)}`}
-                      className="bg-background border-gray-300 focus:border-primary focus:ring-primary"
+                      className="h-10 bg-background border-gray-300 focus:border-primary focus:ring-primary"
                     />
                     {qOptions.length > 2 && (
                       <button
@@ -549,16 +549,16 @@ export default function EditorMode() {
               </div>
             )}
 
-            <div className="flex gap-3 pt-2">
+            <div className="flex flex-col sm:flex-row gap-2 sm:gap-3 pt-2">
               <Button
                 onClick={editingQuestion ? updateQuestion : addQuestion}
-                className="bg-primary hover:bg-primary/90 text-white rounded-lg"
+                className="bg-primary hover:bg-primary/90 text-white rounded-lg w-full sm:w-auto"
               >
                 {editingQuestion ? "Simpan Perubahan" : "Tambah Soal"}
               </Button>
               <Button
                 onClick={resetQuestionForm}
-                className="bg-transparent border-2 border-foreground text-foreground hover:bg-foreground/5 rounded-lg"
+                className="bg-transparent border-2 border-foreground text-foreground hover:bg-foreground/5 rounded-lg w-full sm:w-auto"
               >
                 Batal
               </Button>

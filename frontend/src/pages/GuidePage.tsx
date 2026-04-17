@@ -174,26 +174,26 @@ export default function GuidePage({ user }: GuidePageProps) {
   }
 
   return (
-    <div className="max-w-4xl mx-auto py-8 px-4">
-      <div className="flex justify-between items-center mb-8 border-b border-border/50 pb-4">
-        <div className="flex items-center gap-3">
-          <HelpCircle className="h-8 w-8 text-primary" />
-          <div>
-            <h1 className="text-3xl font-serif font-bold text-primary">
+    <div className="max-w-4xl mx-auto py-6 sm:py-8 px-3 sm:px-4">
+      <div className="flex flex-col md:flex-row md:justify-between md:items-center mb-6 sm:mb-8 border-b border-border/50 pb-4 gap-4">
+        <div className="flex items-start sm:items-center gap-3 w-full">
+          <HelpCircle className="h-6 w-6 sm:h-8 sm:w-8 text-primary shrink-0 mt-0.5 sm:mt-0" />
+          <div className="w-full">
+            <h1 className="text-2xl sm:text-3xl font-serif font-bold text-primary">
               Petunjuk Penggunaan
             </h1>
-            <p className="text-muted-foreground mt-1">
+            <p className="text-muted-foreground mt-1 text-sm sm:text-base">
               Panduan interaktif AirDataLabs
             </p>
           </div>
         </div>
 
         {isAdmin && (
-          <div className="flex gap-2">
+          <div className="flex flex-col sm:flex-row gap-2 w-full md:w-auto">
             {!isEditing ? (
               <button
                 onClick={() => setIsEditing(true)}
-                className="flex items-center gap-2 px-4 py-2 bg-secondary text-secondary-foreground rounded-lg hover:bg-secondary/80 transition-colors"
+                className="flex items-center justify-center gap-2 px-3 py-2 md:px-4 bg-secondary text-secondary-foreground rounded-lg hover:bg-secondary/80 transition-colors w-full md:w-auto"
                 id="btn-edit-guide"
               >
                 <Edit2 className="h-4 w-4" />
@@ -203,7 +203,7 @@ export default function GuidePage({ user }: GuidePageProps) {
               <>
                 <button
                   onClick={() => setIsEditing(false)}
-                  className="flex items-center gap-2 px-4 py-2 bg-background border border-border rounded-lg hover:bg-muted transition-colors"
+                  className="flex items-center justify-center gap-2 px-3 py-2 md:px-4 bg-background border border-border rounded-lg hover:bg-muted transition-colors w-full md:w-auto"
                   id="btn-preview-guide"
                 >
                   <Eye className="h-4 w-4" />
@@ -212,7 +212,7 @@ export default function GuidePage({ user }: GuidePageProps) {
                 <button
                   onClick={handleSave}
                   disabled={saving}
-                  className="flex items-center gap-2 px-4 py-2 bg-primary text-white rounded-lg hover:bg-primary/90 transition-colors disabled:opacity-50"
+                  className="flex items-center justify-center gap-2 px-3 py-2 md:px-4 bg-primary text-white rounded-lg hover:bg-primary/90 transition-colors disabled:opacity-50 w-full md:w-auto"
                   id="btn-save-guide"
                 >
                   <Save className="h-4 w-4" />
@@ -225,7 +225,7 @@ export default function GuidePage({ user }: GuidePageProps) {
       </div>
 
       {error && (
-        <div className="mb-6 p-4 bg-red-50 border border-red-200 text-red-700 rounded-lg flex items-center gap-3">
+        <div className="mb-6 p-4 bg-red-50 border border-red-200 text-red-700 rounded-lg flex items-start gap-3">
           <AlertCircle className="h-5 w-5" />
           {error}
         </div>
@@ -233,18 +233,18 @@ export default function GuidePage({ user }: GuidePageProps) {
 
       <div className="bg-white rounded-xl shadow-sm border border-border/50 overflow-hidden">
         {isEditing ? (
-          <div className="p-4 bg-white editor-container">
+          <div className="p-3 sm:p-4 bg-white editor-container">
             <ReactQuill
               ref={quillRef}
               theme="snow"
               value={content}
               onChange={setContent}
               modules={modules}
-              className="min-h-[400px]"
+              className="min-h-62.5 sm:min-h-75 md:min-h-100"
             />
           </div>
         ) : (
-          <div className="p-8 prose prose-slate max-w-none wrap-break-word">
+          <div className="p-4 sm:p-6 md:p-8 prose prose-slate max-w-none wrap-break-word">
             {content ? (
               <div
                 className="rich-text-content overflow-hidden"
@@ -261,15 +261,96 @@ export default function GuidePage({ user }: GuidePageProps) {
 
       <style>{`
         .rich-text-content { overflow-wrap: break-word; word-break: break-word; }
-        .rich-text-content h1 { font-size: 2rem; font-weight: 700; margin-top: 1.5rem; margin-bottom: 1rem; color: var(--primary); }
-        .rich-text-content h2 { font-size: 1.5rem; font-weight: 600; margin-top: 1.25rem; margin-bottom: 0.75rem; color: var(--primary); }
-        .rich-text-content p { margin-bottom: 1rem; line-height: 1.6; }
-        .rich-text-content ul { list-style-type: disc; padding-left: 1.5rem; margin-bottom: 1rem; }
-        .rich-text-content ol { list-style-type: decimal; padding-left: 1.5rem; margin-bottom: 1rem; }
-        .rich-text-content img { max-width: 100%; height: auto; border-radius: 0.5rem; margin: 1rem 0; }
-        .editor-container .ql-container { min-height: 350px; font-size: 1rem; }
-        .editor-container .ql-editor { min-height: 350px; }
-        .editor-container .ql-editor img { max-width: 100%; height: auto; }
+
+        .rich-text-content h1 {
+          font-size: 2rem;
+          font-weight: 700;
+          margin-top: 1.5rem;
+          margin-bottom: 1rem;
+          color: var(--primary);
+        }
+
+        .rich-text-content h2 {
+          font-size: 1.5rem;
+          font-weight: 600;
+          margin-top: 1.25rem;
+          margin-bottom: 0.75rem;
+          color: var(--primary);
+        }
+
+        .rich-text-content p {
+          margin-bottom: 1rem;
+          line-height: 1.6;
+        }
+
+        .rich-text-content ul {
+          list-style-type: disc;
+          padding-left: 1.5rem;
+          margin-bottom: 1rem;
+        }
+
+        .rich-text-content ol {
+          list-style-type: decimal;
+          padding-left: 1.5rem;
+          margin-bottom: 1rem;
+        }
+
+        .rich-text-content img {
+          max-width: 100%;
+          height: auto;
+          border-radius: 0.5rem;
+          margin: 1rem 0;
+        }
+
+        .editor-container .ql-container {
+          min-height: 250px;
+          font-size: 1rem;
+        }
+
+        .editor-container .ql-editor {
+          min-height: 250px;
+          padding: 1rem;
+        }
+
+        .editor-container .ql-editor img {
+          max-width: 100%;
+          height: auto;
+        }
+
+        @media (min-width: 640px) {
+          .editor-container .ql-container,
+          .editor-container .ql-editor {
+            min-height: 350px;
+          }
+
+          .editor-container .ql-editor {
+            padding: 1.25rem;
+          }
+        }
+
+        @media (max-width: 639px) {
+          .rich-text-content h1 {
+            font-size: 1.5rem;
+            margin-top: 1rem;
+            margin-bottom: 0.75rem;
+          }
+
+          .rich-text-content h2 {
+            font-size: 1.25rem;
+            margin-top: 0.75rem;
+            margin-bottom: 0.5rem;
+          }
+
+          .rich-text-content p {
+            margin-bottom: 0.75rem;
+          }
+
+          .rich-text-content ul,
+          .rich-text-content ol {
+            padding-left: 1rem;
+            margin-bottom: 0.75rem;
+          }
+        }
       `}</style>
     </div>
   );

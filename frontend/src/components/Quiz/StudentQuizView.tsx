@@ -90,13 +90,13 @@ export default function StudentQuizView({
         <div className="max-w-3xl mx-auto space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-700">
           {/* Dashboard Ringkasan */}
           <Card className="overflow-hidden border-none bg-linear-to-br from-primary/10 via-background to-secondary/10 shadow-xl">
-            <CardContent className="p-8">
+            <CardContent className="p-4 sm:p-8">
               <div className="flex flex-col md:flex-row items-center justify-between gap-8">
                 <div className="space-y-4 text-center md:text-left">
                   <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-primary/10 text-primary text-xs font-bold uppercase tracking-wider">
                     <CheckCircle className="w-3.5 h-3.5" /> Kuis Selesai
                   </div>
-                  <h2 className="font-serif text-3xl font-bold text-foreground">
+                  <h2 className="font-serif text-2xl sm:text-3xl font-bold text-foreground">
                     Hasil Pekerjaan Kamu
                   </h2>
                   <p className="text-muted-foreground text-sm max-w-sm">
@@ -276,7 +276,7 @@ export default function StudentQuizView({
           <div className="flex justify-center pt-4">
             <Button
               onClick={() => window.location.reload()}
-              className="bg-primary hover:bg-primary/90 text-white rounded-lg px-8 py-6 h-auto"
+              className="bg-primary hover:bg-primary/90 text-white rounded-lg px-6 sm:px-8 py-3 sm:py-6 h-auto w-full sm:w-auto"
             >
               Kembali ke Daftar Kuis
             </Button>
@@ -339,7 +339,7 @@ export default function StudentQuizView({
           </div>
         </CardHeader>
         <CardContent className="pt-6 space-y-6">
-          <p className="text-foreground text-lg leading-relaxed font-medium">
+          <p className="text-foreground text-base sm:text-lg leading-relaxed font-medium">
             {q.questionText}
           </p>
 
@@ -351,7 +351,7 @@ export default function StudentQuizView({
                   <button
                     key={opt.id}
                     onClick={() => handleSelect(opt.id!)}
-                    className={`w-full flex items-center gap-4 p-4 rounded-lg border-2 text-left transition-all duration-200 ${
+                    className={`w-full flex items-center gap-3 sm:gap-4 p-3 sm:p-4 rounded-lg border-2 text-left transition-all duration-200 ${
                       selected
                         ? "border-primary bg-primary/5 shadow-sm"
                         : "border-border/20 hover:border-primary/40 hover:bg-background"
@@ -363,7 +363,7 @@ export default function StudentQuizView({
                       <Circle className="w-5 h-5 text-muted-foreground shrink-0" />
                     )}
                     <span
-                      className={`text-sm ${selected ? "text-foreground font-medium" : "text-foreground"}`}
+                      className={`text-sm wrap-break-word ${selected ? "text-foreground font-medium" : "text-foreground"}`}
                     >
                       {opt.optionText}
                     </span>
@@ -376,7 +376,7 @@ export default function StudentQuizView({
               value={answers[q.id]?.essayAnswer || ""}
               onChange={(e) => handleEssay(e.target.value)}
               placeholder="Tulis jawaban kamu di sini..."
-              rows={6}
+              rows={5}
               className="w-full p-4 rounded-lg border-2 border-border/20 bg-background text-foreground text-sm resize-none focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/20 transition-all placeholder:text-muted-foreground"
             />
           )}
@@ -384,25 +384,25 @@ export default function StudentQuizView({
       </Card>
 
       {/* Navigation */}
-      <div className="flex items-center justify-between">
+      <div className="flex flex-col sm:flex-row items-center justify-between gap-3">
         <Button
           onClick={() => setCurrent((c) => c - 1)}
           disabled={current === 0}
-          className="bg-transparent border-2 border-foreground text-foreground hover:bg-foreground/5 disabled:opacity-30 rounded-lg"
+          className="bg-transparent border-2 border-foreground text-foreground hover:bg-foreground/5 disabled:opacity-30 rounded-lg w-full sm:w-auto"
         >
           <ChevronLeft className="w-4 h-4 mr-2" /> Sebelumnya
         </Button>
         {current === total - 1 ? (
           <Button
             onClick={handleSubmit}
-            className="bg-primary hover:bg-primary/90 text-white rounded-lg px-6"
+            className="bg-primary hover:bg-primary/90 text-white rounded-lg px-6 w-full sm:w-auto"
           >
             <Send className="w-4 h-4 mr-2" /> Kirim Jawaban
           </Button>
         ) : (
           <Button
             onClick={() => setCurrent((c) => c + 1)}
-            className="bg-primary hover:bg-primary/90 text-white rounded-lg"
+            className="bg-primary hover:bg-primary/90 text-white rounded-lg w-full sm:w-auto"
           >
             Selanjutnya <ChevronRight className="w-4 h-4 ml-2" />
           </Button>
