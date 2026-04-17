@@ -44,11 +44,11 @@ export default function Step3Editor({
   }, [instructions]);
 
   return (
-    <div className="space-y-8">
+    <div className="space-y-6 sm:space-y-8">
       {/* MANAGE INSTRUCTIONS */}
       <Card className="border border-indigo-500/20 bg-indigo-500/5 shadow-sm rounded-xl overflow-hidden">
         <CardHeader>
-          <CardTitle className="font-serif text-xl font-bold text-foreground flex items-center gap-2">
+          <CardTitle className="font-serif text-lg font-bold text-foreground sm:text-xl flex items-center gap-2">
             <Edit3 className="h-5 w-5 text-indigo-600" />
             Edit Petunjuk Pengerjaan (Admin)
           </CardTitle>
@@ -61,7 +61,7 @@ export default function Step3Editor({
             value={localInstructions}
             onChange={(e) => setLocalInstructions(e.target.value)}
             placeholder="Masukkan petunjuk pengerjaan di sini..."
-            className="min-h-[200px] bg-background border-border focus:ring-indigo-500 font-sans leading-relaxed"
+            className="min-h-45 bg-background border-border focus:ring-indigo-500 font-sans leading-relaxed sm:min-h-50"
           />
           <div className="flex justify-end">
             <Button
@@ -69,7 +69,7 @@ export default function Step3Editor({
               disabled={
                 isSavingInstructions || localInstructions === instructions
               }
-              className="bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg flex items-center gap-2"
+              className="w-full bg-indigo-600 text-white hover:bg-indigo-700 rounded-lg sm:w-auto flex items-center justify-center gap-2"
             >
               <Save className="h-4 w-4" />
               {isSavingInstructions ? "Menyimpan..." : "Simpan Petunjuk"}
@@ -81,7 +81,7 @@ export default function Step3Editor({
       {/* UPLOAD DATASET */}
       <Card className="border border-primary/20 bg-primary/5 shadow-sm rounded-xl overflow-hidden">
         <CardHeader>
-          <CardTitle className="font-serif text-xl font-bold text-foreground flex items-center gap-2">
+          <CardTitle className="font-serif text-lg font-bold text-foreground sm:text-xl flex items-center gap-2">
             <Upload className="h-5 w-5 text-primary" />
             Unggah Dataset Langkah 3 (Admin)
           </CardTitle>
@@ -92,20 +92,20 @@ export default function Step3Editor({
         <CardContent>
           <form
             onSubmit={onUpload}
-            className="flex flex-col sm:flex-row items-start sm:items-center gap-4"
+            className="flex flex-col items-stretch gap-3 sm:flex-row sm:items-center sm:gap-4"
           >
             <Input
               id="step3-csv-upload"
               type="file"
               accept=".csv"
               onChange={onFileChange}
-              className="bg-background max-w-md border-border focus:ring-primary h-10"
+              className="h-10 w-full bg-background border-border focus:ring-primary sm:max-w-md"
               required
             />
             <Button
               type="submit"
               disabled={isUploading || !file}
-              className="rounded-lg bg-primary hover:bg-primary/90 text-white min-w-[120px]"
+              className="min-w-30 rounded-lg bg-primary text-white hover:bg-primary/90 sm:w-auto"
             >
               {isUploading ? "Mengunggah..." : "Unggah CSV"}
             </Button>
@@ -116,25 +116,25 @@ export default function Step3Editor({
       {/* DATASET LIST */}
       <Card className="border border-border/20 bg-background shadow-sm rounded-xl overflow-hidden">
         <CardHeader className="border-b border-border/5 bg-background/50">
-          <CardTitle className="font-serif text-xl font-bold text-foreground">
+          <CardTitle className="font-serif text-lg font-bold text-foreground sm:text-xl">
             Kelola Dataset Langkah 3
           </CardTitle>
           <CardDescription className="text-muted-foreground">
             Daftar dataset yang sedang aktif untuk Langkah 3.
           </CardDescription>
         </CardHeader>
-        <CardContent className="pt-6">
-          <div className="rounded-xl border border-border/10 overflow-x-auto overflow-hidden">
+        <CardContent className="pt-4 sm:pt-6">
+          <div className="overflow-x-auto rounded-xl border border-border/10">
             <table className="w-full text-sm text-left">
               <thead className="bg-muted/30 border-b border-border/10">
                 <tr>
-                  <th className="px-5 py-4 font-semibold text-foreground">
+                  <th className="px-4 py-3 font-semibold text-foreground sm:px-5 sm:py-4">
                     Nama File
                   </th>
-                  <th className="px-5 py-4 font-semibold text-foreground w-48">
+                  <th className="w-40 px-4 py-3 font-semibold text-foreground sm:w-48 sm:px-5 sm:py-4">
                     Tanggal
                   </th>
-                  <th className="px-5 py-4 font-semibold text-foreground text-right w-32">
+                  <th className="w-28 px-4 py-3 text-right font-semibold text-foreground sm:w-32 sm:px-5 sm:py-4">
                     Aksi
                   </th>
                 </tr>
@@ -144,7 +144,7 @@ export default function Step3Editor({
                   <tr>
                     <td
                       colSpan={3}
-                      className="px-5 py-8 text-center text-muted-foreground"
+                      className="px-4 py-8 text-center text-muted-foreground sm:px-5"
                     >
                       Belum ada dataset yang diunggah untuk Langkah 3.
                     </td>
@@ -155,21 +155,21 @@ export default function Step3Editor({
                       key={dataset.id}
                       className="hover:bg-muted/10 transition-colors"
                     >
-                      <td className="px-5 py-4 font-medium text-foreground">
+                      <td className="px-4 py-3 font-medium text-foreground sm:px-5 sm:py-4">
                         <div className="flex items-center gap-3">
                           <FileText className="h-5 w-5 text-primary shrink-0" />
                           <span
-                            className="truncate max-w-[300px]"
+                            className="truncate max-w-75"
                             title={dataset.name}
                           >
                             {dataset.name}
                           </span>
                         </div>
                       </td>
-                      <td className="px-5 py-4 text-muted-foreground">
+                      <td className="px-4 py-3 text-muted-foreground sm:px-5 sm:py-4">
                         {dataset.uploadDate}
                       </td>
-                      <td className="px-5 py-4 text-right">
+                      <td className="px-4 py-3 text-right sm:px-5 sm:py-4">
                         <div className="flex justify-end gap-2">
                           <Button
                             variant="outline"

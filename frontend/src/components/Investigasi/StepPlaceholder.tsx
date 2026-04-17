@@ -11,17 +11,17 @@ export default function StepPlaceholder({ stepId }: StepPlaceholderProps) {
   const Icon = step?.icon || Info;
 
   return (
-    <Card className="border-dashed border-2 border-border/40 bg-muted/5 rounded-2xl h-[500px] flex items-center justify-center text-center p-12">
+    <Card className="flex min-h-90 items-center justify-center rounded-2xl border-2 border-dashed border-border/40 bg-muted/5 p-6 text-center sm:h-125 sm:p-12">
       <div className="max-w-md space-y-4">
         <div
-          className={`mx-auto w-20 h-20 rounded-full flex items-center justify-center ${step?.bgColor} ${step?.color}`}
+          className={`mx-auto flex h-16 w-16 items-center justify-center rounded-full sm:h-20 sm:w-20 ${step?.bgColor} ${step?.color}`}
         >
-          <Icon className="w-10 h-10" />
+          <Icon className="h-8 w-8 sm:h-10 sm:w-10" />
         </div>
-        <h2 className="font-serif text-2xl font-bold text-foreground">
+        <h2 className="font-serif text-xl font-bold leading-tight text-foreground sm:text-2xl">
           Materi {step?.title} Sedang Disiapkan
         </h2>
-        <p className="text-muted-foreground">
+        <p className="text-sm text-muted-foreground sm:text-base">
           Step ini adalah bagian dari kurikulum investigasi. Kami sedang
           mengoptimalkan konten untuk memberikan pengalaman belajar terbaik.
         </p>

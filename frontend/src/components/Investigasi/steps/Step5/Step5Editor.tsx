@@ -44,11 +44,11 @@ export default function Step5Editor({
   }, [instructions]);
 
   return (
-    <div className="space-y-8">
+    <div className="space-y-6 sm:space-y-8">
       {/* MANAGE INSTRUCTIONS */}
       <Card className="border border-rose-500/20 bg-rose-500/5 shadow-sm rounded-xl overflow-hidden">
         <CardHeader>
-          <CardTitle className="font-serif text-xl font-bold text-foreground flex items-center gap-2">
+          <CardTitle className="font-serif text-lg font-bold text-foreground sm:text-xl flex items-center gap-2">
             <Edit3 className="h-5 w-5 text-rose-600" />
             Edit Petunjuk Laporan (Admin)
           </CardTitle>
@@ -61,13 +61,15 @@ export default function Step5Editor({
             value={localInstructions}
             onChange={(e) => setLocalInstructions(e.target.value)}
             placeholder="Masukkan petunjuk penyusunan laporan di sini..."
-            className="min-h-[200px] bg-background border-border focus:ring-rose-500 font-sans leading-relaxed"
+            className="min-h-45 bg-background border-border focus:ring-rose-500 font-sans leading-relaxed sm:min-h-50"
           />
           <div className="flex justify-end">
             <Button
               onClick={() => onSaveInstructions(localInstructions)}
-              disabled={isSavingInstructions || localInstructions === instructions}
-              className="bg-rose-600 hover:bg-rose-700 text-white rounded-lg flex items-center gap-2"
+              disabled={
+                isSavingInstructions || localInstructions === instructions
+              }
+              className="w-full bg-rose-600 text-white hover:bg-rose-700 rounded-lg sm:w-auto flex items-center justify-center gap-2"
             >
               <Save className="h-4 w-4" />
               {isSavingInstructions ? "Menyimpan..." : "Simpan Petunjuk"}
@@ -79,7 +81,7 @@ export default function Step5Editor({
       {/* UPLOAD DOCUMENT */}
       <Card className="border border-primary/20 bg-primary/5 shadow-sm rounded-xl overflow-hidden">
         <CardHeader>
-          <CardTitle className="font-serif text-xl font-bold text-foreground flex items-center gap-2">
+          <CardTitle className="font-serif text-lg font-bold text-foreground sm:text-xl flex items-center gap-2">
             <Upload className="h-5 w-5 text-primary" />
             Unggah Berkas Referensi (Admin)
           </CardTitle>
@@ -90,20 +92,20 @@ export default function Step5Editor({
         <CardContent>
           <form
             onSubmit={onUpload}
-            className="flex flex-col sm:flex-row items-start sm:items-center gap-4"
+            className="flex flex-col items-stretch gap-3 sm:flex-row sm:items-center sm:gap-4"
           >
             <Input
               id="step5-csv-upload"
               type="file"
               accept=".csv"
               onChange={onFileChange}
-              className="bg-background max-w-md border-border focus:ring-primary h-10"
+              className="h-10 w-full bg-background border-border focus:ring-primary sm:max-w-md"
               required
             />
             <Button
               type="submit"
               disabled={isUploading || !file}
-              className="rounded-lg bg-primary hover:bg-primary/90 text-white min-w-[120px]"
+              className="min-w-30 rounded-lg bg-primary text-white hover:bg-primary/90 sm:w-auto"
             >
               {isUploading ? "Mengunggah..." : "Unggah Berkas"}
             </Button>
@@ -114,43 +116,60 @@ export default function Step5Editor({
       {/* DOCUMENT LIST */}
       <Card className="border border-border/20 bg-background shadow-sm rounded-xl overflow-hidden">
         <CardHeader className="border-b border-border/5 bg-background/50">
-          <CardTitle className="font-serif text-xl font-bold text-foreground">
+          <CardTitle className="font-serif text-lg font-bold text-foreground sm:text-xl">
             Kelola Berkas Langkah 5
           </CardTitle>
           <CardDescription className="text-muted-foreground">
             Daftar berkas aktif untuk penyusunan laporan.
           </CardDescription>
         </CardHeader>
-        <CardContent className="pt-6">
-          <div className="rounded-xl border border-border/10 overflow-x-auto overflow-hidden">
+        <CardContent className="pt-4 sm:pt-6">
+          <div className="overflow-x-auto rounded-xl border border-border/10">
             <table className="w-full text-sm text-left">
               <thead className="bg-muted/30 border-b border-border/10">
                 <tr>
-                  <th className="px-5 py-4 font-semibold text-foreground">Nama File</th>
-                  <th className="px-5 py-4 font-semibold text-foreground w-48">Tanggal</th>
-                  <th className="px-5 py-4 font-semibold text-foreground text-right w-32">Aksi</th>
+                  <th className="px-4 py-3 font-semibold text-foreground sm:px-5 sm:py-4">
+                    Nama File
+                  </th>
+                  <th className="w-40 px-4 py-3 font-semibold text-foreground sm:w-48 sm:px-5 sm:py-4">
+                    Tanggal
+                  </th>
+                  <th className="w-28 px-4 py-3 text-right font-semibold text-foreground sm:w-32 sm:px-5 sm:py-4">
+                    Aksi
+                  </th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-border/5">
                 {datasets.length === 0 ? (
                   <tr>
-                    <td colSpan={3} className="px-5 py-8 text-center text-muted-foreground">
+                    <td
+                      colSpan={3}
+                      className="px-4 py-8 text-center text-muted-foreground sm:px-5"
+                    >
                       Belum ada berkas referensi untuk Langkah 5.
                     </td>
                   </tr>
                 ) : (
                   datasets.map((dataset) => (
-                    <tr key={dataset.id} className="hover:bg-muted/10 transition-colors">
-                      <td className="px-5 py-4 font-medium text-foreground">
+                    <tr
+                      key={dataset.id}
+                      className="hover:bg-muted/10 transition-colors"
+                    >
+                      <td className="px-4 py-3 font-medium text-foreground sm:px-5 sm:py-4">
                         <div className="flex items-center gap-3">
                           <FileText className="h-5 w-5 text-primary shrink-0" />
-                          <span className="truncate max-w-[300px]" title={dataset.name}>
+                          <span
+                            className="truncate max-w-75"
+                            title={dataset.name}
+                          >
                             {dataset.name}
                           </span>
                         </div>
                       </td>
-                      <td className="px-5 py-4 text-muted-foreground">{dataset.uploadDate}</td>
-                      <td className="px-5 py-4 text-right">
+                      <td className="px-4 py-3 text-muted-foreground sm:px-5 sm:py-4">
+                        {dataset.uploadDate}
+                      </td>
+                      <td className="px-4 py-3 text-right sm:px-5 sm:py-4">
                         <div className="flex justify-end gap-2">
                           <Button
                             variant="outline"

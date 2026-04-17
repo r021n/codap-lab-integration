@@ -168,7 +168,7 @@ export default function Investigasi({ user }: { user: User }) {
     user.role === "admin" ? mode : mode === "editor" ? "preview" : mode;
 
   return (
-    <div className="mx-auto max-w-6xl space-y-8 pb-12 font-sans text-foreground">
+    <div className="mx-auto max-w-6xl space-y-6 px-4 pb-8 font-sans text-foreground sm:space-y-8 sm:px-6 sm:pb-12 lg:px-0">
       <ToastContainer />
 
       <StepHeader
@@ -181,7 +181,7 @@ export default function Investigasi({ user }: { user: User }) {
 
       {activeStep === null ? (
         isProgressLoading ? (
-          <div className="rounded-2xl border border-border/30 bg-background/60 p-6 text-sm text-muted-foreground">
+          <div className="rounded-2xl border border-border/30 bg-background/60 p-4 text-xs text-muted-foreground sm:p-6 sm:text-sm">
             Memuat progress investigasi...
           </div>
         ) : (
@@ -192,7 +192,7 @@ export default function Investigasi({ user }: { user: User }) {
           />
         )
       ) : (
-        <div className="space-y-8 animate-in fade-in duration-500">
+        <div className="space-y-6 animate-in fade-in duration-500 sm:space-y-8">
           {activeStep === 1 && <Step1 mode={activeMode} user={user} />}
           {activeStep === 2 && <Step2 mode={activeMode} user={user} />}
           {activeStep === 3 && <Step3 mode={activeMode} user={user} />}
@@ -205,11 +205,11 @@ export default function Investigasi({ user }: { user: User }) {
             activeStep !== 5 && <StepPlaceholder stepId={activeStep} />}
 
           {/* ACTION FOOTER */}
-          <div className="pt-8 border-t border-border/10 flex justify-between items-center">
+          <div className="flex flex-col-reverse gap-3 border-t border-border/10 pt-6 sm:flex-row sm:items-center sm:justify-between sm:gap-0 sm:pt-8">
             <Button
               variant="ghost"
               onClick={() => setActiveStep(null)}
-              className="text-muted-foreground hover:text-foreground"
+              className="w-full justify-center text-muted-foreground hover:text-foreground sm:w-auto"
             >
               Kembali ke Daftar Langkah
             </Button>
@@ -218,7 +218,7 @@ export default function Investigasi({ user }: { user: User }) {
               <Button
                 onClick={() => handleCompleteStep(activeStep)}
                 disabled={completingStepId === activeStep}
-                className="bg-emerald-600 hover:bg-emerald-700 text-white px-8 rounded-full shadow-lg shadow-emerald-500/20"
+                className="w-full justify-center rounded-xl bg-emerald-600 px-6 text-white shadow-lg shadow-emerald-500/20 hover:bg-emerald-700 sm:w-auto sm:rounded-full sm:px-8"
               >
                 {completingStepId === activeStep
                   ? "Menyimpan Progress..."

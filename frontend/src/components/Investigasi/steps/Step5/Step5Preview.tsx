@@ -21,14 +21,14 @@ export default function Step5Preview({
   onDownload,
 }: Step5PreviewProps) {
   return (
-    <div className="grid gap-8 lg:grid-cols-4">
-      <div className="lg:col-span-1 space-y-8">
+    <div className="grid gap-6 lg:grid-cols-4 lg:gap-8">
+      <div className="space-y-6 lg:col-span-1 lg:space-y-8">
         <Card className="border border-border/20 bg-background shadow-sm rounded-xl overflow-hidden">
-          <CardHeader className="pb-4">
-            <CardTitle className="font-serif text-lg font-bold text-foreground">
+          <CardHeader className="pb-3 sm:pb-4">
+            <CardTitle className="font-serif text-base font-bold text-foreground sm:text-lg">
               Dokumen Referensi (Langkah 5)
             </CardTitle>
-            <CardDescription className="text-muted-foreground">
+            <CardDescription className="text-xs text-muted-foreground sm:text-sm">
               Data tambahan untuk penyusunan laporan
             </CardDescription>
           </CardHeader>
@@ -68,27 +68,29 @@ export default function Step5Preview({
         </Card>
 
         <Card className="border border-rose-500/20 bg-rose-500/5 shadow-sm rounded-xl overflow-hidden">
-          <CardHeader className="pb-4">
-            <CardTitle className="font-serif text-lg font-bold text-rose-700 flex items-center gap-2">
+          <CardHeader className="pb-3 sm:pb-4">
+            <CardTitle className="font-serif text-base font-bold text-rose-700 sm:text-lg flex items-center gap-2">
               <Info className="h-5 w-5" />
               Petunjuk Penyusunan Laporan
             </CardTitle>
           </CardHeader>
-          <CardContent className="text-sm text-foreground/80 space-y-4">
+          <CardContent className="space-y-4 text-xs text-foreground/80 sm:text-sm">
             {instructions ? (
               <div className="whitespace-pre-wrap leading-relaxed">
                 {instructions}
               </div>
             ) : (
-              <p className="italic text-muted-foreground">Petunjuk belum tersedia.</p>
+              <p className="italic text-muted-foreground">
+                Petunjuk belum tersedia.
+              </p>
             )}
           </CardContent>
         </Card>
       </div>
 
-      <Card className="lg:col-span-3 flex flex-col h-[740px] border border-border/20 bg-background shadow-md rounded-xl overflow-hidden">
-        <CardHeader className="border-b border-border/10 bg-background py-4 px-6 flex flex-row items-center justify-between">
-          <CardTitle className="font-serif text-lg font-bold text-foreground flex items-center gap-2">
+      <Card className="flex min-h-105 h-[70vh] flex-col overflow-hidden rounded-xl border border-border/20 bg-background shadow-md sm:h-160 lg:col-span-3 lg:h-185">
+        <CardHeader className="flex flex-row items-center justify-between border-b border-border/10 bg-background px-4 py-3 sm:px-6 sm:py-4">
+          <CardTitle className="font-serif text-base font-bold text-foreground sm:text-lg flex items-center gap-2">
             <Lightbulb className="w-5 h-5 text-rose-500" />
             Laporan Akhir Investigasi
           </CardTitle>

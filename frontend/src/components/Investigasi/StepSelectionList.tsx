@@ -13,7 +13,7 @@ export default function StepSelectionList({
   onSelectStep,
 }: StepSelectionListProps) {
   return (
-    <div className="grid gap-6 py-4">
+    <div className="grid gap-4 py-2 sm:gap-6 sm:py-4">
       {INVESTIGASI_STEPS.map((step) => {
         const isLocked = isStepLocked(step.id);
         const isCompleted = completedSteps.includes(step.id);
@@ -22,21 +22,21 @@ export default function StepSelectionList({
           <div
             key={step.id}
             onClick={() => !isLocked && onSelectStep(step.id)}
-            className={`group relative overflow-hidden rounded-2xl border transition-all duration-300 ${
+            className={`group relative overflow-hidden rounded-xl border transition-all duration-300 sm:rounded-2xl ${
               isLocked
                 ? "opacity-60 grayscale cursor-not-allowed border-border/10 bg-muted/20"
                 : "cursor-pointer hover:shadow-xl hover:-translate-y-1 border-border/20 bg-background"
             }`}
           >
-            <div className="p-6 flex items-center gap-6">
+            <div className="flex items-start gap-4 p-4 sm:items-center sm:gap-6 sm:p-6">
               {/* Step Number/Icon */}
               <div
-                className={`shrink-0 w-16 h-16 rounded-xl flex items-center justify-center text-2xl font-bold transition-transform group-hover:scale-110 ${step.bgColor} ${step.color}`}
+                className={`h-12 w-12 shrink-0 rounded-lg text-xl font-bold transition-transform group-hover:scale-110 sm:h-16 sm:w-16 sm:rounded-xl sm:text-2xl ${step.bgColor} ${step.color} flex items-center justify-center`}
               >
                 {isCompleted ? (
-                  <CheckCircle className="w-8 h-8" />
+                  <CheckCircle className="h-6 w-6 sm:h-8 sm:w-8" />
                 ) : isLocked ? (
-                  <Lock className="w-7 h-7" />
+                  <Lock className="h-5 w-5 sm:h-7 sm:w-7" />
                 ) : (
                   step.id
                 )}
@@ -46,7 +46,7 @@ export default function StepSelectionList({
               <div className="flex-1 min-w-0">
                 <div className="flex items-center gap-2 mb-1">
                   <h3
-                    className={`font-serif text-xl font-bold truncate ${isLocked ? "text-muted-foreground" : "text-foreground"}`}
+                    className={`font-serif text-lg font-bold leading-tight sm:text-xl ${isLocked ? "text-muted-foreground" : "text-foreground"}`}
                   >
                     {step.title}
                   </h3>
@@ -56,14 +56,14 @@ export default function StepSelectionList({
                     </span>
                   )}
                 </div>
-                <p className="text-muted-foreground text-sm line-clamp-1">
+                <p className="line-clamp-2 text-sm text-muted-foreground sm:line-clamp-1">
                   {step.description}
                 </p>
               </div>
 
               {/* Arrow Indicator */}
               {!isLocked && (
-                <div className="shrink-0 opacity-0 group-hover:opacity-100 transition-opacity translate-x-4 group-hover:translate-x-0">
+                <div className="hidden shrink-0 translate-x-4 opacity-0 transition-opacity group-hover:translate-x-0 group-hover:opacity-100 sm:block">
                   <ArrowRight className="h-6 w-6 text-primary" />
                 </div>
               )}
