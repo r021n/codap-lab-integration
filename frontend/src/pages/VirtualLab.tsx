@@ -559,6 +559,11 @@ export default function App() {
     });
   }, []);
 
+  const schedulePortCoordsUpdate = useCallback(() => {
+    updatePortCoords();
+    window.setTimeout(updatePortCoords, 80);
+  }, [updatePortCoords]);
+
   const isPortLocked = useCallback((port: PortId, labState: LabState) => {
     const pair = port === "B" || port === "C" ? "BC" : "DJ";
     return isPairConnected(labState, pair);
@@ -590,10 +595,20 @@ export default function App() {
   );
 
   useEffect(() => {
-    window.addEventListener("resize", updatePortCoords);
-    setTimeout(updatePortCoords, 100);
-    return () => window.removeEventListener("resize", updatePortCoords);
-  }, [updatePortCoords, state.isSunny]);
+    const visualViewport = window.visualViewport;
+
+    window.addEventListener("resize", schedulePortCoordsUpdate);
+    window.addEventListener("orientationchange", schedulePortCoordsUpdate);
+    visualViewport?.addEventListener("resize", schedulePortCoordsUpdate);
+
+    window.setTimeout(schedulePortCoordsUpdate, 100);
+
+    return () => {
+      window.removeEventListener("resize", schedulePortCoordsUpdate);
+      window.removeEventListener("orientationchange", schedulePortCoordsUpdate);
+      visualViewport?.removeEventListener("resize", schedulePortCoordsUpdate);
+    };
+  }, [schedulePortCoordsUpdate, state.isSunny]);
 
   useEffect(() => {
     let interval: ReturnType<typeof setInterval> | undefined;
@@ -1029,9 +1044,9 @@ export default function App() {
   );
 
   return (
-    <div className="flex flex-col md:flex-row h-screen w-full bg-background text-foreground overflow-hidden font-sans">
+    <div className="flex h-dvh w-full flex-col overflow-hidden bg-background font-sans text-foreground md:h-screen md:flex-row">
       {/* PANEL KIRI: INVENTORY — tinggi = 100vh */}
-      <div className="w-full md:w-1/4 lg:w-1/5 bg-background border-b md:border-b-0 md:border-r border-border/20 flex flex-col z-20 shadow-[0px_4px_6px_-1px_rgba(0,0,0,0.1)] h-1/3 md:h-screen">
+      <div className="z-20 flex h-[34dvh] min-h-0 w-full flex-col border-b border-border/20 bg-background shadow-[0px_4px_6px_-1px_rgba(0,0,0,0.1)] md:h-screen md:w-1/4 md:border-b-0 md:border-r lg:w-1/5">
         <div className="p-3 border-b border-border/20 bg-background/90 sticky top-0 backdrop-blur-sm z-10">
           <div className="flex items-center justify-between">
             <div>
@@ -1053,7 +1068,7 @@ export default function App() {
           </div>
         </div>
         <div className="flex-1 overflow-y-auto p-3">
-          <div className="grid grid-cols-3 md:grid-cols-2 gap-2">
+          <div className="grid grid-cols-3 gap-2 md:grid-cols-2">
             {state.inventory.thermoA &&
               renderInvItem("thermoA", "🌡️", "Thermo A")}
             {state.inventory.thermoB &&
@@ -1095,7 +1110,7 @@ export default function App() {
       </div>
 
       {/* PANEL KANAN: AREA PRAKTIKUM & LKPD */}
-      <div className="flex-1 flex flex-col relative h-2/3 md:h-screen overflow-hidden">
+      <div className="relative flex h-[66dvh] min-h-0 flex-1 flex-col overflow-hidden md:h-screen">
         {/* Header Instruksi */}
         <div className="bg-background/90 backdrop-blur-sm border-b border-border/20 p-2 md:p-3 shadow-[0px_4px_6px_-1px_rgba(0,0,0,0.1)] z-20 shrink-0">
           <p className="text-xs md:text-sm text-foreground font-medium leading-tight">
@@ -1104,320 +1119,322 @@ export default function App() {
           </p>
         </div>
 
-        {/* Meja Praktikum (Area Interaktif) — tinggi 50% */}
-        <div
-          ref={workspaceRef}
-          className={`relative transition-colors duration-1000 overflow-hidden touch-none flex flex-col
+        <div className="flex min-h-0 flex-1 flex-col">
+          {/* Meja Praktikum (Area Interaktif) */}
+          <div
+            ref={workspaceRef}
+            className={`relative flex min-h-0 flex-[1.1] touch-none flex-col overflow-hidden transition-colors duration-1000 md:flex-1
             ${state.isSunny ? "bg-primary/10" : "bg-muted-foreground/5"}
             ${activeDropZone === "environment" ? "ring-inset ring-4 ring-primary/50" : ""}`}
-          style={{ height: "50%" }}
-          data-dropzone="environment"
-        >
-          {state.isSunny && (
-            <div className="absolute top-2 right-2 md:top-4 md:right-4 opacity-80 pointer-events-none animate-spin-slow">
-              <SunSVG />
-            </div>
-          )}
-
-          {/* OVERLAY SELANG: Melengkung ke atas rapih seperti jembatan pipa lab */}
-          <svg
-            id="hose-overlay"
-            className="absolute inset-0 w-full h-full pointer-events-none z-30"
+            data-dropzone="environment"
           >
-            {state.hoseBCConnected &&
-              hasMeasuredPortCoords(portCoords, "B") &&
-              hasMeasuredPortCoords(portCoords, "C") && (
-                <path
-                  d={`M ${portCoords.B.x} ${portCoords.B.y} Q ${(portCoords.B.x + portCoords.C.x) / 2} ${Math.min(portCoords.B.y, portCoords.C.y) - 80} ${portCoords.C.x} ${portCoords.C.y}`}
-                  fill="none"
-                  stroke="#22c55e"
-                  strokeWidth="8"
-                  strokeLinecap="round"
-                  style={{ filter: "drop-shadow(0 3px 2px rgba(0,0,0,0.3))" }}
+            {state.isSunny && (
+              <div className="absolute top-2 right-2 md:top-4 md:right-4 opacity-80 pointer-events-none animate-spin-slow">
+                <SunSVG />
+              </div>
+            )}
+
+            {/* OVERLAY SELANG: Melengkung ke atas rapih seperti jembatan pipa lab */}
+            <svg
+              id="hose-overlay"
+              className="absolute inset-0 w-full h-full pointer-events-none z-30"
+            >
+              {state.hoseBCConnected &&
+                hasMeasuredPortCoords(portCoords, "B") &&
+                hasMeasuredPortCoords(portCoords, "C") && (
+                  <path
+                    d={`M ${portCoords.B.x} ${portCoords.B.y} Q ${(portCoords.B.x + portCoords.C.x) / 2} ${Math.min(portCoords.B.y, portCoords.C.y) - 80} ${portCoords.C.x} ${portCoords.C.y}`}
+                    fill="none"
+                    stroke="#22c55e"
+                    strokeWidth="8"
+                    strokeLinecap="round"
+                    style={{ filter: "drop-shadow(0 3px 2px rgba(0,0,0,0.3))" }}
+                  />
+                )}
+              {state.hoseDJConnected &&
+                hasMeasuredPortCoords(portCoords, "D") &&
+                hasMeasuredPortCoords(portCoords, "J") && (
+                  <path
+                    d={`M ${portCoords.D.x} ${portCoords.D.y} Q ${(portCoords.D.x + portCoords.J.x) / 2} ${Math.min(portCoords.D.y, portCoords.J.y) - 70} ${portCoords.J.x} ${portCoords.J.y}`}
+                    fill="none"
+                    stroke="#0ea5e9"
+                    strokeWidth="8"
+                    strokeLinecap="round"
+                    style={{
+                      filter: "drop-shadow(0 3px 2px rgba(0,0,0,0.25))",
+                    }}
+                  />
+                )}
+              {hoseDrawing.isDrawing &&
+                hoseDrawing.startPort &&
+                hasMeasuredPortCoords(portCoords, hoseDrawing.startPort) && (
+                  <path
+                    d={`M ${portCoords[hoseDrawing.startPort].x} ${portCoords[hoseDrawing.startPort].y} Q ${(portCoords[hoseDrawing.startPort].x + hoseDrawing.currentX) / 2} ${Math.min(portCoords[hoseDrawing.startPort].y, hoseDrawing.currentY) - 50} ${hoseDrawing.currentX} ${hoseDrawing.currentY}`}
+                    fill="none"
+                    stroke="#4ade80"
+                    strokeWidth="6"
+                    strokeLinecap="round"
+                    strokeDasharray="10 5"
+                    className="opacity-70"
+                  />
+                )}
+            </svg>
+
+            {/* Area Penempatan Tabung dan Timbangan */}
+            <div className="z-20 flex flex-1 flex-wrap content-end items-end justify-around gap-2 px-2 pb-8 pt-2 sm:px-6 md:px-8">
+              {/* Tabung A */}
+              <div
+                className={`relative flex w-14 flex-col items-center transition-transform sm:w-20 md:w-28 lg:w-32 ${activeDropZone === "flaskA" ? "scale-110 drop-shadow-[0_0_10px_rgba(59,130,246,0.8)]" : ""}`}
+                data-dropzone="flaskA"
+              >
+                {state.flaskA.hasThermo && (
+                  <div className="absolute -top-6 bg-slate-900/90 text-white px-2 py-0.5 rounded text-[10px] md:text-xs font-mono border border-slate-700 whitespace-nowrap">
+                    {state.flaskA.temp.toFixed(1)}°C
+                  </div>
+                )}
+                <ErlenmeyerSVG
+                  label="A"
+                  hasThermo={state.flaskA.hasThermo}
+                  hasStopper={state.flaskA.hasStopper}
+                  hasPlant={state.flaskA.hasPlant}
                 />
-              )}
-            {state.hoseDJConnected &&
-              hasMeasuredPortCoords(portCoords, "D") &&
-              hasMeasuredPortCoords(portCoords, "J") && (
-                <path
-                  d={`M ${portCoords.D.x} ${portCoords.D.y} Q ${(portCoords.D.x + portCoords.J.x) / 2} ${Math.min(portCoords.D.y, portCoords.J.y) - 70} ${portCoords.J.x} ${portCoords.J.y}`}
-                  fill="none"
-                  stroke="#0ea5e9"
-                  strokeWidth="8"
-                  strokeLinecap="round"
-                  style={{ filter: "drop-shadow(0 3px 2px rgba(0,0,0,0.25))" }}
+              </div>
+
+              {/* Tabung B */}
+              <div
+                className={`relative flex w-14 flex-col items-center transition-transform sm:w-20 md:w-28 lg:w-32 ${activeDropZone === "flaskB" ? "scale-110 drop-shadow-[0_0_10px_rgba(59,130,246,0.8)]" : ""}`}
+                data-dropzone="flaskB"
+              >
+                {state.flaskB.hasThermo && (
+                  <div className="absolute -top-6 bg-slate-900/90 text-white px-2 py-0.5 rounded text-[10px] md:text-xs font-mono border border-slate-700 whitespace-nowrap">
+                    {state.flaskB.temp.toFixed(1)}°C
+                  </div>
+                )}
+                <ErlenmeyerSVG
+                  label="B"
+                  hasThermo={state.flaskB.hasThermo}
+                  hasStopper={state.flaskB.hasStopper}
                 />
-              )}
-            {hoseDrawing.isDrawing &&
-              hoseDrawing.startPort &&
-              hasMeasuredPortCoords(portCoords, hoseDrawing.startPort) && (
-                <path
-                  d={`M ${portCoords[hoseDrawing.startPort].x} ${portCoords[hoseDrawing.startPort].y} Q ${(portCoords[hoseDrawing.startPort].x + hoseDrawing.currentX) / 2} ${Math.min(portCoords[hoseDrawing.startPort].y, hoseDrawing.currentY) - 50} ${hoseDrawing.currentX} ${hoseDrawing.currentY}`}
-                  fill="none"
-                  stroke="#4ade80"
-                  strokeWidth="6"
-                  strokeLinecap="round"
-                  strokeDasharray="10 5"
-                  className="opacity-70"
-                />
-              )}
-          </svg>
 
-          {/* Area Penempatan Tabung dan Timbangan */}
-          <div className="flex-1 flex flex-wrap justify-around items-end pb-8 px-2 sm:px-8 gap-x-2 z-20">
-            {/* Tabung A */}
-            <div
-              className={`w-16 sm:w-24 md:w-32 flex flex-col items-center relative transition-transform ${activeDropZone === "flaskA" ? "scale-110 drop-shadow-[0_0_10px_rgba(59,130,246,0.8)]" : ""}`}
-              data-dropzone="flaskA"
-            >
-              {state.flaskA.hasThermo && (
-                <div className="absolute -top-6 bg-slate-900/90 text-white px-2 py-0.5 rounded text-[10px] md:text-xs font-mono border border-slate-700 whitespace-nowrap">
-                  {state.flaskA.temp.toFixed(1)}°C
-                </div>
-              )}
-              <ErlenmeyerSVG
-                label="A"
-                hasThermo={state.flaskA.hasThermo}
-                hasStopper={state.flaskA.hasStopper}
-                hasPlant={state.flaskA.hasPlant}
-              />
-            </div>
-
-            {/* Tabung B */}
-            <div
-              className={`w-16 sm:w-24 md:w-32 flex flex-col items-center relative transition-transform ${activeDropZone === "flaskB" ? "scale-110 drop-shadow-[0_0_10px_rgba(59,130,246,0.8)]" : ""}`}
-              data-dropzone="flaskB"
-            >
-              {state.flaskB.hasThermo && (
-                <div className="absolute -top-6 bg-slate-900/90 text-white px-2 py-0.5 rounded text-[10px] md:text-xs font-mono border border-slate-700 whitespace-nowrap">
-                  {state.flaskB.temp.toFixed(1)}°C
-                </div>
-              )}
-              <ErlenmeyerSVG
-                label="B"
-                hasThermo={state.flaskB.hasThermo}
-                hasStopper={state.flaskB.hasStopper}
-              />
-
-              {/* Port Selang B */}
-              <div
-                ref={portBRef}
-                data-port="B"
-                onPointerDown={(e) => handlePortPointerDown(e, "B")}
-                className={`absolute top-[12%] left-1/2 w-8 h-8 rounded-full border-[3px] transform -translate-x-1/2 -translate-y-1/2 touch-none z-40 cursor-pointer shadow-sm
-                  ${state.hoseBCConnected ? "bg-primary border-foreground" : "bg-background border-foreground hover:bg-primary/30 hover:scale-125 animate-pulse"}`}
-              ></div>
-            </div>
-
-            {/* Tabung C */}
-            <div
-              className={`w-16 sm:w-24 md:w-32 flex flex-col items-center relative transition-transform ${activeDropZone === "flaskC" ? "scale-110 drop-shadow-[0_0_10px_rgba(59,130,246,0.8)]" : ""}`}
-              data-dropzone="flaskC"
-            >
-              <ErlenmeyerSVG
-                label="C"
-                hasStopper={state.flaskC.hasStopper}
-                hasSoda={state.flaskC.hasSoda}
-                hasVinegar={state.flaskC.hasVinegar}
-                isBubbling={state.flaskC.hasSoda && state.flaskC.hasVinegar}
-              />
-
-              {/* Port Selang C */}
-              <div
-                ref={portCRef}
-                data-port="C"
-                onPointerDown={(e) => handlePortPointerDown(e, "C")}
-                className={`absolute top-[12%] left-1/2 w-8 h-8 rounded-full border-[3px] transform -translate-x-1/2 -translate-y-1/2 touch-none z-40 cursor-pointer shadow-sm
-                  ${state.hoseBCConnected ? "bg-primary border-foreground" : "bg-background border-foreground hover:bg-primary/30 hover:scale-125 animate-pulse"}`}
-              ></div>
-            </div>
-
-            {/* Tabung D */}
-            <div
-              className={`w-16 sm:w-24 md:w-32 flex flex-col items-center relative transition-transform ${activeDropZone === "flaskD" ? "scale-110 drop-shadow-[0_0_10px_rgba(59,130,246,0.8)]" : ""}`}
-              data-dropzone="flaskD"
-            >
-              {state.flaskD.hasThermo && (
-                <div className="absolute -top-6 bg-slate-900/90 text-white px-2 py-0.5 rounded text-[10px] md:text-xs font-mono border border-slate-700 whitespace-nowrap">
-                  {state.flaskD.temp.toFixed(1)}°C
-                </div>
-              )}
-              <ErlenmeyerSVG
-                label="D"
-                hasThermo={state.flaskD.hasThermo}
-                hasStopper={state.flaskD.hasStopper}
-              />
-
-              {/* Port Selang D */}
-              <div
-                ref={portDRef}
-                data-port="D"
-                onPointerDown={(e) => handlePortPointerDown(e, "D")}
-                className={`absolute top-[12%] left-1/2 w-8 h-8 rounded-full border-[3px] transform -translate-x-1/2 -translate-y-1/2 touch-none z-40 cursor-pointer shadow-sm
-                  ${state.hoseDJConnected ? "bg-primary border-foreground" : "bg-background border-foreground hover:bg-primary/30 hover:scale-125 animate-pulse"}`}
-              ></div>
-            </div>
-
-            {/* Toples Tanaman */}
-            <div
-              className={`w-20 sm:w-28 md:w-36 flex flex-col items-center relative transition-transform ${activeDropZone === "jar" ? "scale-105 drop-shadow-[0_0_10px_rgba(59,130,246,0.8)]" : ""}`}
-              data-dropzone="jar"
-            >
-              <ToplesSVG
-                hasPlant={state.jar.hasPlant}
-                hasWrap={state.jar.hasWrap}
-              />
-
-              {/* Port Selang Toples */}
-              <div
-                ref={portJRef}
-                data-port="J"
-                onPointerDown={(e) => handlePortPointerDown(e, "J")}
-                className={`absolute top-[24%] right-[16%] w-8 h-8 rounded-full border-[3px] touch-none z-40 cursor-pointer shadow-sm
-                  ${state.hoseDJConnected ? "bg-primary border-foreground" : "bg-background border-foreground hover:bg-primary/30 hover:scale-125 animate-pulse"}`}
-              ></div>
-
-              <p className="text-[10px] md:text-xs text-muted-foreground font-semibold mt-1 text-center">
-                {state.jar.hasPlant
-                  ? "Tanaman siap, wrap terpasang"
-                  : "Drop Tanaman ke Toples"}
-              </p>
-            </div>
-
-            {/* Area Timbangan & Gelas Ukur */}
-            <div
-              className={`w-20 sm:w-28 md:w-36 h-24 md:h-32 flex flex-col items-center justify-end relative transition-transform ${activeDropZone === "scale" ? "scale-105 drop-shadow-[0_0_10px_rgba(59,130,246,0.8)]" : ""}`}
-              data-dropzone="scale"
-            >
-              {state.scale.hasCylinder && (
+                {/* Port Selang B */}
                 <div
-                  className="w-8 sm:w-12 h-16 sm:h-20 mb-[-10%] z-20 touch-none cursor-grab"
-                  onPointerDown={(e) => handleItemPointerDown(e, "cylinder")}
-                >
-                  <GelasUkurSVG sodaAmount={state.scale.sodaAmount} />
-                </div>
-              )}
-              <div className="w-full h-12 z-10">
-                <TimbanganSVG
-                  value={
-                    state.scale.hasCylinder
-                      ? state.scale.sodaAmount > 0
-                        ? 10.0
+                  ref={portBRef}
+                  data-port="B"
+                  onPointerDown={(e) => handlePortPointerDown(e, "B")}
+                  className={`absolute top-[12%] left-1/2 h-9 w-9 -translate-x-1/2 -translate-y-1/2 transform rounded-full border-[3px] touch-none z-40 cursor-pointer shadow-sm md:h-8 md:w-8
+                  ${state.hoseBCConnected ? "bg-primary border-foreground" : "bg-background border-foreground hover:bg-primary/30 hover:scale-125 animate-pulse"}`}
+                ></div>
+              </div>
+
+              {/* Tabung C */}
+              <div
+                className={`relative flex w-14 flex-col items-center transition-transform sm:w-20 md:w-28 lg:w-32 ${activeDropZone === "flaskC" ? "scale-110 drop-shadow-[0_0_10px_rgba(59,130,246,0.8)]" : ""}`}
+                data-dropzone="flaskC"
+              >
+                <ErlenmeyerSVG
+                  label="C"
+                  hasStopper={state.flaskC.hasStopper}
+                  hasSoda={state.flaskC.hasSoda}
+                  hasVinegar={state.flaskC.hasVinegar}
+                  isBubbling={state.flaskC.hasSoda && state.flaskC.hasVinegar}
+                />
+
+                {/* Port Selang C */}
+                <div
+                  ref={portCRef}
+                  data-port="C"
+                  onPointerDown={(e) => handlePortPointerDown(e, "C")}
+                  className={`absolute top-[12%] left-1/2 h-9 w-9 -translate-x-1/2 -translate-y-1/2 transform rounded-full border-[3px] touch-none z-40 cursor-pointer shadow-sm md:h-8 md:w-8
+                  ${state.hoseBCConnected ? "bg-primary border-foreground" : "bg-background border-foreground hover:bg-primary/30 hover:scale-125 animate-pulse"}`}
+                ></div>
+              </div>
+
+              {/* Tabung D */}
+              <div
+                className={`relative flex w-14 flex-col items-center transition-transform sm:w-20 md:w-28 lg:w-32 ${activeDropZone === "flaskD" ? "scale-110 drop-shadow-[0_0_10px_rgba(59,130,246,0.8)]" : ""}`}
+                data-dropzone="flaskD"
+              >
+                {state.flaskD.hasThermo && (
+                  <div className="absolute -top-6 bg-slate-900/90 text-white px-2 py-0.5 rounded text-[10px] md:text-xs font-mono border border-slate-700 whitespace-nowrap">
+                    {state.flaskD.temp.toFixed(1)}°C
+                  </div>
+                )}
+                <ErlenmeyerSVG
+                  label="D"
+                  hasThermo={state.flaskD.hasThermo}
+                  hasStopper={state.flaskD.hasStopper}
+                />
+
+                {/* Port Selang D */}
+                <div
+                  ref={portDRef}
+                  data-port="D"
+                  onPointerDown={(e) => handlePortPointerDown(e, "D")}
+                  className={`absolute top-[12%] left-1/2 h-9 w-9 -translate-x-1/2 -translate-y-1/2 transform rounded-full border-[3px] touch-none z-40 cursor-pointer shadow-sm md:h-8 md:w-8
+                  ${state.hoseDJConnected ? "bg-primary border-foreground" : "bg-background border-foreground hover:bg-primary/30 hover:scale-125 animate-pulse"}`}
+                ></div>
+              </div>
+
+              {/* Toples Tanaman */}
+              <div
+                className={`relative flex w-16 flex-col items-center transition-transform sm:w-24 md:w-32 lg:w-36 ${activeDropZone === "jar" ? "scale-105 drop-shadow-[0_0_10px_rgba(59,130,246,0.8)]" : ""}`}
+                data-dropzone="jar"
+              >
+                <ToplesSVG
+                  hasPlant={state.jar.hasPlant}
+                  hasWrap={state.jar.hasWrap}
+                />
+
+                {/* Port Selang Toples */}
+                <div
+                  ref={portJRef}
+                  data-port="J"
+                  onPointerDown={(e) => handlePortPointerDown(e, "J")}
+                  className={`absolute top-[24%] right-[16%] h-9 w-9 rounded-full border-[3px] touch-none z-40 cursor-pointer shadow-sm md:h-8 md:w-8
+                  ${state.hoseDJConnected ? "bg-primary border-foreground" : "bg-background border-foreground hover:bg-primary/30 hover:scale-125 animate-pulse"}`}
+                ></div>
+
+                <p className="text-[10px] md:text-xs text-muted-foreground font-semibold mt-1 text-center">
+                  {state.jar.hasPlant
+                    ? "Tanaman siap, wrap terpasang"
+                    : "Drop Tanaman ke Toples"}
+                </p>
+              </div>
+
+              {/* Area Timbangan & Gelas Ukur */}
+              <div
+                className={`relative flex h-20 w-16 flex-col items-center justify-end transition-transform sm:h-24 sm:w-24 md:h-28 md:w-32 lg:h-32 lg:w-36 ${activeDropZone === "scale" ? "scale-105 drop-shadow-[0_0_10px_rgba(59,130,246,0.8)]" : ""}`}
+                data-dropzone="scale"
+              >
+                {state.scale.hasCylinder && (
+                  <div
+                    className="w-8 sm:w-12 h-16 sm:h-20 mb-[-10%] z-20 touch-none cursor-grab"
+                    onPointerDown={(e) => handleItemPointerDown(e, "cylinder")}
+                  >
+                    <GelasUkurSVG sodaAmount={state.scale.sodaAmount} />
+                  </div>
+                )}
+                <div className="w-full h-12 z-10">
+                  <TimbanganSVG
+                    value={
+                      state.scale.hasCylinder
+                        ? state.scale.sodaAmount > 0
+                          ? 10.0
+                          : 0.0
                         : 0.0
-                      : 0.0
-                  }
-                />
+                    }
+                  />
+                </div>
               </div>
             </div>
+
+            {/* Meja Kayu (Landasan Bawah) */}
+            <div className="absolute bottom-0 w-full h-8 bg-background border-t border-border/20 z-10 shadow-[0_-5px_15px_rgba(0,0,0,0.05)]"></div>
           </div>
 
-          {/* Meja Kayu (Landasan Bawah) */}
-          <div className="absolute bottom-0 w-full h-8 bg-background border-t border-border/20 z-10 shadow-[0_-5px_15px_rgba(0,0,0,0.05)]"></div>
-        </div>
-
-        {/* Panel LKPD (Bawah) — tinggi 50% */}
-        <div
-          className="bg-background border-t-2 border-border/20 flex flex-col z-40 shadow-[0px_-4px_6px_-1px_rgba(0,0,0,0.05)]"
-          style={{ height: "50%" }}
-        >
-          <div className="flex justify-between items-center bg-background px-3 py-1.5 md:p-2 border-b border-border/20">
-            <h3 className="font-serif font-bold text-xs md:text-sm text-primary">
-              📝 LKPD Data Suhu
-            </h3>
-            <div className="flex items-center gap-2">
-              {/* Durasi Custom */}
-              <div className="flex items-center gap-1 text-[10px] md:text-xs">
-                <label
-                  htmlFor="duration-input"
-                  className="text-muted-foreground font-medium"
-                >
-                  Durasi:
-                </label>
-                <input
-                  id="duration-input"
-                  type="number"
-                  min="5"
-                  value={durationInput}
-                  onChange={(e) => handleDurationChange(e.target.value)}
-                  onBlur={handleDurationBlur}
-                  disabled={state.isRunning || isLabFinished}
-                  className="w-12 md:w-14 px-1.5 py-0.5 rounded border border-border/30 text-center font-sans font-semibold text-foreground bg-background focus:border-primary focus:outline-none disabled:opacity-50 disabled:cursor-not-allowed"
-                />
-                <span className="text-muted-foreground">mnt</span>
-              </div>
-              <div className="font-sans font-semibold bg-background px-2 py-0.5 rounded text-primary text-xs md:text-sm border border-primary/20">
-                Waktu: {state.time}/{state.duration} Menit
+          {/* Panel LKPD (Bawah) */}
+          <div className="z-40 flex min-h-0 flex-1 flex-col border-t-2 border-border/20 bg-background shadow-[0px_-4px_6px_-1px_rgba(0,0,0,0.05)]">
+            <div className="flex flex-wrap items-center justify-between gap-2 border-b border-border/20 bg-background px-3 py-1.5 md:p-2">
+              <h3 className="font-serif font-bold text-xs md:text-sm text-primary">
+                📝 LKPD Data Suhu
+              </h3>
+              <div className="flex flex-wrap items-center justify-end gap-2">
+                {/* Durasi Custom */}
+                <div className="flex items-center gap-1 text-[10px] md:text-xs">
+                  <label
+                    htmlFor="duration-input"
+                    className="text-muted-foreground font-medium"
+                  >
+                    Durasi:
+                  </label>
+                  <input
+                    id="duration-input"
+                    type="number"
+                    min="5"
+                    value={durationInput}
+                    onChange={(e) => handleDurationChange(e.target.value)}
+                    onBlur={handleDurationBlur}
+                    disabled={state.isRunning || isLabFinished}
+                    className="w-12 rounded border border-border/30 bg-background px-1.5 py-0.5 text-center font-sans font-semibold text-foreground focus:border-primary focus:outline-none disabled:cursor-not-allowed disabled:opacity-50 md:w-14"
+                  />
+                  <span className="text-muted-foreground">mnt</span>
+                </div>
+                <div className="rounded border border-primary/20 bg-background px-2 py-0.5 font-sans text-xs font-semibold text-primary md:text-sm">
+                  Waktu: {state.time}/{state.duration} Menit
+                </div>
               </div>
             </div>
-          </div>
-          <div className="flex-1 overflow-y-auto">
-            <table className="w-full text-left text-[10px] md:text-xs">
-              <thead className="bg-background text-foreground sticky top-0 border-b border-border/20">
-                <tr>
-                  <th className="p-1.5 md:p-2 pl-4 font-semibold">Menit ke-</th>
-                  <th className="p-1.5 md:p-2 font-semibold">
-                    Tabung A (Kontrol)
-                  </th>
-                  <th className="p-1.5 md:p-2 font-semibold">
-                    Tabung B (+CO2)
-                  </th>
-                  <th className="p-1.5 md:p-2 font-semibold">
-                    Tabung D (Toples)
-                  </th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-border/10">
-                {state.logs.length === 0 ? (
+            <div className="flex-1 overflow-auto">
+              <table className="w-max min-w-full text-left text-[11px] md:text-xs">
+                <thead className="sticky top-0 border-b border-border/20 bg-background text-foreground">
                   <tr>
-                    <td
-                      colSpan={4}
-                      className="p-3 text-center text-muted-foreground italic"
-                    >
-                      Mulai stopwatch untuk mencatat data.
-                    </td>
+                    <th className="p-1.5 pl-4 font-semibold md:p-2">
+                      Menit ke-
+                    </th>
+                    <th className="p-1.5 font-semibold md:p-2">
+                      Tabung A (Kontrol)
+                    </th>
+                    <th className="p-1.5 font-semibold md:p-2">
+                      Tabung B (+CO2)
+                    </th>
+                    <th className="p-1.5 font-semibold md:p-2">
+                      Tabung D (Toples)
+                    </th>
                   </tr>
-                ) : (
-                  state.logs.map((log) => (
-                    <tr
-                      key={log.time}
-                      className="hover:bg-background/50 transition-colors"
-                    >
-                      <td className="p-1.5 md:p-2 pl-4 font-sans font-semibold text-foreground">
-                        {log.time}
-                      </td>
-                      <td className="p-1.5 md:p-2 text-muted-foreground font-sans">
-                        {log.tempA} °C
-                      </td>
-                      <td className="p-1.5 md:p-2 text-primary font-bold font-sans">
-                        {log.tempB} °C{" "}
-                        {parseFloat(log.tempB) > parseFloat(log.tempA)
-                          ? "🔥"
-                          : ""}
-                      </td>
-                      <td className="p-1.5 md:p-2 text-muted-foreground font-sans">
-                        {log.tempD} °C
+                </thead>
+                <tbody className="divide-y divide-border/10">
+                  {state.logs.length === 0 ? (
+                    <tr>
+                      <td
+                        colSpan={4}
+                        className="p-3 text-center italic text-muted-foreground"
+                      >
+                        Mulai stopwatch untuk mencatat data.
                       </td>
                     </tr>
-                  ))
-                )}
-              </tbody>
-            </table>
-          </div>
-
-          {/* Footer: Tombol Reset setelah selesai */}
-          {isLabFinished && (
-            <div className="p-3 border-t border-border/20 bg-background flex items-center justify-center gap-3">
-              <p className="text-xs md:text-sm text-primary font-semibold">
-                ✅ Praktikum Selesai!
-              </p>
-              <button
-                onClick={handleReset}
-                className="px-4 py-1.5 text-xs md:text-sm font-semibold rounded-lg bg-primary text-white hover:bg-primary/90 active:scale-95 transition-all duration-150"
-              >
-                ↺ Ulangi Percobaan
-              </button>
+                  ) : (
+                    state.logs.map((log) => (
+                      <tr
+                        key={log.time}
+                        className="transition-colors hover:bg-background/50"
+                      >
+                        <td className="p-1.5 pl-4 font-sans font-semibold text-foreground md:p-2">
+                          {log.time}
+                        </td>
+                        <td className="p-1.5 font-sans text-muted-foreground md:p-2">
+                          {log.tempA} °C
+                        </td>
+                        <td className="p-1.5 font-sans font-bold text-primary md:p-2">
+                          {log.tempB} °C{" "}
+                          {parseFloat(log.tempB) > parseFloat(log.tempA)
+                            ? "🔥"
+                            : ""}
+                        </td>
+                        <td className="p-1.5 font-sans text-muted-foreground md:p-2">
+                          {log.tempD} °C
+                        </td>
+                      </tr>
+                    ))
+                  )}
+                </tbody>
+              </table>
             </div>
-          )}
+
+            {/* Footer: Tombol Reset setelah selesai */}
+            {isLabFinished && (
+              <div className="flex items-center justify-center gap-3 border-t border-border/20 bg-background p-3">
+                <p className="text-xs font-semibold text-primary md:text-sm">
+                  ✅ Praktikum Selesai!
+                </p>
+                <button
+                  onClick={handleReset}
+                  className="rounded-lg bg-primary px-4 py-1.5 text-xs font-semibold text-white transition-all duration-150 hover:bg-primary/90 active:scale-95 md:text-sm"
+                >
+                  ↺ Ulangi Percobaan
+                </button>
+              </div>
+            )}
+          </div>
         </div>
       </div>
 
