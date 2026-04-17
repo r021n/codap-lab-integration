@@ -1,6 +1,7 @@
 import { Link } from "react-router-dom";
 import { Button } from "../components/ui/button";
 import { useState, useEffect } from "react";
+import { Menu, X } from "lucide-react";
 import ConfirmDialog from "../components/ui/confirm-dialog";
 import codapImg from "../assets/features/codap.png";
 import virtualLabImg from "../assets/features/virtual_lab.png";
@@ -53,6 +54,7 @@ export default function Home() {
     Boolean(localStorage.getItem("token")),
   );
   const [logoutConfirmOpen, setLogoutConfirmOpen] = useState(false);
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [activeFeatureIndex, setActiveFeatureIndex] = useState(0);
   const [openFaqIndex, setOpenFaqIndex] = useState<number | null>(null);
 
@@ -67,6 +69,7 @@ export default function Home() {
     localStorage.removeItem("token");
     localStorage.removeItem("user");
     setIsLoggedIn(false);
+    setMobileMenuOpen(false);
   };
 
   const toggleFaq = (index: number) => {
@@ -81,13 +84,27 @@ export default function Home() {
     <div className="min-h-screen bg-background font-sans text-foreground flex flex-col">
       {/* Header */}
       <header className="sticky top-0 z-50 w-full border-b border-border/20 bg-background/95 backdrop-blur supports-backdrop-filter:bg-background/60">
-        <div className="container mx-auto flex h-16 max-w-7xl items-center justify-between px-4">
+        <div className="container mx-auto flex h-14 sm:h-16 max-w-7xl items-center justify-between px-4">
           <div className="flex items-center gap-2">
-            <span className="font-serif text-2xl font-bold text-primary">
+            <span className="font-serif text-lg sm:text-2xl font-bold text-primary">
               AirDataLabs
             </span>
           </div>
-          <nav className="flex items-center gap-4">
+
+          <button
+            type="button"
+            onClick={() => setMobileMenuOpen((prev) => !prev)}
+            className="sm:hidden inline-flex h-10 w-10 items-center justify-center rounded-lg border border-border/40 text-foreground hover:bg-background/70"
+            aria-label={mobileMenuOpen ? "Tutup menu" : "Buka menu"}
+          >
+            {mobileMenuOpen ? (
+              <X className="h-5 w-5" />
+            ) : (
+              <Menu className="h-5 w-5" />
+            )}
+          </button>
+
+          <nav className="hidden sm:flex items-center gap-4">
             {isLoggedIn ? (
               <>
                 <Link to="/dashboard">
@@ -122,25 +139,71 @@ export default function Home() {
             )}
           </nav>
         </div>
+
+        <div
+          className={`sm:hidden border-t border-border/20 bg-background/95 px-4 py-3 transition-all duration-200 ${
+            mobileMenuOpen ? "block" : "hidden"
+          }`}
+        >
+          <nav className="flex flex-col gap-2">
+            {isLoggedIn ? (
+              <>
+                <Link to="/dashboard" onClick={() => setMobileMenuOpen(false)}>
+                  <Button className="w-full rounded-lg bg-primary text-white hover:bg-primary/90">
+                    To Dashboard
+                  </Button>
+                </Link>
+                <Button
+                  onClick={() => {
+                    setMobileMenuOpen(false);
+                    setLogoutConfirmOpen(true);
+                  }}
+                  variant="ghost"
+                  className="w-full justify-center text-red-500 hover:bg-red-50 hover:text-red-600"
+                >
+                  Logout
+                </Button>
+              </>
+            ) : (
+              <>
+                <Link to="/login" onClick={() => setMobileMenuOpen(false)}>
+                  <Button
+                    variant="ghost"
+                    className="w-full justify-center text-primary hover:bg-primary/10 hover:text-primary"
+                  >
+                    Sign In
+                  </Button>
+                </Link>
+                <Link to="/register" onClick={() => setMobileMenuOpen(false)}>
+                  <Button className="w-full rounded-lg bg-primary text-white hover:bg-primary/90">
+                    Get Started
+                  </Button>
+                </Link>
+              </>
+            )}
+          </nav>
+        </div>
       </header>
 
       {/* Hero Section */}
       <main className="flex-1">
-        <section className="container mx-auto max-w-7xl px-4 py-16 text-center lg:py-32">
-          <h1 className="font-serif text-4xl font-bold tracking-tight text-foreground sm:text-5xl md:text-6xl lg:text-7xl">
-            Understand Climate Change <br className="hidden sm:inline" />
-            <span className="text-primary">Through Data Literacy</span>
+        <section className="container mx-auto max-w-7xl px-4 py-10 sm:py-16 text-center lg:py-32">
+          <h1 className="font-serif text-3xl sm:text-4xl md:text-5xl lg:text-6xl xl:text-7xl font-bold tracking-tight text-foreground">
+            Understand Climate Change
+            <span className="block text-primary mt-2">
+              Through Data Literacy
+            </span>
           </h1>
-          <p className="mx-auto mt-8 max-w-2xl text-lg leading-relaxed text-muted-foreground sm:text-xl">
+          <p className="mx-auto mt-6 sm:mt-8 max-w-2xl text-base sm:text-lg md:text-xl leading-relaxed text-muted-foreground">
             Empower yourself with CODAP (Common Online Data Analysis Platform).
             Explore real-world climate datasets, build essential data literacy
             skills, and discover the science behind our changing planet.
           </p>
-          <div className="mt-10 flex justify-center gap-4">
-            <Link to="/register">
+          <div className="mt-8 sm:mt-10 flex flex-col sm:flex-row justify-center gap-3 sm:gap-4 w-full max-w-md mx-auto">
+            <Link to="/register" className="w-full sm:w-auto">
               <Button
-                size="lg"
-                className="h-12 rounded-lg bg-primary px-8 text-lg text-white hover:bg-primary/90"
+                size="sm"
+                className="w-full sm:w-auto h-12 sm:h-12 rounded-lg bg-primary px-6 sm:px-8 text-base sm:text-lg text-white hover:bg-primary/90"
               >
                 Start Learning Now
               </Button>
@@ -149,11 +212,12 @@ export default function Home() {
               href="https://codap.concord.org/"
               target="_blank"
               rel="noreferrer"
+              className="w-full sm:w-auto"
             >
               <Button
-                size="lg"
+                size="sm"
                 variant="outline"
-                className="h-12 rounded-lg border-2 border-foreground bg-transparent px-8 text-lg text-foreground hover:bg-foreground/5"
+                className="w-full sm:w-auto h-12 sm:h-12 rounded-lg border-2 border-foreground bg-transparent px-6 sm:px-8 text-base sm:text-lg text-foreground hover:bg-foreground/5"
               >
                 What is CODAP?
               </Button>
@@ -162,9 +226,9 @@ export default function Home() {
         </section>
 
         {/* Features Section */}
-        <section className="container mx-auto max-w-7xl px-4 py-16">
-          <div className="text-center mb-16">
-            <h2 className="font-serif text-3xl font-bold text-foreground sm:text-4xl mb-4">
+        <section className="container mx-auto max-w-7xl px-4 py-10 sm:py-16">
+          <div className="text-center mb-10 sm:mb-16">
+            <h2 className="font-serif text-2xl sm:text-3xl md:text-4xl font-bold text-foreground mb-3 sm:mb-4">
               Fitur Utama Platform
             </h2>
             <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
@@ -173,12 +237,12 @@ export default function Home() {
             </p>
           </div>
 
-          <div className="flex flex-col lg:flex-row items-center gap-16">
-            <div className="w-full lg:w-1/2 flex flex-col gap-6">
+          <div className="flex flex-col lg:flex-row items-center gap-8 sm:gap-12 lg:gap-16">
+            <div className="w-full lg:w-1/2 flex flex-col gap-3 sm:gap-6">
               {features.map((feature, index) => (
                 <div
                   key={index}
-                  className={`p-6 rounded-xl border-2 transition-all duration-300 cursor-pointer ${
+                  className={`p-4 sm:p-6 rounded-xl border-2 transition-all duration-300 cursor-pointer ${
                     activeFeatureIndex === index
                       ? "border-primary bg-background shadow-[0px_4px_6px_-1px_rgba(0,0,0,0.1)] scale-[1.02] transform z-10"
                       : "border-transparent bg-transparent hover:bg-background/50 opacity-60"
@@ -186,7 +250,7 @@ export default function Home() {
                   onClick={() => setActiveFeatureIndex(index)}
                 >
                   <h3
-                    className={`font-serif text-2xl font-bold mb-3 transition-colors ${
+                    className={`font-serif text-xl sm:text-2xl font-bold mb-2 sm:mb-3 transition-colors ${
                       activeFeatureIndex === index
                         ? "text-primary"
                         : "text-foreground"
@@ -194,12 +258,12 @@ export default function Home() {
                   >
                     {feature.title}
                   </h3>
-                  <p className="text-muted-foreground leading-relaxed mb-4">
+                  <p className="text-muted-foreground leading-relaxed mb-3 sm:mb-4 text-sm sm:text-base">
                     {feature.description}
                   </p>
                   {activeFeatureIndex === index && (
                     <Link to={feature.link}>
-                      <span className="inline-flex items-center text-primary font-semibold hover:text-primary/80 transition-colors">
+                      <span className="inline-flex items-center text-primary font-semibold hover:text-primary/80 transition-colors text-base sm:text-lg">
                         Mulai Pelajari
                         <svg
                           className="w-5 h-5 ml-2"
@@ -221,23 +285,23 @@ export default function Home() {
               ))}
             </div>
 
-            <div className="w-full lg:w-1/2 h-[350px] sm:h-[450px] relative perspective-1000">
+            <div className="w-full lg:w-1/2 h-55 min-[420px]:h-65 sm:h-87.5 md:h-100 lg:h-112.5 relative perspective-1000">
               <div className="relative w-full h-full flex items-center justify-center">
                 {features.map((feature, index) => {
                   const offset =
                     (index - activeFeatureIndex + features.length) %
                     features.length;
 
+                  const translateY = offset * 18;
+                  const translateX = offset * 12;
                   const zIndex = 30 - offset * 10;
                   const scale = 1 - offset * 0.1;
-                  const translateY = offset * 25;
-                  const translateX = offset * 15;
                   const opacity = 1 - offset * 0.4;
 
                   return (
                     <div
                       key={index}
-                      className="absolute top-0 left-0 w-full h-full p-4 transition-all duration-700 ease-in-out flex items-center justify-center"
+                      className="absolute top-0 left-0 w-full h-full p-2 sm:p-4 transition-all duration-700 ease-in-out flex items-center justify-center"
                       style={{
                         zIndex: zIndex,
                         transform: `translate(${translateX}px, ${translateY}px) scale(${scale})`,
@@ -247,7 +311,7 @@ export default function Home() {
                       <img
                         src={feature.image}
                         alt={feature.title}
-                        className="w-full h-full object-cover rounded-xl shadow-xl bg-background border border-border/20 ring-4 ring-white/50"
+                        className="w-full h-full object-cover rounded-xl shadow-xl bg-background border border-border/20 ring-2 sm:ring-4 ring-white/50"
                       />
                     </div>
                   );
@@ -258,29 +322,29 @@ export default function Home() {
         </section>
 
         {/* FAQ Section */}
-        <section className="bg-background border-y border-border/20 mt-16 py-24">
-          <div className="container mx-auto max-w-4xl px-4">
-            <div className="text-center mb-12">
-              <h2 className="font-serif text-3xl font-bold text-foreground sm:text-4xl mb-4">
+        <section className="bg-background border-y border-border/20 mt-10 sm:mt-16 py-12 sm:py-24">
+          <div className="container mx-auto max-w-4xl px-2 sm:px-4">
+            <div className="text-center mb-8 sm:mb-12">
+              <h2 className="font-serif text-xl sm:text-3xl md:text-4xl font-bold text-foreground mb-2 sm:mb-4">
                 Pertanyaan Seputar Platform
               </h2>
-              <p className="text-lg text-muted-foreground">
+              <p className="text-base sm:text-lg text-muted-foreground">
                 Beberapa hal yang sering ditanyakan mengenai platform edukasi
                 kami.
               </p>
             </div>
 
-            <div className="space-y-4">
+            <div className="space-y-3 sm:space-y-4">
               {faqs.map((faq, index) => (
                 <div
                   key={index}
                   className={`border border-border/20 rounded-lg bg-background transition-colors ${openFaqIndex === index ? "border-primary ring-1 ring-primary/20" : "hover:border-border/50"}`}
                 >
                   <button
-                    className="w-full px-6 py-5 flex items-center justify-between focus:outline-none"
+                    className="w-full px-4 sm:px-6 py-4 sm:py-5 flex items-center justify-between focus:outline-none"
                     onClick={() => toggleFaq(index)}
                   >
-                    <span className="font-semibold text-foreground text-left text-lg">
+                    <span className="font-semibold text-foreground text-left text-base sm:text-lg">
                       {faq.question}
                     </span>
                     <span
@@ -302,9 +366,9 @@ export default function Home() {
                     </span>
                   </button>
                   <div
-                    className={`overflow-hidden transition-all duration-300 ease-in-out ${openFaqIndex === index ? "max-h-48 opacity-100" : "max-h-0 opacity-0"}`}
+                    className={`overflow-hidden transition-all duration-300 ease-in-out ${openFaqIndex === index ? "max-h-64 sm:max-h-96 opacity-100" : "max-h-0 opacity-0"}`}
                   >
-                    <div className="px-6 pb-5 text-muted-foreground leading-relaxed text-base">
+                    <div className="px-4 sm:px-6 pb-4 sm:pb-5 text-muted-foreground leading-relaxed text-sm sm:text-base">
                       {faq.answer}
                     </div>
                   </div>
@@ -316,23 +380,23 @@ export default function Home() {
       </main>
 
       {/* Footer Section */}
-      <footer className="bg-foreground text-white py-16 mt-auto">
-        <div className="container mx-auto max-w-7xl px-4">
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-12">
+      <footer className="bg-foreground text-white py-10 sm:py-16 mt-auto">
+        <div className="container mx-auto max-w-7xl px-2 sm:px-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6 sm:gap-8 md:gap-12">
             <div>
-              <span className="font-serif text-2xl font-bold text-primary">
+              <span className="font-serif text-xl sm:text-2xl font-bold text-primary">
                 AirDataLabs
               </span>
-              <p className="mt-6 text-muted-foreground leading-relaxed max-w-sm">
+              <p className="mt-4 sm:mt-6 text-muted-foreground leading-relaxed max-w-sm text-sm sm:text-base">
                 Membangun literasi data untuk memahami perubahan iklim melalui
                 platform edukasi yang interaktif dan komprehensif.
               </p>
             </div>
             <div>
-              <h4 className="font-serif text-lg font-bold mb-6 text-white">
+              <h4 className="font-serif text-base sm:text-lg font-bold mb-4 sm:mb-6 text-white">
                 Tautan Cepat
               </h4>
-              <ul className="space-y-3 text-muted-foreground">
+              <ul className="space-y-2 sm:space-y-3 text-muted-foreground text-sm sm:text-base">
                 <li>
                   <Link
                     to="/investigasi"
@@ -360,11 +424,11 @@ export default function Home() {
               </ul>
             </div>
             <div>
-              <h4 className="font-serif text-lg font-bold mb-6 text-white">
+              <h4 className="font-serif text-base sm:text-lg font-bold mb-4 sm:mb-6 text-white">
                 Hubungi Kami
               </h4>
-              <ul className="space-y-3 text-muted-foreground">
-                <li className="flex items-center gap-3">
+              <ul className="space-y-2 sm:space-y-3 text-muted-foreground text-sm sm:text-base">
+                <li className="flex items-center gap-2 sm:gap-3">
                   <svg
                     className="w-5 h-5 text-primary"
                     fill="none"
@@ -380,7 +444,7 @@ export default function Home() {
                   </svg>
                   support@airdatalabs.com
                 </li>
-                <li className="flex items-center gap-3">
+                <li className="flex items-center gap-2 sm:gap-3">
                   <svg
                     className="w-5 h-5 text-primary"
                     fill="none"
@@ -399,16 +463,16 @@ export default function Home() {
               </ul>
             </div>
           </div>
-          <div className="border-t border-border/20 mt-16 pt-8 flex flex-col md:flex-row items-center justify-between text-muted-foreground">
-            <p>
+          <div className="border-t border-border/20 mt-10 sm:mt-16 pt-6 sm:pt-8 flex flex-col md:flex-row items-center justify-between text-muted-foreground">
+            <p className="text-xs sm:text-sm">
               &copy; {new Date().getFullYear()} AirDataLabs. All rights
               reserved.
             </p>
-            <div className="flex gap-4 mt-4 md:mt-0">
-              <span className="text-sm hover:text-white cursor-pointer">
+            <div className="flex gap-2 sm:gap-4 mt-4 md:mt-0">
+              <span className="text-xs sm:text-sm hover:text-white cursor-pointer">
                 Privacy Policy
               </span>
-              <span className="text-sm hover:text-white cursor-pointer">
+              <span className="text-xs sm:text-sm hover:text-white cursor-pointer">
                 Terms of Service
               </span>
             </div>

@@ -124,10 +124,10 @@ export default function Profile({ user, setUser }: ProfileProps) {
   };
 
   return (
-    <div className="mx-auto max-w-3xl space-y-8 relative">
+    <div className="mx-auto w-full max-w-3xl space-y-6 sm:space-y-8 relative">
       {/* Toast Notification */}
       {toast && toast.show && (
-        <div className="fixed bottom-4 right-4 z-50 flex max-h-screen w-full flex-col-reverse p-4 sm:bottom-0 sm:right-0 sm:top-auto sm:flex-col md:max-w-[420px]">
+        <div className="fixed inset-x-0 bottom-3 z-50 flex justify-center px-3 sm:inset-x-auto sm:bottom-4 sm:right-4 sm:px-0 md:max-w-105">
           <div className="pointer-events-auto relative flex w-full items-center justify-between space-x-4 overflow-hidden rounded-lg border p-4 pr-6 shadow-[0px_4px_6px_-1px_rgba(0,0,0,0.1)] transition-all border-border/20 bg-background text-foreground">
             <div className="flex gap-3">
               {toast.type === "success" ? (
@@ -146,27 +146,30 @@ export default function Profile({ user, setUser }: ProfileProps) {
         </div>
       )}
 
-      <header className="mb-8">
-        <h1 className="font-serif text-3xl font-bold text-foreground">
+      <header className="mb-6 sm:mb-8">
+        <h1 className="font-serif text-2xl sm:text-3xl font-bold text-foreground">
           Pengaturan Profil
         </h1>
-        <p className="mt-2 text-lg text-muted-foreground">
+        <p className="mt-2 text-base sm:text-lg text-muted-foreground">
           Perbarui informasi akun dan kata sandi Anda
         </p>
       </header>
 
       {/* Edit Profile */}
       <Card className="border border-border/20 bg-background shadow-[0px_4px_6px_-1px_rgba(0,0,0,0.1)] rounded-lg overflow-hidden">
-        <CardHeader className="border-b border-border/10 bg-background/50">
-          <CardTitle className="font-serif text-xl font-bold text-foreground">
+        <CardHeader className="border-b border-border/10 bg-background/50 p-4 sm:p-6">
+          <CardTitle className="font-serif text-lg sm:text-xl font-bold text-foreground">
             Detail Profil
           </CardTitle>
           <CardDescription className="text-muted-foreground">
             Ubah nama atau alamat email Anda
           </CardDescription>
         </CardHeader>
-        <CardContent className="pt-6">
-          <form onSubmit={handleUpdateProfile} className="space-y-5">
+        <CardContent className="px-4 pb-4 pt-4 sm:px-6 sm:pb-6 sm:pt-6">
+          <form
+            onSubmit={handleUpdateProfile}
+            className="space-y-4 sm:space-y-5"
+          >
             <div className="space-y-2">
               <Label htmlFor="name" className="font-semibold text-foreground">
                 Nama Lengkap
@@ -177,7 +180,7 @@ export default function Profile({ user, setUser }: ProfileProps) {
                 onChange={(e) => setName(e.target.value)}
                 placeholder="Nama Lengkap"
                 required
-                className="bg-background border-gray-300 focus:border-primary focus:ring-primary focus-visible:ring-primary"
+                className="h-10 bg-background border-gray-300 focus:border-primary focus:ring-primary focus-visible:ring-primary"
               />
             </div>
             <div className="space-y-2">
@@ -191,11 +194,11 @@ export default function Profile({ user, setUser }: ProfileProps) {
                 onChange={(e) => setEmail(e.target.value)}
                 placeholder="nama@email.com"
                 required
-                className="bg-background border-gray-300 focus:border-primary focus:ring-primary focus-visible:ring-primary"
+                className="h-10 bg-background border-gray-300 focus:border-primary focus:ring-primary focus-visible:ring-primary"
               />
             </div>
 
-            <div className="grid grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
               <div className="space-y-2">
                 <Label
                   htmlFor="school"
@@ -209,7 +212,7 @@ export default function Profile({ user, setUser }: ProfileProps) {
                   onChange={(e) => setSchool(e.target.value)}
                   placeholder="Nama Sekolah"
                   required
-                  className="bg-background border-gray-300 focus:border-primary focus:ring-primary focus-visible:ring-primary"
+                  className="h-10 bg-background border-gray-300 focus:border-primary focus:ring-primary focus-visible:ring-primary"
                 />
               </div>
               <div className="space-y-2">
@@ -225,12 +228,12 @@ export default function Profile({ user, setUser }: ProfileProps) {
                   onChange={(e) => setUserClass(e.target.value)}
                   placeholder="Contoh: 10A"
                   required
-                  className="bg-background border-gray-300 focus:border-primary focus:ring-primary focus-visible:ring-primary"
+                  className="h-10 bg-background border-gray-300 focus:border-primary focus:ring-primary focus-visible:ring-primary"
                 />
               </div>
             </div>
 
-            <div className="grid grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
               <div className="space-y-2">
                 <Label htmlFor="age" className="font-semibold text-foreground">
                   Usia
@@ -242,7 +245,7 @@ export default function Profile({ user, setUser }: ProfileProps) {
                   onChange={(e) => setAge(e.target.value)}
                   placeholder="15"
                   required
-                  className="bg-background border-gray-300 focus:border-primary focus:ring-primary focus-visible:ring-primary"
+                  className="h-10 bg-background border-gray-300 focus:border-primary focus:ring-primary focus-visible:ring-primary"
                 />
               </div>
               <div className="space-y-2">
@@ -257,7 +260,7 @@ export default function Profile({ user, setUser }: ProfileProps) {
                   value={gender}
                   onChange={(e) => setGender(e.target.value)}
                   required
-                  className="flex h-10 w-full rounded-md border border-gray-300 bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary disabled:cursor-not-allowed disabled:opacity-50"
+                  className="flex h-10 w-full rounded-md border border-gray-300 bg-background px-3 py-2 text-base sm:text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary disabled:cursor-not-allowed disabled:opacity-50"
                 >
                   <option value="">Pilih...</option>
                   <option value="Laki-laki">Laki-laki</option>
@@ -273,7 +276,7 @@ export default function Profile({ user, setUser }: ProfileProps) {
             <Button
               type="submit"
               disabled={isLoadingProfile}
-              className="mt-6 rounded-lg bg-primary text-white hover:bg-primary/90"
+              className="mt-4 sm:mt-6 h-10 w-full sm:w-auto rounded-lg bg-primary text-white hover:bg-primary/90"
             >
               {isLoadingProfile ? (
                 <>
@@ -290,16 +293,19 @@ export default function Profile({ user, setUser }: ProfileProps) {
 
       {/* Edit Password */}
       <Card className="border border-border/20 bg-background shadow-[0px_4px_6px_-1px_rgba(0,0,0,0.1)] rounded-lg overflow-hidden">
-        <CardHeader className="border-b border-border/10 bg-background/50">
-          <CardTitle className="font-serif text-xl font-bold text-foreground">
+        <CardHeader className="border-b border-border/10 bg-background/50 p-4 sm:p-6">
+          <CardTitle className="font-serif text-lg sm:text-xl font-bold text-foreground">
             Keamanan
           </CardTitle>
           <CardDescription className="text-muted-foreground">
             Ganti kata sandi akun Anda
           </CardDescription>
         </CardHeader>
-        <CardContent className="pt-6">
-          <form onSubmit={handleUpdatePassword} className="space-y-5">
+        <CardContent className="px-4 pb-4 pt-4 sm:px-6 sm:pb-6 sm:pt-6">
+          <form
+            onSubmit={handleUpdatePassword}
+            className="space-y-4 sm:space-y-5"
+          >
             <div className="space-y-2">
               <Label
                 htmlFor="currentPassword"
@@ -315,13 +321,17 @@ export default function Profile({ user, setUser }: ProfileProps) {
                   onChange={(e) => setCurrentPassword(e.target.value)}
                   placeholder="Masukkan password saat ini"
                   required
-                  className="bg-background border-gray-300 focus:border-primary focus:ring-primary focus-visible:ring-primary pr-10"
+                  className="h-10 bg-background border-gray-300 focus:border-primary focus:ring-primary focus-visible:ring-primary pr-10"
                 />
                 <button
                   type="button"
                   onClick={() => setShowCurrentPassword(!showCurrentPassword)}
-                  className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground"
-                  tabIndex={-1}
+                  className="absolute right-2 top-1/2 -translate-y-1/2 rounded-md p-1 text-muted-foreground hover:text-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-primary"
+                  aria-label={
+                    showCurrentPassword
+                      ? "Sembunyikan password saat ini"
+                      : "Tampilkan password saat ini"
+                  }
                 >
                   {showCurrentPassword ? (
                     <EyeOff size={18} />
@@ -347,13 +357,17 @@ export default function Profile({ user, setUser }: ProfileProps) {
                   onChange={(e) => setNewPassword(e.target.value)}
                   placeholder="Masukkan password baru"
                   required
-                  className="bg-background border-gray-300 focus:border-primary focus:ring-primary focus-visible:ring-primary pr-10"
+                  className="h-10 bg-background border-gray-300 focus:border-primary focus:ring-primary focus-visible:ring-primary pr-10"
                 />
                 <button
                   type="button"
                   onClick={() => setShowNewPassword(!showNewPassword)}
-                  className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground"
-                  tabIndex={-1}
+                  className="absolute right-2 top-1/2 -translate-y-1/2 rounded-md p-1 text-muted-foreground hover:text-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-primary"
+                  aria-label={
+                    showNewPassword
+                      ? "Sembunyikan password baru"
+                      : "Tampilkan password baru"
+                  }
                 >
                   {showNewPassword ? <EyeOff size={18} /> : <Eye size={18} />}
                 </button>
@@ -375,13 +389,17 @@ export default function Profile({ user, setUser }: ProfileProps) {
                   onChange={(e) => setConfirmPassword(e.target.value)}
                   placeholder="Konfirmasi password baru"
                   required
-                  className="bg-background border-gray-300 focus:border-primary focus:ring-primary focus-visible:ring-primary pr-10"
+                  className="h-10 bg-background border-gray-300 focus:border-primary focus:ring-primary focus-visible:ring-primary pr-10"
                 />
                 <button
                   type="button"
                   onClick={() => setShowConfirmPassword(!showConfirmPassword)}
-                  className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground"
-                  tabIndex={-1}
+                  className="absolute right-2 top-1/2 -translate-y-1/2 rounded-md p-1 text-muted-foreground hover:text-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-primary"
+                  aria-label={
+                    showConfirmPassword
+                      ? "Sembunyikan konfirmasi password baru"
+                      : "Tampilkan konfirmasi password baru"
+                  }
                 >
                   {showConfirmPassword ? (
                     <EyeOff size={18} />
@@ -400,7 +418,7 @@ export default function Profile({ user, setUser }: ProfileProps) {
                 !newPassword ||
                 !confirmPassword
               }
-              className="mt-6 rounded-lg bg-primary text-white hover:bg-primary/90"
+              className="mt-4 sm:mt-6 h-10 w-full sm:w-auto rounded-lg bg-primary text-white hover:bg-primary/90"
             >
               {isLoadingPassword ? (
                 <>
