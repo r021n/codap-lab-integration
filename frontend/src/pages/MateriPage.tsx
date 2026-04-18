@@ -1,4 +1,11 @@
-import { useState, useEffect, useRef, useMemo, useCallback } from "react";
+import {
+  useState,
+  useEffect,
+  useLayoutEffect,
+  useRef,
+  useMemo,
+  useCallback,
+} from "react";
 import { getContent, updateContent } from "../api/content.api";
 import {
   Edit2,
@@ -30,8 +37,21 @@ export default function MateriPage({ user }: MateriPageProps) {
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const quillRef = useRef<ReactQuill>(null);
+  const contentCardRef = useRef<HTMLDivElement>(null);
+  const hasMountedRef = useRef(false);
 
   const isAdmin = user.role === "admin";
+
+  useLayoutEffect(() => {
+    if (hasMountedRef.current) {
+      contentCardRef.current?.scrollIntoView({
+        block: "start",
+        behavior: "auto",
+      });
+    } else {
+      hasMountedRef.current = true;
+    }
+  }, [currentIndex]);
 
   useEffect(() => {
     const fetchContent = async () => {
@@ -306,7 +326,10 @@ export default function MateriPage({ user }: MateriPageProps) {
       )}
 
       {/* Content Area */}
-      <div className="bg-white rounded-2xl shadow-xl border border-border/50 overflow-hidden min-h-125 flex flex-col">
+      <div
+        ref={contentCardRef}
+        className="bg-white rounded-2xl shadow-xl border border-border/50 overflow-hidden min-h-125 flex flex-col"
+      >
         {isEditing ? (
           <div className="p-3 sm:p-4 flex-1 flex flex-col">
             <ReactQuill
@@ -324,7 +347,7 @@ export default function MateriPage({ user }: MateriPageProps) {
             <div className="p-4 sm:p-6 md:p-8 lg:p-12 prose prose-slate max-w-none flex-1 overflow-x-hidden">
               {slides[currentIndex] ? (
                 <div
-                  className="rich-text-content animate-in fade-in duration-500"
+                  className="rich-text-content"
                   dangerouslySetInnerHTML={{ __html: slides[currentIndex] }}
                 />
               ) : (
@@ -460,14 +483,6 @@ export default function MateriPage({ user }: MateriPageProps) {
             margin: 1rem auto;
             border-radius: 0.75rem;
           }
-        }
-        
-        .animate-in {
-          animation: fadeIn 0.5s ease-out;
-        }
-        @keyframes fadeIn {
-          from { opacity: 0; transform: translateY(10px); }
-          to { opacity: 1; transform: translateY(0); }
         }
       `}</style>
     </div>
