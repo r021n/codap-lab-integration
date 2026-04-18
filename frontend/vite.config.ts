@@ -37,7 +37,8 @@ export default defineConfig({
         ],
       },
       workbox: {
-        navigateFallback: "/offline.html",
+        // Route document navigations to the SPA entry so direct URLs like /login still resolve client-side.
+        navigateFallback: "/index.html",
         navigateFallbackDenylist: [/^\/api\//],
         runtimeCaching: [
           {

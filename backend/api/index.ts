@@ -5,6 +5,8 @@ import * as dotenv from "dotenv";
 import authRoutes from "../src/routes/auth.routes";
 import datasetsRoutes from "../src/routes/datasets.routes";
 import quizRoutes from "../src/routes/quiz.routes";
+import contentRoutes from "../src/routes/content.routes";
+import investigasiRoutes from "../src/routes/investigasi.routes";
 
 dotenv.config();
 
@@ -31,6 +33,8 @@ app.use(express.json());
 app.use("/api/auth", authRoutes);
 app.use("/api/datasets", datasetsRoutes);
 app.use("/api/quizzes", quizRoutes);
+app.use("/api/contents", contentRoutes);
+app.use("/api/investigasi", investigasiRoutes);
 
 app.get("/api/health", (req, res) => {
   res.json({ status: "ok", message: "API is running on Vercel" });
