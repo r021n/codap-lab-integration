@@ -12,6 +12,7 @@ import {
   BookOpen,
   Book,
   HelpCircle,
+  Wind,
 } from "lucide-react";
 import ConfirmDialog from "./ui/confirm-dialog";
 
@@ -46,6 +47,12 @@ const navItems = [
     to: "/dashboard/investigasi",
     title: "Investigasi",
     icon: FileSearch,
+    end: false,
+  },
+  {
+    to: "/dashboard/air-quality-lab",
+    title: "Lab Kualitas Udara",
+    icon: Wind,
     end: false,
   },
   { to: "/dashboard/kuis", title: "Kuis", icon: ClipboardList, end: false },
