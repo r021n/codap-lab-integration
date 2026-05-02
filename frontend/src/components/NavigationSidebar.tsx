@@ -12,7 +12,6 @@ import {
   BookOpen,
   Book,
   HelpCircle,
-  Wind,
 } from "lucide-react";
 import ConfirmDialog from "./ui/confirm-dialog";
 
