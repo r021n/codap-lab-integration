@@ -2,72 +2,72 @@ Hari,Tanggal,Jam,Kota,PM 10,PM 2.5,SO2,CO,O3,NO2,HC
 Senin,27/04/2026,19.00,Tasikmalaya,0,0,1,4,1,5,4
 Senin,27/04/2026,19.00,Solo,7,23,53,14,4,10,-
 Senin,27/04/2026,19.00,Kutai Barat,62,146,3,6,4,4,0
-Senin,27/04/2026,20.00,Tasikmalaya,0,0,1,4,1,5,4
+Senin,27/04/2026,20.00,Tasikmalaya,0,1,1,4,1,5,4
 Senin,27/04/2026,20.00,Solo,8,27,53,14,5,11,-
 Senin,27/04/2026,20.00,Kutai Barat,62,146,3,6,4,4,2
-Senin,27/04/2026,21.00,Tasikmalaya,0,0,1,4,1,5,4
+Senin,27/04/2026,21.00,Tasikmalaya,0,0,1,3,1,6,4
 Senin,27/04/2026,21.00,Solo,9,32,52,14,5,12,-
 Senin,27/04/2026,21.00,Kutai Barat,62,146,3,6,4,4,2
-Senin,27/04/2026,22.00,Tasikmalaya,0,0,1,4,1,5,4
+Senin,27/04/2026,22.00,Tasikmalaya,1,0,0,4,2,5,3
 Senin,27/04/2026,22.00,Solo,10,36,52,14,5,13,-
 Senin,27/04/2026,22.00,Kutai Barat,62,146,3,6,4,4,2
-Senin,27/04/2026,23.00,Tasikmalaya,0,0,1,4,1,5,4
+Senin,27/04/2026,23.00,Tasikmalaya,0,2,1,5,1,4,4
 Senin,27/04/2026,23.00,Solo,11,38,51,14,6,14,-
 Senin,27/04/2026,23.00,Kutai Barat,62,146,3,6,4,4,2
-Selasa,28/04/2026,00.00,Tasikmalaya,0,0,1,4,1,5,4
+Selasa,28/04/2026,00.00,Tasikmalaya,0,0,2,4,0,5,5
 Selasa,28/04/2026,00.00,Solo,11,37,50,13,6,14,-
 Selasa,28/04/2026,00.00,Kutai Barat,62,146,3,6,4,4,2
 Selasa,28/04/2026,01.00,Tasikmalaya,0,0,1,4,1,5,4
 Selasa,28/04/2026,01.00,Solo,12,43,50,14,6,16,-
 Selasa,28/04/2026,01.00,Kutai Barat,62,146,3,6,4,4,2
-Selasa,28/04/2026,02.00,Tasikmalaya,0,0,1,4,1,5,4
+Selasa,28/04/2026,02.00,Tasikmalaya,0,1,1,4,1,5,4
 Selasa,28/04/2026,02.00,Solo,13,47,49,14,7,17,-
 Selasa,28/04/2026,02.00,Kutai Barat,62,-,3,6,4,4,2
-Selasa,28/04/2026,03.00,Tasikmalaya,0,0,1,4,1,5,4
+Selasa,28/04/2026,03.00,Tasikmalaya,0,0,1,3,1,6,4
 Selasa,28/04/2026,03.00,Solo,14,50,48,14,7,18,-
 Selasa,28/04/2026,03.00,Kutai Barat,62,146,3,6,4,4,2
-Selasa,28/04/2026,04.00,Tasikmalaya,0,0,1,4,1,5,4
+Selasa,28/04/2026,04.00,Tasikmalaya,1,0,0,4,2,5,3
 Selasa,28/04/2026,04.00,Solo,15,51,46,14,7,19,-
 Selasa,28/04/2026,04.00,Kutai Barat,62,146,3,6,4,4,2
-Selasa,28/04/2026,05.00,Tasikmalaya,0,0,1,4,1,5,4
+Selasa,28/04/2026,05.00,Tasikmalaya,0,1,1,5,1,4,4
 Selasa,28/04/2026,05.00,Solo,16,53,45,14,8,20,-
 Selasa,28/04/2026,05.00,Kutai Barat,62,146,3,6,4,4,2
-Selasa,28/04/2026,06.00,Tasikmalaya,0,0,1,4,1,5,4
+Selasa,28/04/2026,06.00,Tasikmalaya,0,0,2,4,0,5,5
 Selasa,28/04/2026,06.00,Solo,18,56,44,14,8,21,-
 Selasa,28/04/2026,06.00,Kutai Barat,62,146,3,6,4,4,2
 Selasa,28/04/2026,07.00,Tasikmalaya,0,0,1,4,1,5,4
 Selasa,28/04/2026,07.00,Solo,17,55,45,14,8,20,-
 Selasa,28/04/2026,07.00,Kutai Barat,62,146,3,6,4,4,2
-Selasa,28/04/2026,08.00,Tasikmalaya,0,0,1,4,1,5,4
+Selasa,28/04/2026,08.00,Tasikmalaya,0,1,1,4,1,5,4
 Selasa,28/04/2026,08.00,Solo,17,53,47,14,7,19,-
 Selasa,28/04/2026,08.00,Kutai Barat,61,144,3,6,4,4,2
-Selasa,28/04/2026,09.00,Tasikmalaya,0,0,1,4,1,5,4
+Selasa,28/04/2026,09.00,Tasikmalaya,1,0,1,3,1,6,4
 Selasa,28/04/2026,09.00,Solo,18,55,48,14,8,20,-
 Selasa,28/04/2026,09.00,Kutai Barat,60,-,3,6,4,4,2
-Selasa,28/04/2026,10.00,Tasikmalaya,0,0,1,4,1,5,4
+Selasa,28/04/2026,10.00,Tasikmalaya,0,0,0,4,2,5,3
 Selasa,28/04/2026,10.00,Solo,19,56,50,14,8,19,-
 Selasa,28/04/2026,10.00,Kutai Barat,60,-,3,6,4,4,2
-Selasa,28/04/2026,11.00,Tasikmalaya,0,0,1,4,1,5,4
+Selasa,28/04/2026,11.00,Tasikmalaya,0,2,1,5,1,4,4
 Selasa,28/04/2026,11.00,Solo,19,57,51,14,8,19,-
 Selasa,28/04/2026,11.00,Kutai Barat,57,-,3,6,5,4,2
-Selasa,28/04/2026,12.00,Tasikmalaya,0,0,1,4,1,5,4
+Selasa,28/04/2026,12.00,Tasikmalaya,0,0,2,4,0,5,5
 Selasa,28/04/2026,12.00,Solo,19,57,51,14,8,18,-
 Selasa,28/04/2026,12.00,Kutai Barat,55,-,3,6,5,4,2
 Selasa,28/04/2026,13.00,Tasikmalaya,0,0,1,4,1,5,4
 Selasa,28/04/2026,13.00,Solo,19,57,52,14,8,18,-
 Selasa,28/04/2026,13.00,Kutai Barat,54,-,3,6,5,4,2
-Selasa,28/04/2026,14.00,Tasikmalaya,0,0,1,4,1,5,4
+Selasa,28/04/2026,14.00,Tasikmalaya,1,1,1,4,1,5,4
 Selasa,28/04/2026,14.00,Solo,20,58,52,14,8,18,-
 Selasa,28/04/2026,14.00,Kutai Barat,52,-,3,6,5,4,2
-Selasa,28/04/2026,15.00,Tasikmalaya,0,0,1,4,1,5,4
+Selasa,28/04/2026,15.00,Tasikmalaya,0,0,1,3,1,6,4
 Selasa,28/04/2026,15.00,Solo,20,57,53,14,7,17,-
 Selasa,28/04/2026,15.00,Kutai Barat,50,-,3,6,5,4,2
-Selasa,28/04/2026,16.00,Tasikmalaya,0,0,1,4,1,5,4
+Selasa,28/04/2026,16.00,Tasikmalaya,0,0,0,4,2,5,3
 Selasa,28/04/2026,16.00,Solo,20,58,53,14,7,17,-
 Selasa,28/04/2026,16.00,Kutai Barat,49,-,3,6,5,4,2
-Selasa,28/04/2026,17.00,Tasikmalaya,0,0,1,4,1,5,4
+Selasa,28/04/2026,17.00,Tasikmalaya,0,1,1,5,1,4,4
 Selasa,28/04/2026,17.00,Solo,20,57,53,14,7,16,-
 Selasa,28/04/2026,17.00,Kutai Barat,47,-,3,6,5,4,2
-Selasa,28/04/2026,18.00,Tasikmalaya,0,0,1,4,1,5,4
+Selasa,28/04/2026,18.00,Tasikmalaya,0,0,2,4,0,5,5
 Selasa,28/04/2026,18.00,Solo,22,60,55,13,7,16,-
 Selasa,28/04/2026,18.00,Kutai Barat,44,-,3,6,5,4,2

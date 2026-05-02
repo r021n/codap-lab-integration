@@ -49,12 +49,6 @@ const navItems = [
     icon: FileSearch,
     end: false,
   },
-  {
-    to: "/dashboard/air-quality-lab",
-    title: "Lab Kualitas Udara",
-    icon: Wind,
-    end: false,
-  },
   { to: "/dashboard/kuis", title: "Kuis", icon: ClipboardList, end: false },
 ] as const;
 

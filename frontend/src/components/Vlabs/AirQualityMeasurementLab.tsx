@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef, useCallback, useMemo } from "react";
-import IndonesiaMapSVG from "../assets/air_labs/indonesian_map.svg";
+import IndonesiaMapSVG from "../../assets/air_labs/indonesian_map.svg";
 
 // ─── Types ─────────────────────────────────────────────────────────────────
 
@@ -359,7 +359,7 @@ const LocationPins = ({ selected }: { selected: string | null }) => (
 );
 
 const IndonesiaMap = ({ selected }: { selected: string | null }) => (
-  <div className="relative w-full max-w-2xl aspect-2/1 mx-auto bg-[#E0F6FF] rounded-2xl overflow-hidden shadow-inner border border-blue-200">
+  <div className="relative w-full max-w-2xl aspect-[2/1] mx-auto bg-[#E0F6FF] rounded-2xl overflow-hidden shadow-inner border border-blue-200">
     <MapIndonesiaBase />
     <LocationPins selected={selected} />
   </div>
@@ -377,7 +377,7 @@ const DeviceSVG = ({
   return (
     <svg
       viewBox="0 0 400 500"
-      className="w-75 md:w-87.5 lg:w-100 h-auto drop-shadow-2xl"
+      className="w-64 sm:w-72 md:w-87.5 lg:w-100 h-auto drop-shadow-2xl mx-auto"
     >
       {/* Device Body */}
       <rect x="40" y="20" width="320" height="460" rx="30" fill="#2d3748" />
@@ -571,7 +571,13 @@ const DeviceSVG = ({
 
 // ─── Main Component ────────────────────────────────────────────────────────
 
-export default function AirQualityLab() {
+type AirQualityMeasurementLabProps = {
+  onBack: () => void;
+};
+
+export default function AirQualityMeasurementLab({
+  onBack,
+}: AirQualityMeasurementLabProps) {
   const [screen, setScreen] = useState<Screen>("start");
   const [selectedLocation, setSelectedLocation] = useState<Location | null>(
     null,
@@ -679,15 +685,21 @@ export default function AirQualityLab() {
     if (screen === "start" || screen === "location") {
       return (
         <div className="flex flex-col h-full space-y-6">
-          <div>
-            <h1 className="text-3xl font-serif font-bold text-slate-800 flex items-center gap-2">
-              <WindIcon className="w-8 h-8 text-primary" /> Virtual Lab
+          <div className="flex items-center justify-between">
+            <h1 className="text-2xl md:text-3xl font-serif font-bold text-slate-800 flex items-center gap-2">
+              <WindIcon className="w-6 h-6 md:w-8 md:h-8 text-primary" /> Virtual Lab
             </h1>
-            <p className="text-slate-500 mt-2">
-              Pilih lokasi pemantauan pada peta atau daftar di bawah untuk
-              memulai simulasi pengukuran kualitas udara.
-            </p>
+            <button
+              onClick={onBack}
+              className="text-xs font-semibold px-2 py-1 border rounded hover:bg-slate-50 transition-colors"
+            >
+              ← Kembali
+            </button>
           </div>
+          <p className="text-slate-500 mt-2">
+            Pilih lokasi pemantauan pada peta atau daftar di bawah untuk
+            memulai simulasi pengukuran kualitas udara.
+          </p>
 
           <div className="flex-1 overflow-y-auto pr-2 space-y-3">
             {LOCATIONS.map((loc) => (
@@ -833,7 +845,7 @@ export default function AirQualityLab() {
           <div className="mt-auto pt-6">
             <button
               onClick={startMeasurement}
-              className="w-full bg-primary text-white py-4 rounded-xl font-bold tracking-wide shadow-lg hover:shadow-xl transition-all active:scale-95"
+              className="w-full bg-primary text-white mb-4 py-4 rounded-xl font-bold tracking-wide shadow-lg hover:shadow-xl transition-all active:scale-95"
             >
               Mulai Pengukuran
             </button>
@@ -952,22 +964,17 @@ export default function AirQualityLab() {
   // ─── Main Render ─────────────────────────────────────────────────────────
 
   return (
-    <div className="flex w-full h-screen bg-slate-50 overflow-hidden font-sans">
-      {/* Left Panel: Controls */}
-      <div className="w-full md:w-100 lg:w-112.5 shrink-0 bg-white border-r border-slate-200 p-6 md:p-8 flex flex-col z-10 shadow-[4px_0_24px_rgba(0,0,0,0.05)] overflow-y-auto relative">
-        {renderLeftPanel()}
-      </div>
-
-      {/* Right Panel: Visual Stage */}
-      <div className="hidden md:flex flex-1 relative bg-[#E0F6FF] overflow-hidden justify-center items-center">
+    <div className="flex flex-col md:flex-row w-full h-screen bg-slate-50 overflow-hidden font-sans">
+      {/* Visual Stage: Top on mobile, right on desktop */}
+      <div className="flex-none h-[40vh] min-h-[300px] md:h-full md:flex-1 relative bg-[#E0F6FF] overflow-hidden justify-center items-center order-1 md:order-2">
         {/* Background Visuals based on screen */}
         {(screen === "start" ||
           screen === "location" ||
           screen === "time" ||
           screen === "confirm") && (
-          <div className="absolute inset-0 flex items-center justify-center p-8">
+          <div className="absolute inset-0 flex items-center justify-center p-4 md:p-8">
             <div className="w-full max-w-4xl text-center">
-              <h2 className="text-4xl font-serif text-sky-800 opacity-50 mb-12">
+              <h2 className="text-2xl md:text-4xl font-serif text-sky-800 opacity-50 mb-4 md:mb-12">
                 Pilih Lokasi Pemantauan
               </h2>
               <IndonesiaMap selected={selectedLocation} />
@@ -999,6 +1006,11 @@ export default function AirQualityLab() {
             result={result}
           />
         </div>
+      </div>
+
+      {/* Left Panel: Controls */}
+      <div className="flex-1 md:w-100 lg:w-112.5 md:shrink-0 bg-white border-t md:border-t-0 md:border-r border-slate-200 p-6 md:p-8 flex flex-col z-10 shadow-[0_-4px_24px_rgba(0,0,0,0.05)] md:shadow-[4px_0_24px_rgba(0,0,0,0.05)] overflow-y-auto relative order-2 md:order-1">
+        {renderLeftPanel()}
       </div>
     </div>
   );

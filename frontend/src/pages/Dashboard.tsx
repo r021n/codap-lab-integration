@@ -10,7 +10,6 @@ import QuizPage from "./Quiz";
 import IntroductionPage from "./IntroductionPage";
 import GuidePage from "./GuidePage";
 import MateriPage from "./MateriPage";
-import AirQualityLab from "./AirQualityLab";
 
 export default function Dashboard() {
   const [user, setUser] = useState<User | null>(null);
@@ -71,9 +70,7 @@ export default function Dashboard() {
   const isPendahuluan = location.pathname.startsWith("/dashboard/pendahuluan");
   const isPetunjuk = location.pathname.startsWith("/dashboard/petunjuk");
   const isMateri = location.pathname.startsWith("/dashboard/materi");
-  const isAirQualityLab = location.pathname.startsWith(
-    "/dashboard/air-quality-lab",
-  );
+
   const pageTitle = isProfile
     ? "Profil"
     : isInvestigasi
@@ -88,9 +85,7 @@ export default function Dashboard() {
               ? "Petunjuk"
               : isMateri
                 ? "Materi"
-                : isAirQualityLab
-                  ? "Lab Kualitas Udara"
-                  : "Dashboard";
+                : "Dashboard";
   const contentPaddingClass = "p-3 sm:p-4 md:p-8";
 
   const investigasiContainerClass = isInvestigasi
@@ -145,9 +140,6 @@ export default function Dashboard() {
         </div>
         <div className={isMateri ? `block ${contentPaddingClass}` : "hidden"}>
           <MateriPage user={user} />
-        </div>
-        <div className={isAirQualityLab ? "block w-full h-full" : "hidden"}>
-          <AirQualityLab />
         </div>
       </main>
     </div>
