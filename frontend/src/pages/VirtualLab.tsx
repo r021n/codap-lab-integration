@@ -514,6 +514,8 @@ export default function App() {
   const [durationInput, setDurationInput] = useState<string>(
     String(DEFAULT_DURATION),
   );
+  const [isStarted, setIsStarted] = useState(false);
+  const [isReady, setIsReady] = useState(false);
 
   const [hoseDrawing, setHoseDrawing] =
     useState<HoseDrawing>(initialHoseDrawing);
@@ -1042,6 +1044,68 @@ export default function App() {
       </span>
     </div>
   );
+  if (!isStarted) {
+    return (
+      <div className="flex h-screen w-full items-center justify-center bg-[#f8fafc] p-4 font-sans">
+        <div className="w-full max-w-md overflow-hidden rounded-3xl border border-white/40 bg-white/70 p-10 shadow-[0_20px_50px_rgba(0,0,0,0.1)] backdrop-blur-xl">
+          <div className="mb-8 text-center">
+            <div className="mx-auto mb-6 flex h-20 w-20 items-center justify-center rounded-2xl bg-slate-100 text-4xl shadow-inner">
+              🔬
+            </div>
+            <h1 className="mb-2 text-3xl font-serif font-bold tracking-tight text-slate-800">
+              Siap memulai simulasi?
+            </h1>
+            <p className="text-slate-500">
+              Pastikan Anda sudah memahami instruksi sebelum memulai.
+            </p>
+          </div>
+
+          <div className="group mb-10 flex cursor-pointer items-center justify-center gap-4 rounded-2xl border border-slate-100 bg-slate-50/50 p-5 transition-all hover:bg-slate-50">
+            <div className="relative flex items-center">
+              <input
+                type="checkbox"
+                id="ready-checkbox"
+                checked={isReady}
+                onChange={(e) => setIsReady(e.target.checked)}
+                className="peer h-6 w-6 cursor-pointer appearance-none rounded-lg border-2 border-slate-300 transition-all checked:border-primary checked:bg-primary focus:outline-none focus:ring-2 focus:ring-primary/20"
+              />
+              <svg
+                className="pointer-events-none absolute left-1 top-1 h-4 w-4 scale-0 text-white transition-transform peer-checked:scale-100"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+                strokeWidth="4"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  d="M5 13l4 4L19 7"
+                />
+              </svg>
+            </div>
+            <label
+              htmlFor="ready-checkbox"
+              className="cursor-pointer select-none text-lg font-semibold text-slate-700 group-hover:text-primary transition-colors"
+            >
+              Ya, saya siap!
+            </label>
+          </div>
+
+          <button
+            onClick={() => setIsStarted(true)}
+            disabled={!isReady}
+            className={`relative w-full overflow-hidden rounded-2xl py-4 font-bold tracking-wide transition-all duration-300 active:scale-[0.98] ${
+              isReady
+                ? "bg-primary text-white shadow-[0_10px_20px_rgba(0,0,0,0.1)] hover:shadow-[0_15px_25px_rgba(0,0,0,0.15)]"
+                : "bg-slate-200 text-slate-400 cursor-not-allowed"
+            }`}
+          >
+            Mulai Simulasi
+          </button>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="flex h-dvh w-full flex-col overflow-hidden bg-background font-sans text-foreground md:h-screen md:flex-row">
