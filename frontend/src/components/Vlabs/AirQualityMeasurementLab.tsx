@@ -3,12 +3,7 @@ import IndonesiaMapSVG from "../../assets/air_labs/indonesian_map.svg";
 
 // ─── Types ─────────────────────────────────────────────────────────────────
 
-type Screen =
-  | "start"
-  | "time"
-  | "confirm"
-  | "measuring"
-  | "result";
+type Screen = "start" | "time" | "confirm" | "activation" | "measuring" | "result";
 
 type AirQualityRecord = {
   hari: string;
@@ -209,20 +204,6 @@ const WindIcon = ({ className = "w-8 h-8" }: { className?: string }) => (
   </svg>
 );
 
-const AeroScannerIcon = ({ className = "w-10 h-10" }: { className?: string }) => (
-  <svg
-    viewBox="0 0 24 24"
-    fill="none"
-    xmlns="http://www.w3.org/2000/svg"
-    className={className}
-  >
-    <circle cx="12" cy="12" r="9" stroke="#3B82F6" strokeWidth="2" fill="#3B82F6" fillOpacity="0.1" />
-    <circle cx="12" cy="12" r="5" stroke="#3B82F6" strokeWidth="1.5" />
-    <path d="M12 7V17M7 12H17" stroke="#3B82F6" strokeWidth="1.5" strokeLinecap="round" />
-    <path d="M18 18L21 21" stroke="#3B82F6" strokeWidth="2" strokeLinecap="round" />
-  </svg>
-);
-
 // ─── Illustrations ──────────────────────────────────────────────────────────
 
 const EnvironmentVisual = ({ location }: { location?: string }) => (
@@ -373,189 +354,450 @@ const DeviceSVG = ({
   status,
   result,
   compact = false,
+  powerState = "ready",
+  onPowerClick,
 }: {
   progress?: number;
   status?: string;
   result?: MeasurementResult | null;
   compact?: boolean;
+  powerState?: "off" | "booting" | "ready";
+  onPowerClick?: () => void;
 }) => {
+  const getIndicatorX = (category: ISPUCategory | string) => {
+    switch (category) {
+      case "Baik":
+        return 55;
+      case "Sedang":
+        return 85;
+      case "Tidak Sehat":
+        return 115;
+      case "Sangat Tidak Sehat":
+        return 145;
+      case "Berbahaya":
+        return 175;
+      default:
+        return 55;
+    }
+  };
+
   return (
     <svg
-      viewBox="0 0 400 500"
-      className={`${compact ? "w-full max-w-[240px]" : "w-64 sm:w-72 md:w-87.5 lg:w-100"} h-auto drop-shadow-2xl mx-auto`}
+      viewBox="0 0 300 400"
+      className={`w-full h-auto drop-shadow-2xl mx-auto transition-all duration-300 ${compact ? "max-w-[180px]" : "max-w-[280px] sm:max-w-[320px]"}`}
     >
       {/* Device Body */}
-      <rect x="40" y="20" width="320" height="460" rx="30" fill="#2d3748" />
-      <rect x="45" y="25" width="310" height="450" rx="25" fill="#1f2937" />
+      {/* Back shadow */}
+      <rect
+        x="25"
+        y="25"
+        width="260"
+        height="360"
+        rx="15"
+        fill="#94a3b8"
+        opacity="0.3"
+      />
+      {/* Main casing */}
+      <rect
+        x="15"
+        y="15"
+        width="260"
+        height="360"
+        rx="15"
+        fill="#ffffff"
+        stroke="#e2e8f0"
+        strokeWidth="2"
+      />
 
-      {/* Sensors / Top Details */}
-      <rect x="150" y="5" width="100" height="20" rx="5" fill="#4a5568" />
-      <circle cx="100" cy="50" r="10" fill="#4a5568" />
-      <circle cx="300" cy="50" r="10" fill="#4a5568" />
-      {progress > 0 && progress < 100 && (
-        <circle cx="100" cy="50" r="5" fill="#ef4444">
-          <animate
-            attributeName="opacity"
-            values="1;0;1"
-            dur="1s"
-            repeatCount="indefinite"
+      {/* Right side shading to give 3D edge effect */}
+      <path d="M 230 15 L 230 375" stroke="#e2e8f0" strokeWidth="1" />
+      <path
+        d="M 230 15 L 260 15 Q 275 15 275 30 L 275 360 Q 275 375 260 375 L 230 375 Z"
+        fill="#f1f5f9"
+      />
+
+      {/* Vents and Side Button */}
+      <g fill="#cbd5e1">
+        <rect
+          x="245"
+          y="80"
+          width="20"
+          height="4"
+          rx="2"
+          transform="rotate(-10 245 80)"
+        />
+        <rect
+          x="245"
+          y="95"
+          width="20"
+          height="4"
+          rx="2"
+          transform="rotate(-10 245 95)"
+        />
+        <rect
+          x="245"
+          y="110"
+          width="20"
+          height="4"
+          rx="2"
+          transform="rotate(-10 245 110)"
+        />
+        <rect
+          x="245"
+          y="125"
+          width="20"
+          height="4"
+          rx="2"
+          transform="rotate(-10 245 125)"
+        />
+        <rect
+          x="245"
+          y="140"
+          width="20"
+          height="4"
+          rx="2"
+          transform="rotate(-10 245 140)"
+        />
+
+        {/* Power Button Area */}
+        <g
+          className={onPowerClick ? "cursor-pointer" : ""}
+          onClick={onPowerClick}
+        >
+          {/* Transparent hit area for power button - enlarged for touch */}
+          <circle cx="255" cy="200" r="25" fill="transparent" />
+
+          <circle
+            cx="255"
+            cy="200"
+            r="10"
+            fill="none"
+            stroke={powerState !== "off" ? "#10b981" : "#cbd5e1"}
+            strokeWidth="2"
+            className="transition-colors duration-300"
           />
-        </circle>
+          <rect
+            x="254"
+            y="195"
+            width="2"
+            height="6"
+            fill={powerState !== "off" ? "#10b981" : "#cbd5e1"}
+            className="transition-colors duration-300"
+          />
+        </g>
+
+        <rect
+          x="245"
+          y="260"
+          width="20"
+          height="4"
+          rx="2"
+          transform="rotate(-10 245 260)"
+        />
+        <rect
+          x="245"
+          y="275"
+          width="20"
+          height="4"
+          rx="2"
+          transform="rotate(-10 245 275)"
+        />
+        <rect
+          x="245"
+          y="290"
+          width="20"
+          height="4"
+          rx="2"
+          transform="rotate(-10 245 290)"
+        />
+        <rect
+          x="245"
+          y="305"
+          width="20"
+          height="4"
+          rx="2"
+          transform="rotate(-10 245 305)"
+        />
+      </g>
+
+      {/* Screen Area */}
+      <rect x="30" y="30" width="185" height="330" rx="8" fill="#111827" />
+      <rect x="32" y="32" width="181" height="326" rx="6" fill="#000000" />
+
+      {/* Top Bar on Screen (only visible when not off) */}
+      {powerState !== "off" && (
+        <g>
+          <path
+            d="M 40 45 L 46 51 L 43 54 L 43 36 L 46 39 L 40 45 Z"
+            fill="none"
+            stroke="#ffffff"
+            strokeWidth="1.5"
+            strokeLinejoin="round"
+          />
+          <rect
+            x="180"
+            y="40"
+            width="18"
+            height="10"
+            rx="2"
+            fill="none"
+            stroke="#ffffff"
+            strokeWidth="1.5"
+          />
+          <rect x="199" y="43" width="2" height="4" fill="#ffffff" />
+          <rect x="182" y="42" width="14" height="6" fill="#10b981" rx="1" />
+
+          <text
+            x="122"
+            y="65"
+            textAnchor="middle"
+            fill="#ffffff"
+            fontSize="10"
+            fontFamily="sans-serif"
+            fontWeight="bold"
+            letterSpacing="0.5"
+          >
+            AIR QUALITY DETECTOR
+          </text>
+          <rect x="40" y="75" width="165" height="1" fill="#334155" />
+        </g>
       )}
 
-      {/* Screen */}
-      <rect x="60" y="80" width="280" height="220" rx="15" fill="#111827" />
-      <rect x="65" y="85" width="270" height="210" rx="10" fill="#0f172a" />
-
-      {/* Screen Content - Measuring */}
-      {!result && progress > 0 && (
+      {/* Screen Content */}
+      {powerState === "off" ? (
+        <g>{/* Black screen content - nothing to show */}</g>
+      ) : powerState === "booting" ? (
         <g>
           <text
-            x="200"
-            y="130"
+            x="122"
+            y="170"
             textAnchor="middle"
-            fill="#60a5fa"
-            fontSize="18"
+            fill="#10b981"
+            fontSize="14"
             fontFamily="monospace"
+            fontWeight="bold"
+            className="animate-pulse"
+          >
+            SYSTEM BOOT...
+          </text>
+          <rect x="50" y="190" width="145" height="4" fill="#1e293b" rx="2" />
+          <rect x="50" y="190" width="145" height="4" fill="#10b981" rx="2">
+            <animate
+              attributeName="width"
+              from="0"
+              to="145"
+              dur="1.5s"
+              fill="freeze"
+            />
+          </rect>
+          <text
+            x="122"
+            y="220"
+            textAnchor="middle"
+            fill="#475569"
+            fontSize="8"
+            fontFamily="sans-serif"
+          >
+            LOADING CALIBRATION
+          </text>
+        </g>
+      ) : progress > 0 && !result ? (
+        <g>
+          <text
+            x="122"
+            y="170"
+            textAnchor="middle"
+            fill="#3b82f6"
+            fontSize="16"
+            fontFamily="monospace"
+            fontWeight="bold"
+            className="animate-pulse"
           >
             MENGUKUR...
           </text>
+          <text
+            x="122"
+            y="210"
+            textAnchor="middle"
+            fill="#ffffff"
+            fontSize="32"
+            fontFamily="monospace"
+            fontWeight="bold"
+          >
+            {progress}%
+          </text>
           {!compact && (
             <text
-              x="200"
-              y="160"
+              x="122"
+              y="240"
               textAnchor="middle"
               fill="#9ca3af"
-              fontSize="12"
-              fontFamily="monospace"
+              fontSize="10"
+              fontFamily="sans-serif"
             >
               {status}
             </text>
           )}
-
-          <rect x="80" y="200" width="240" height="20" rx="10" fill="#1e293b" />
-          <rect
-            x="80" y="200"
-            width={(progress / 100) * 240}
-            height="20"
-            rx="10"
-            fill="#3b82f6"
-          >
-            <animate
-              attributeName="width"
-              from="0"
-              to={(progress / 100) * 240}
-              dur="0.2s"
-            />
-          </rect>
-
-          <text
-            x="200"
-            y="260"
-            textAnchor="middle"
-            fill="#ffffff"
-            fontSize="32"
-            fontWeight="bold"
-            fontFamily="monospace"
-          >
-            {progress}%
-          </text>
+          {/* Mock Parameters blinking */}
+          {PARAMETERS.map((p, i) => (
+            <text
+              key={p.key}
+              x="45"
+              y={100 + i * 28}
+              fill="#4b5563"
+              fontSize="12"
+              fontWeight="bold"
+              fontFamily="sans-serif"
+            >
+              {p.label}
+            </text>
+          ))}
         </g>
-      )}
-
-      {/* Screen Content - Result */}
-      {result && (
-        <g>
-          <rect
-            x="65"
-            y="85"
-            width="270"
-            height="210"
-            rx="10"
-            fill={result.overallColor}
-            opacity="0.2"
-          />
-          <text
-            x="200"
-            y="120"
-            textAnchor="middle"
-            fill="#9ca3af"
-            fontSize="14"
-            fontFamily="sans-serif"
-          >
-            ISPU {result.record.kota.toUpperCase()}
-          </text>
-          <text
-            x="200"
-            y="195"
-            textAnchor="middle"
-            fill={result.overallColor}
-            fontSize="72"
-            fontWeight="bold"
-            fontFamily="sans-serif"
-          >
-            {result.overallMax}
-          </text>
-          <rect
-            x="80"
-            y="225"
-            width="240"
-            height="40"
-            rx="20"
-            fill={result.overallColor}
-          />
-          <text
-            x="200"
-            y="252"
-            textAnchor="middle"
-            fill="#ffffff"
-            fontSize="18"
-            fontWeight="bold"
-            fontFamily="sans-serif"
-          >
-            {result.overallCategory}
-          </text>
-        </g>
-      )}
-
-      {/* Screen Content - Idle */}
-      {!result && progress === 0 && (
+      ) : !result && progress === 0 ? (
         <g>
           <text
-            x="200"
-            y="180"
+            x="122"
+            y="200"
             textAnchor="middle"
             fill="#4b5563"
             fontSize="24"
             fontFamily="monospace"
+            fontWeight="bold"
           >
             READY
           </text>
+          {PARAMETERS.map((p, i) => (
+            <text
+              key={p.key}
+              x="45"
+              y={100 + i * 28}
+              fill="#374151"
+              fontSize="12"
+              fontWeight="bold"
+              fontFamily="sans-serif"
+            >
+              {p.label}
+            </text>
+          ))}
+        </g>
+      ) : (
+        <g>
+          {/* Display Results */}
+          {PARAMETERS.map((param, i) => {
+            const cat = result?.categories[param.key];
+            const value =
+              cat?.value !== null && cat?.value !== undefined
+                ? cat?.value
+                : "---";
+            const color = cat?.color || "#9ca3af";
+            const yPos = 100 + i * 28;
+            return (
+              <g key={param.key}>
+                <text
+                  x="45"
+                  y={yPos}
+                  fill={color}
+                  fontSize="14"
+                  fontWeight="bold"
+                  fontFamily="sans-serif"
+                >
+                  {param.label}
+                </text>
+                <text
+                  x="155"
+                  y={yPos}
+                  fill={color}
+                  fontSize="16"
+                  fontWeight="bold"
+                  fontFamily="monospace"
+                  textAnchor="end"
+                >
+                  {value}
+                </text>
+                <text
+                  x="160"
+                  y={yPos}
+                  fill={color}
+                  fontSize="9"
+                  fontFamily="sans-serif"
+                  textAnchor="start"
+                >
+                  {param.unit === "µg/m³" ? "ug/m³" : param.unit}
+                </text>
+              </g>
+            );
+          })}
         </g>
       )}
 
-      {/* Buttons / Bottom details */}
-      <circle cx="200" cy="360" r="40" fill="#374151" />
-      <circle cx="200" cy="360" r="30" fill="#1f2937" />
-      
-      {/* Vents */}
-      <rect x="80" y="340" width="10" height="40" rx="5" fill="#111827" />
-      <rect x="100" y="340" width="10" height="40" rx="5" fill="#111827" />
-      <rect x="290" y="340" width="10" height="40" rx="5" fill="#111827" />
-      <rect x="310" y="340" width="10" height="40" rx="5" fill="#111827" />
+      {/* Bottom Color Bar (only when ready or result) */}
+      {(powerState === "ready" || result) && (
+        <g transform="translate(0, 10)">
+          <text
+            x="55"
+            y="325"
+            textAnchor="middle"
+            fill="#ffffff"
+            fontSize="7"
+            fontFamily="sans-serif"
+          >
+            Baik
+          </text>
+          <text
+            x="85"
+            y="325"
+            textAnchor="middle"
+            fill="#ffffff"
+            fontSize="7"
+            fontFamily="sans-serif"
+          >
+            Sedang
+          </text>
+          <text
+            x="115"
+            y="325"
+            textAnchor="middle"
+            fill="#ffffff"
+            fontSize="7"
+            fontFamily="sans-serif"
+          >
+            T.Sht
+          </text>
+          <text
+            x="145"
+            y="325"
+            textAnchor="middle"
+            fill="#ffffff"
+            fontSize="7"
+            fontFamily="sans-serif"
+          >
+            S.T.S
+          </text>
+          <text
+            x="175"
+            y="325"
+            textAnchor="middle"
+            fill="#ffffff"
+            fontSize="7"
+            fontFamily="sans-serif"
+          >
+            Bhaya
+          </text>
 
-      {/* Brand logo */}
-      <text
-        x="200"
-        y="460"
-        textAnchor="middle"
-        fill="#4b5563"
-        fontSize="12"
-        fontWeight="bold"
-        fontFamily="sans-serif"
-      >
-        MULTILOC SENSOR V2
-      </text>
+          <rect x="40" y="330" width="30" height="6" fill="#16a34a" />
+          <rect x="70" y="330" width="30" height="6" fill="#2563eb" />
+          <rect x="100" y="330" width="30" height="6" fill="#eab308" />
+          <rect x="130" y="330" width="30" height="6" fill="#dc2626" />
+          <rect x="160" y="330" width="30" height="6" fill="#581c87" />
+
+          {result && (
+            <polygon
+              points={`${getIndicatorX(result.overallCategory) - 4},344 ${getIndicatorX(result.overallCategory)},337 ${getIndicatorX(result.overallCategory) + 4},344`}
+              fill="#ffffff"
+            />
+          )}
+        </g>
+      )}
     </svg>
   );
 };
@@ -577,7 +819,15 @@ export default function AirQualityMeasurementLab({
   const [measureStatus, setMeasureStatus] = useState("");
   const [results, setResults] = useState<MeasurementResult[]>([]);
   const [revealedCities, setRevealedCities] = useState<string[]>([]);
-  const [dragInfo, setDragInfo] = useState<DragInfo>({ isDragging: false, x: 0, y: 0, isTouch: false });
+  const [confirmDevicePower, setConfirmDevicePower] = useState<
+    "off" | "booting" | "ready"
+  >("off");
+  const [dragInfo, setDragInfo] = useState<DragInfo>({
+    isDragging: false,
+    x: 0,
+    y: 0,
+    isTouch: false,
+  });
   const [activeDropZone, setActiveDropZone] = useState<string | null>(null);
   const measureIntervalRef = useRef<ReturnType<typeof setInterval> | null>(
     null,
@@ -598,9 +848,7 @@ export default function AirQualityMeasurementLab({
   const availableTimes = useMemo(() => {
     if (data.length === 0) return [];
     // Use Solo as reference for times (assuming all cities have same times)
-    const times = data
-      .filter((r) => r.kota === "Solo")
-      .map((r) => r.jam);
+    const times = data.filter((r) => r.kota === "Solo").map((r) => r.jam);
     return [...new Set(times)].sort((a, b) => {
       const ah = parseFloat(a.replace(".", ":"));
       const bh = parseFloat(b.replace(".", ":"));
@@ -614,6 +862,14 @@ export default function AirQualityMeasurementLab({
       .filter((r) => r.kota === "Solo" && r.jam === selectedTime)
       .map((r) => ({ hari: r.hari, tanggal: r.tanggal }));
   }, [data, selectedTime]);
+
+  const handlePowerClick = useCallback(() => {
+    if (confirmDevicePower !== "off") return;
+    setConfirmDevicePower("booting");
+    setTimeout(() => {
+      setConfirmDevicePower("ready");
+    }, 2000);
+  }, [confirmDevicePower]);
 
   const startMeasurement = useCallback(() => {
     if (!selectedTime) return;
@@ -645,9 +901,9 @@ export default function AirQualityMeasurementLab({
       if (progress >= 100) {
         if (measureIntervalRef.current)
           clearInterval(measureIntervalRef.current);
-        
+
         const currentResults: MeasurementResult[] = [];
-        LOCATIONS.forEach(loc => {
+        LOCATIONS.forEach((loc) => {
           const record = data.find(
             (r) => r.kota === loc && r.jam === selectedTime,
           );
@@ -661,7 +917,7 @@ export default function AirQualityMeasurementLab({
           setScreen("result");
         }
       }
-    }, 40);
+    }, 120);
   }, [data, selectedTime]);
 
   useEffect(() => {
@@ -676,7 +932,7 @@ export default function AirQualityMeasurementLab({
       isDragging: true,
       x: e.clientX,
       y: e.clientY,
-      isTouch: e.nativeEvent instanceof TouchEvent
+      isTouch: e.nativeEvent instanceof TouchEvent,
     });
   };
 
@@ -695,7 +951,7 @@ export default function AirQualityMeasurementLab({
         clientY = (e as MouseEvent).clientY;
       }
 
-      setDragInfo(prev => ({ ...prev, x: clientX, y: clientY }));
+      setDragInfo((prev) => ({ ...prev, x: clientX, y: clientY }));
 
       // Target detection during drag for feedback
       const dragOverlay = document.getElementById("scanner-overlay");
@@ -704,7 +960,9 @@ export default function AirQualityMeasurementLab({
       if (dragOverlay) dragOverlay.style.visibility = "visible";
 
       const dropZone = target?.closest("[data-dropzone-city]");
-      setActiveDropZone(dropZone ? dropZone.getAttribute("data-dropzone-city") : null);
+      setActiveDropZone(
+        dropZone ? dropZone.getAttribute("data-dropzone-city") : null,
+      );
     };
 
     const handlePointerUp = (e: MouseEvent | TouchEvent) => {
@@ -728,7 +986,7 @@ export default function AirQualityMeasurementLab({
       if (dropZone) {
         const cityName = dropZone.getAttribute("data-dropzone-city");
         if (cityName && !revealedCities.includes(cityName)) {
-          setRevealedCities(prev => [...prev, cityName]);
+          setRevealedCities((prev) => [...prev, cityName]);
         }
       }
 
@@ -738,7 +996,9 @@ export default function AirQualityMeasurementLab({
 
     if (dragInfo.isDragging) {
       window.addEventListener("mousemove", handlePointerMove);
-      window.addEventListener("touchmove", handlePointerMove, { passive: false });
+      window.addEventListener("touchmove", handlePointerMove, {
+        passive: false,
+      });
       window.addEventListener("mouseup", handlePointerUp);
       window.addEventListener("touchend", handlePointerUp);
     }
@@ -764,10 +1024,11 @@ export default function AirQualityMeasurementLab({
 
     if (screen === "start") {
       return (
-        <div className="flex flex-col h-full space-y-6">
+        <div className="flex flex-col min-h-full space-y-6">
           <div className="flex items-center justify-between">
             <h1 className="text-2xl md:text-3xl font-serif font-bold text-slate-800 flex items-center gap-2">
-              <WindIcon className="w-6 h-6 md:w-8 md:h-8 text-primary" /> Virtual Lab
+              <WindIcon className="w-6 h-6 md:w-8 md:h-8 text-primary" />{" "}
+              Virtual Lab
             </h1>
             <button
               onClick={onBack}
@@ -776,11 +1037,13 @@ export default function AirQualityMeasurementLab({
               ← Kembali
             </button>
           </div>
-          
+
           <div className="bg-blue-50 border-l-4 border-primary p-4 rounded-r-xl">
             <h3 className="font-bold text-primary mb-1">Misi Pengukuran</h3>
             <p className="text-sm text-slate-600 leading-relaxed">
-              Anda akan melakukan pemantauan kualitas udara secara serentak di 3 lokasi berbeda di Indonesia untuk membandingkan kondisi lingkungan yang berbeda.
+              Anda akan melakukan pemantauan kualitas udara secara serentak di 3
+              lokasi berbeda di Indonesia untuk membandingkan kondisi lingkungan
+              yang berbeda.
             </p>
           </div>
 
@@ -794,11 +1057,15 @@ export default function AirQualityMeasurementLab({
                 >
                   <MapPinIcon className="w-6 h-6 text-primary" />
                   <div>
-                    <span className="font-bold text-slate-700 block">{loc}</span>
+                    <span className="font-bold text-slate-700 block">
+                      {loc}
+                    </span>
                     <span className="text-xs text-slate-500">
-                      {loc === "Tasikmalaya" ? "Jawa Barat (Kaki Gunung)" : 
-                       loc === "Solo" ? "Jawa Tengah (Pusat Kota)" : 
-                       "Kalimantan Timur (Area Hutan)"}
+                      {loc === "Tasikmalaya"
+                        ? "Jawa Barat (Kaki Gunung)"
+                        : loc === "Solo"
+                          ? "Jawa Tengah (Pusat Kota)"
+                          : "Kalimantan Timur (Area Hutan)"}
                     </span>
                   </div>
                 </div>
@@ -820,7 +1087,7 @@ export default function AirQualityMeasurementLab({
 
     if (screen === "time") {
       return (
-        <div className="flex flex-col h-full space-y-6">
+        <div className="flex flex-col min-h-full space-y-6">
           <button
             onClick={() => setScreen("start")}
             className="self-start text-sm text-primary font-medium hover:underline flex items-center gap-1"
@@ -833,7 +1100,8 @@ export default function AirQualityMeasurementLab({
               Pilih Waktu Pengukuran
             </h2>
             <p className="text-slate-500 mt-1">
-              Pengukuran akan dilakukan secara serentak pada waktu yang Anda pilih.
+              Pengukuran akan dilakukan secara serentak pada waktu yang Anda
+              pilih.
             </p>
           </div>
 
@@ -872,9 +1140,12 @@ export default function AirQualityMeasurementLab({
 
     if (screen === "confirm") {
       return (
-        <div className="flex flex-col h-full space-y-6">
+        <div className="flex flex-col min-h-full space-y-6">
           <button
-            onClick={() => setScreen("time")}
+            onClick={() => {
+              setScreen("time");
+              setConfirmDevicePower("off");
+            }}
             className="self-start text-sm text-primary font-medium hover:underline flex items-center gap-1"
           >
             ← Kembali Pilih Waktu
@@ -882,7 +1153,7 @@ export default function AirQualityMeasurementLab({
 
           <div>
             <h2 className="text-2xl font-serif font-bold text-slate-800">
-              Konfirmasi & Mulai
+              Konfirmasi
             </h2>
             <p className="text-slate-500 mt-2">
               Anda akan mengaktifkan sensor di 3 lokasi pemantauan pada:
@@ -893,7 +1164,9 @@ export default function AirQualityMeasurementLab({
             <div className="flex justify-between items-start">
               <span className="text-slate-500 text-sm">Lokasi (3)</span>
               <span className="font-bold text-slate-800 text-right">
-                Tasikmalaya, Solo,<br />Kutai Barat
+                Tasikmalaya, Solo,
+                <br />
+                Kutai Barat
               </span>
             </div>
             <div className="flex justify-between">
@@ -910,10 +1183,91 @@ export default function AirQualityMeasurementLab({
             )}
           </div>
 
+          <div className="flex-1 flex flex-col items-center justify-center p-6 bg-blue-50/50 rounded-2xl border-2 border-dashed border-blue-100">
+             <div className="text-center space-y-2">
+                <div className="w-12 h-12 bg-white rounded-full flex items-center justify-center mx-auto shadow-sm text-xl">
+                   ⚡
+                </div>
+                <h4 className="font-bold text-slate-700">Siap Aktivasi</h4>
+                <p className="text-xs text-slate-500 leading-relaxed max-w-[200px]">
+                  Semua data sudah siap. Langkah selanjutnya adalah menyalakan alat deteksi.
+                </p>
+             </div>
+          </div>
+
           <div className="mt-auto pt-6">
             <button
+              onClick={() => setScreen("activation")}
+              className="w-full mb-4 py-4 rounded-xl font-bold tracking-wide shadow-lg transition-all bg-primary text-white hover:shadow-xl active:scale-95"
+            >
+              Lanjut ke Aktivasi Alat
+            </button>
+          </div>
+        </div>
+      );
+    }
+
+    if (screen === "activation") {
+      return (
+        <div className="flex flex-col min-h-full space-y-6">
+          <button
+            onClick={() => setScreen("confirm")}
+            className="self-start text-sm text-primary font-medium hover:underline flex items-center gap-1"
+          >
+            ← Kembali ke Konfirmasi
+          </button>
+
+          <div>
+            <h2 className="text-2xl font-serif font-bold text-slate-800">
+              Aktivasi Alat
+            </h2>
+            <p className="text-slate-500 mt-2">
+              Nyalakan alat untuk mulai memantau kualitas udara di lokasi.
+            </p>
+          </div>
+
+          <div className="flex-1 flex flex-col items-center justify-center p-6 bg-slate-50 rounded-2xl border-2 border-dashed border-slate-200 relative">
+            <div className="absolute top-2 right-3">
+              <div
+                className={`w-2 h-2 rounded-full ${confirmDevicePower === "ready" ? "bg-green-500 animate-pulse" : "bg-slate-300"}`}
+              />
+            </div>
+
+            <div className="w-full mb-6">
+              <DeviceSVG
+                compact={false}
+                powerState={confirmDevicePower}
+                onPowerClick={handlePowerClick}
+              />
+            </div>
+
+            <div className="text-center">
+              <h4 className="font-bold text-slate-700 text-lg">
+                {confirmDevicePower === "off"
+                  ? "Alat Belum Aktif"
+                  : confirmDevicePower === "booting"
+                    ? "Menginisialisasi..."
+                    : "Sistem Siap"}
+              </h4>
+              <p className="text-sm text-slate-500 mt-2 leading-relaxed max-w-[320px] mx-auto">
+                {confirmDevicePower === "off"
+                  ? "Sentuh tombol power (bulat) di samping alat untuk menyalakan."
+                  : confirmDevicePower === "booting"
+                    ? "Menghubungkan ke jaringan stasiun udara di 3 kota..."
+                    : "Alat telah terkalibrasi. Tekan tombol di bawah untuk mulai."}
+              </p>
+            </div>
+          </div>
+
+          <div className="mt-auto pt-6">
+            <button
+              disabled={confirmDevicePower !== "ready"}
               onClick={startMeasurement}
-              className="w-full bg-primary text-white mb-4 py-4 rounded-xl font-bold tracking-wide shadow-lg hover:shadow-xl transition-all active:scale-95"
+              className={`w-full mb-4 py-4 rounded-xl font-bold tracking-wide shadow-lg transition-all ${
+                confirmDevicePower === "ready"
+                  ? "bg-primary text-white hover:shadow-xl active:scale-95"
+                  : "bg-slate-200 text-slate-400 cursor-not-allowed"
+              }`}
             >
               Mulai Pengukuran Serentak
             </button>
@@ -949,21 +1303,25 @@ export default function AirQualityMeasurementLab({
             <div className="flex flex-col md:flex-row items-center gap-6">
               <div className="flex-1 text-center md:text-left">
                 <h3 className="text-sm md:text-base font-bold text-primary flex items-center gap-2 justify-center md:justify-start">
-                  <span className="p-1 bg-primary/10 rounded-lg">🛠️</span> Rak Alat Analisis
+                  <span className="p-1 bg-primary/10 rounded-lg">🛠️</span> Rak
+                  Alat Analisis
                 </h3>
                 <p className="text-xs text-muted-foreground mt-1 leading-relaxed">
-                  Sentuh & tarik <b>AeroScan Tool</b> ke kotak hasil setiap kota untuk menganalisis kategori kualitas udara (ISPU).
+                  Sentuh & tarik tombol <b>ISPU</b> ke kotak hasil setiap kota
+                  untuk menganalisis kategori kualitas udara.
                 </p>
               </div>
 
               <div className="shrink-0 flex flex-col items-center gap-1 group">
                 <div
                   onPointerDown={handleScannerPointerDown}
-                  className="w-16 h-16 flex items-center justify-center bg-white rounded-2xl border-2 border-blue-400 shadow-sm cursor-grab active:cursor-grabbing transition-all hover:scale-110 hover:shadow-md group-hover:border-blue-500 touch-none"
+                  className="w-16 h-16 flex items-center justify-center bg-blue-600 text-white rounded-full border-4 border-blue-400 shadow-lg cursor-grab active:cursor-grabbing transition-all hover:scale-110 active:scale-95 touch-none font-black text-lg tracking-tighter"
                 >
-                  <AeroScannerIcon className="w-10 h-10" />
+                  ISPU
                 </div>
-                <span className="text-[10px] font-black text-blue-600 uppercase tracking-tighter">AeroScan Tool</span>
+                <span className="text-[10px] font-bold text-blue-600 uppercase tracking-widest mt-1">
+                  Scanner
+                </span>
               </div>
             </div>
           </div>
@@ -978,8 +1336,8 @@ export default function AirQualityMeasurementLab({
                     key={res.record.kota}
                     data-dropzone-city={res.record.kota}
                     className={`space-y-4 rounded-2xl p-1 transition-all duration-300 border-2 ${
-                      isRevealed 
-                        ? "border-transparent" 
+                      isRevealed
+                        ? "border-transparent"
                         : isHovered
                           ? "border-blue-500 bg-blue-50 shadow-lg scale-[1.02]"
                           : "border-dashed border-slate-300 bg-slate-50/50"
@@ -989,7 +1347,9 @@ export default function AirQualityMeasurementLab({
                       <div className="w-6 h-6 rounded-full bg-primary text-white flex items-center justify-center text-xs font-bold">
                         {idx + 1}
                       </div>
-                      <h3 className="font-bold text-slate-800 text-lg">{res.record.kota}</h3>
+                      <h3 className="font-bold text-slate-800 text-lg">
+                        {res.record.kota}
+                      </h3>
                     </div>
 
                     {isRevealed ? (
@@ -997,15 +1357,27 @@ export default function AirQualityMeasurementLab({
                         className={`p-4 rounded-xl text-white shadow-lg animate-in zoom-in-95 duration-500 ${getCategoryBgClass(res.overallCategory)}`}
                       >
                         <div className="flex justify-between items-center mb-1">
-                          <p className="text-sm opacity-90 font-medium">Kategori ISPU</p>
-                          <span className="text-2xl font-black">{res.overallMax}</span>
+                          <p className="text-sm opacity-90 font-medium">
+                            Kategori ISPU
+                          </p>
+                          <span className="text-2xl font-black">
+                            {res.overallMax}
+                          </span>
                         </div>
-                        <h3 className="text-xl font-bold">{res.overallCategory}</h3>
+                        <h3 className="text-xl font-bold">
+                          {res.overallCategory}
+                        </h3>
                       </div>
                     ) : (
-                      <div className={`h-[84px] rounded-xl flex flex-col items-center justify-center border-2 border-white transition-colors gap-1 italic text-sm ${isHovered ? "bg-blue-100 text-blue-600" : "bg-slate-200/50 text-slate-400"}`}>
-                         <div className={`w-8 h-8 rounded-full border-2 flex items-center justify-center opacity-50 ${isHovered ? "border-blue-400 animate-pulse" : "border-slate-300"}`}>?</div>
-                         {isHovered ? "Ready to Scan" : "Drop Scanner Here"}
+                      <div
+                        className={`h-[84px] rounded-xl flex flex-col items-center justify-center border-2 border-white transition-colors gap-1 italic text-sm ${isHovered ? "bg-blue-100 text-blue-600" : "bg-slate-200/50 text-slate-400"}`}
+                      >
+                        <div
+                          className={`w-8 h-8 rounded-full border-2 flex items-center justify-center opacity-50 ${isHovered ? "border-blue-400 animate-pulse" : "border-slate-300"}`}
+                        >
+                          ?
+                        </div>
+                        {isHovered ? "Ready to Scan" : "Drop Tombol ISPU"}
                       </div>
                     )}
 
@@ -1032,11 +1404,15 @@ export default function AirQualityMeasurementLab({
                                 </td>
                                 <td className="p-3 text-center font-mono font-bold">
                                   <div className="flex flex-col items-center">
-                                    <span>{cat.value !== null ? cat.value : "-"}</span>
+                                    <span>
+                                      {cat.value !== null ? cat.value : "-"}
+                                    </span>
                                     {isRevealed && cat.category !== "-" && (
                                       <span
                                         className={`text-[10px] px-1.5 py-0.5 rounded animate-in fade-in slide-in-from-top-1 ${getCategoryTextClass(cat.category)}`}
-                                        style={{ backgroundColor: cat.color + "20" }}
+                                        style={{
+                                          backgroundColor: cat.color + "20",
+                                        }}
                                       >
                                         {cat.category}
                                       </span>
@@ -1062,6 +1438,7 @@ export default function AirQualityMeasurementLab({
                 setResults([]);
                 setSelectedTime(null);
                 setRevealedCities([]);
+                setConfirmDevicePower("off");
               }}
               className="w-full bg-slate-100 text-slate-700 py-3 rounded-xl font-bold hover:bg-slate-200 transition-colors active:scale-95"
             >
@@ -1082,19 +1459,19 @@ export default function AirQualityMeasurementLab({
       {/* Visual Stage: Top on mobile, right on desktop */}
       <div
         className={`flex-none transition-all duration-500 relative bg-[#E0F6FF] overflow-hidden order-1 md:order-2
-        ${(screen === "time" || screen === "confirm") ? "h-0 md:h-full md:flex-1" : "h-[45vh] min-h-[350px] md:h-full md:flex-1"}
+        ${screen === "time" || screen === "confirm" || screen === "activation" ? "h-0 md:h-full md:flex-1" : "h-[45vh] min-h-[350px] md:h-full md:flex-1"}
         ${screen === "measuring" ? "h-full md:h-full md:flex-1" : ""}
         ${screen === "result" ? "hidden" : ""}
       `}
       >
         {/* Background Visuals for selection phases */}
-        {(screen === "start" || screen === "time" || screen === "confirm") && (
+        {(screen === "start" || screen === "time" || screen === "confirm" || screen === "activation") && (
           <div className="absolute inset-0 flex items-center justify-center p-4 md:p-8">
             <div className="w-full max-w-4xl text-center">
               <h2 className="text-xl md:text-3xl font-serif text-sky-800 opacity-60 mb-4 md:mb-8">
                 Jaringan Pemantauan Kualitas Udara
               </h2>
-              <IndonesiaMap isMonitoring={screen === "confirm"} />
+              <IndonesiaMap isMonitoring={screen === "activation"} />
             </div>
           </div>
         )}
@@ -1150,14 +1527,14 @@ export default function AirQualityMeasurementLab({
         <div
           id="scanner-overlay"
           className="fixed pointer-events-none z-[100] transform -translate-x-1/2 drop-shadow-2xl scale-125"
-          style={{ 
-            left: dragInfo.x, 
+          style={{
+            left: dragInfo.x,
             top: dragInfo.y - (dragInfo.isTouch ? 60 : 0),
-            marginTop: dragInfo.isTouch ? '-20px' : '0px'
+            marginTop: dragInfo.isTouch ? "-20px" : "0px",
           }}
         >
-          <div className="bg-white p-3 rounded-full border-4 border-blue-500 shadow-[0_0_20px_rgba(59,130,246,0.6)]">
-            <AeroScannerIcon className="w-12 h-12" />
+          <div className="bg-blue-600 text-white p-3 rounded-full border-4 border-blue-400 shadow-[0_0_25px_rgba(37,99,235,0.7)] font-black text-sm tracking-tighter">
+            ISPU
           </div>
           {dragInfo.isTouch && (
             <div className="absolute top-full left-1/2 -translate-x-1/2 mt-2 px-2 py-1 bg-blue-600 text-white text-[8px] font-bold rounded uppercase whitespace-nowrap shadow-md">
