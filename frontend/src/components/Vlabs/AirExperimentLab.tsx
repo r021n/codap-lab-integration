@@ -1008,7 +1008,7 @@ export default function AirExperimentLab({ onBack }: AirExperimentLabProps) {
     if (!state.isSunny)
       return "12. Tarik Matahari ke area kosong untuk memindahkan set alat ke luar ruangan.";
     if (!state.isRunning && state.time === 0)
-      return "13. Tarik stopwacth ke area kerja untuk mulai mengamati perbedaan suhu tabung A, B, dan D!";
+      return "13. Tarik stopwatch ke area kerja untuk mulai mengamati perbedaan suhu tabung A, B, dan D!";
     if (state.time < state.duration)
       return "Mengamati... (Perhatikan suhu di Tabung B naik lebih cepat karena CO2 dari Tabung C)";
     return "Praktikum selesai! LKPD menampilkan perbandingan suhu Tabung A dan B tiap menit.";

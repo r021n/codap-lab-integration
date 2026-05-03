@@ -42,6 +42,13 @@ type MeasurementResult = {
   overallMax: number;
 };
 
+type DragInfo = {
+  isDragging: boolean;
+  x: number;
+  y: number;
+  isTouch: boolean;
+};
+
 // ─── Constants ─────────────────────────────────────────────────────────────
 
 const LOCATIONS = ["Tasikmalaya", "Solo", "Kutai Barat"] as const;
@@ -199,6 +206,20 @@ const WindIcon = ({ className = "w-8 h-8" }: { className?: string }) => (
     className={className}
   >
     <path d="M9.59 4.59A2 2 0 1 1 11 8H2m10.59 11.41A2 2 0 1 0 14 16H2m15.73-8.27A2.5 2.5 0 1 1 19.5 12H2" />
+  </svg>
+);
+
+const AeroScannerIcon = ({ className = "w-10 h-10" }: { className?: string }) => (
+  <svg
+    viewBox="0 0 24 24"
+    fill="none"
+    xmlns="http://www.w3.org/2000/svg"
+    className={className}
+  >
+    <circle cx="12" cy="12" r="9" stroke="#3B82F6" strokeWidth="2" fill="#3B82F6" fillOpacity="0.1" />
+    <circle cx="12" cy="12" r="5" stroke="#3B82F6" strokeWidth="1.5" />
+    <path d="M12 7V17M7 12H17" stroke="#3B82F6" strokeWidth="1.5" strokeLinecap="round" />
+    <path d="M18 18L21 21" stroke="#3B82F6" strokeWidth="2" strokeLinecap="round" />
   </svg>
 );
 
@@ -414,8 +435,7 @@ const DeviceSVG = ({
 
           <rect x="80" y="200" width="240" height="20" rx="10" fill="#1e293b" />
           <rect
-            x="80"
-            y="200"
+            x="80" y="200"
             width={(progress / 100) * 240}
             height="20"
             rx="10"
@@ -556,6 +576,9 @@ export default function AirQualityMeasurementLab({
   const [measureProgress, setMeasureProgress] = useState(0);
   const [measureStatus, setMeasureStatus] = useState("");
   const [results, setResults] = useState<MeasurementResult[]>([]);
+  const [revealedCities, setRevealedCities] = useState<string[]>([]);
+  const [dragInfo, setDragInfo] = useState<DragInfo>({ isDragging: false, x: 0, y: 0, isTouch: false });
+  const [activeDropZone, setActiveDropZone] = useState<string | null>(null);
   const measureIntervalRef = useRef<ReturnType<typeof setInterval> | null>(
     null,
   );
@@ -597,6 +620,7 @@ export default function AirQualityMeasurementLab({
 
     setScreen("measuring");
     setMeasureProgress(0);
+    setRevealedCities([]);
 
     const statuses = [
       "Menginisialisasi alat ukur di 3 lokasi...",
@@ -645,6 +669,87 @@ export default function AirQualityMeasurementLab({
       if (measureIntervalRef.current) clearInterval(measureIntervalRef.current);
     };
   }, []);
+
+  const handleScannerPointerDown = (e: React.PointerEvent) => {
+    e.preventDefault();
+    setDragInfo({
+      isDragging: true,
+      x: e.clientX,
+      y: e.clientY,
+      isTouch: e.nativeEvent instanceof TouchEvent
+    });
+  };
+
+  useEffect(() => {
+    const handlePointerMove = (e: MouseEvent | TouchEvent) => {
+      if (!dragInfo.isDragging) return;
+
+      let clientX, clientY;
+      if ("touches" in e) {
+        // Prevent scroll on mobile during drag
+        if (e.cancelable) e.preventDefault();
+        clientX = e.touches[0].clientX;
+        clientY = e.touches[0].clientY;
+      } else {
+        clientX = (e as MouseEvent).clientX;
+        clientY = (e as MouseEvent).clientY;
+      }
+
+      setDragInfo(prev => ({ ...prev, x: clientX, y: clientY }));
+
+      // Target detection during drag for feedback
+      const dragOverlay = document.getElementById("scanner-overlay");
+      if (dragOverlay) dragOverlay.style.visibility = "hidden";
+      const target = document.elementFromPoint(clientX, clientY);
+      if (dragOverlay) dragOverlay.style.visibility = "visible";
+
+      const dropZone = target?.closest("[data-dropzone-city]");
+      setActiveDropZone(dropZone ? dropZone.getAttribute("data-dropzone-city") : null);
+    };
+
+    const handlePointerUp = (e: MouseEvent | TouchEvent) => {
+      if (!dragInfo.isDragging) return;
+
+      let clientX, clientY;
+      if ("touches" in e) {
+        clientX = (e as TouchEvent).changedTouches[0].clientX;
+        clientY = (e as TouchEvent).changedTouches[0].clientY;
+      } else {
+        clientX = (e as MouseEvent).clientX;
+        clientY = (e as MouseEvent).clientY;
+      }
+
+      const dragOverlay = document.getElementById("scanner-overlay");
+      if (dragOverlay) dragOverlay.style.visibility = "hidden";
+      const target = document.elementFromPoint(clientX, clientY);
+      if (dragOverlay) dragOverlay.style.visibility = "visible";
+
+      const dropZone = target?.closest("[data-dropzone-city]");
+      if (dropZone) {
+        const cityName = dropZone.getAttribute("data-dropzone-city");
+        if (cityName && !revealedCities.includes(cityName)) {
+          setRevealedCities(prev => [...prev, cityName]);
+        }
+      }
+
+      setDragInfo({ isDragging: false, x: 0, y: 0, isTouch: false });
+      setActiveDropZone(null);
+    };
+
+    if (dragInfo.isDragging) {
+      window.addEventListener("mousemove", handlePointerMove);
+      window.addEventListener("touchmove", handlePointerMove, { passive: false });
+      window.addEventListener("mouseup", handlePointerUp);
+      window.addEventListener("touchend", handlePointerUp);
+    }
+
+    return () => {
+      window.removeEventListener("mousemove", handlePointerMove);
+      window.removeEventListener("touchmove", handlePointerMove);
+      window.removeEventListener("mouseup", handlePointerUp);
+      window.removeEventListener("touchend", handlePointerUp);
+    };
+  }, [dragInfo.isDragging, revealedCities]);
 
   // ─── Sub-renders for Left Panel ──────────────────────────────────────────
 
@@ -823,95 +928,142 @@ export default function AirQualityMeasurementLab({
 
     if (screen === "result" && results.length > 0) {
       return (
-        <div className="flex flex-col h-full space-y-6 overflow-hidden max-w-5xl mx-auto w-full">
-          <div>
-            <h2 className="text-2xl font-serif font-bold text-slate-800">
-              Hasil Pengukuran
-            </h2>
-            <div className="flex gap-2 mt-2 text-sm text-slate-500">
-              <span className="px-2 py-1 bg-slate-100 rounded">
-                Serentak di 3 Lokasi
-              </span>
-              <span className="px-2 py-1 bg-slate-100 rounded">
-                Jam {results[0].record.jam}
-              </span>
+        <div className="flex flex-col h-full space-y-4 overflow-hidden max-w-5xl mx-auto w-full relative">
+          {/* Header */}
+          <div className="flex flex-wrap items-center justify-between gap-4 border-b border-slate-100 pb-4">
+            <div>
+              <h2 className="text-2xl font-serif font-bold text-slate-800">
+                Hasil Pengukuran
+              </h2>
+              <p className="text-sm text-slate-500 mt-1">
+                Data real-time jam {results[0].record.jam}
+              </p>
+            </div>
+            <div className="px-3 py-1.5 bg-blue-50 text-blue-700 font-bold text-xs rounded-full border border-blue-100 shadow-sm animate-pulse">
+              {revealedCities.length}/{LOCATIONS.length} Lokasi Teranalisis
+            </div>
+          </div>
+
+          {/* Rak Alat Analisis */}
+          <div className="bg-slate-50 rounded-2xl border-2 border-slate-200 p-4 shadow-inner">
+            <div className="flex flex-col md:flex-row items-center gap-6">
+              <div className="flex-1 text-center md:text-left">
+                <h3 className="text-sm md:text-base font-bold text-primary flex items-center gap-2 justify-center md:justify-start">
+                  <span className="p-1 bg-primary/10 rounded-lg">🛠️</span> Rak Alat Analisis
+                </h3>
+                <p className="text-xs text-muted-foreground mt-1 leading-relaxed">
+                  Sentuh & tarik <b>AeroScan Tool</b> ke kotak hasil setiap kota untuk menganalisis kategori kualitas udara (ISPU).
+                </p>
+              </div>
+
+              <div className="shrink-0 flex flex-col items-center gap-1 group">
+                <div
+                  onPointerDown={handleScannerPointerDown}
+                  className="w-16 h-16 flex items-center justify-center bg-white rounded-2xl border-2 border-blue-400 shadow-sm cursor-grab active:cursor-grabbing transition-all hover:scale-110 hover:shadow-md group-hover:border-blue-500 touch-none"
+                >
+                  <AeroScannerIcon className="w-10 h-10" />
+                </div>
+                <span className="text-[10px] font-black text-blue-600 uppercase tracking-tighter">AeroScan Tool</span>
+              </div>
             </div>
           </div>
 
           <div className="flex-1 overflow-y-auto pr-2 space-y-8">
-            <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-              {results.map((res, idx) => (
-                <div key={res.record.kota} className="space-y-4">
-                  <div className="flex items-center gap-2 border-b pb-2">
-                    <div className="w-6 h-6 rounded-full bg-primary text-white flex items-center justify-center text-xs font-bold">
-                      {idx + 1}
-                    </div>
-                    <h3 className="font-bold text-slate-800 text-lg">{res.record.kota}</h3>
-                  </div>
-
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 py-4">
+              {results.map((res, idx) => {
+                const isRevealed = revealedCities.includes(res.record.kota);
+                const isHovered = activeDropZone === res.record.kota;
+                return (
                   <div
-                    className={`p-4 rounded-xl text-white ${getCategoryBgClass(res.overallCategory)}`}
+                    key={res.record.kota}
+                    data-dropzone-city={res.record.kota}
+                    className={`space-y-4 rounded-2xl p-1 transition-all duration-300 border-2 ${
+                      isRevealed 
+                        ? "border-transparent" 
+                        : isHovered
+                          ? "border-blue-500 bg-blue-50 shadow-lg scale-[1.02]"
+                          : "border-dashed border-slate-300 bg-slate-50/50"
+                    }`}
                   >
-                    <div className="flex justify-between items-center mb-1">
-                      <p className="text-sm opacity-90 font-medium">Kategori ISPU</p>
-                      <span className="text-2xl font-black">{res.overallMax}</span>
+                    <div className="flex items-center gap-2 border-b pb-2 px-2">
+                      <div className="w-6 h-6 rounded-full bg-primary text-white flex items-center justify-center text-xs font-bold">
+                        {idx + 1}
+                      </div>
+                      <h3 className="font-bold text-slate-800 text-lg">{res.record.kota}</h3>
                     </div>
-                    <h3 className="text-xl font-bold">{res.overallCategory}</h3>
-                  </div>
 
-                  <div className="bg-white border rounded-xl overflow-hidden text-sm shadow-sm">
-                    <table className="w-full">
-                      <thead className="bg-slate-50 text-slate-500">
-                        <tr>
-                          <th className="p-3 text-left">Parameter</th>
-                          <th className="p-3 text-center">Nilai</th>
-                        </tr>
-                      </thead>
-                      <tbody className="divide-y divide-slate-100">
-                        {PARAMETERS.map((param) => {
-                          const cat = res.categories[param.key];
-                          return (
-                            <tr key={param.key}>
-                              <td className="p-3">
-                                <span className="font-medium block">
-                                  {param.label}
-                                </span>
-                                <span className="text-xs text-slate-400">
-                                  {param.unit}
-                                </span>
-                              </td>
-                              <td className="p-3 text-center font-mono font-bold">
-                                <div className="flex flex-col items-center">
-                                  <span>{cat.value !== null ? cat.value : "-"}</span>
-                                  {cat.category !== "-" && (
-                                    <span
-                                      className={`text-[10px] px-1.5 py-0.5 rounded ${getCategoryTextClass(cat.category)}`}
-                                      style={{ backgroundColor: cat.color + "20" }}
-                                    >
-                                      {cat.category}
-                                    </span>
-                                  )}
-                                </div>
-                              </td>
-                            </tr>
-                          );
-                        })}
-                      </tbody>
-                    </table>
+                    {isRevealed ? (
+                      <div
+                        className={`p-4 rounded-xl text-white shadow-lg animate-in zoom-in-95 duration-500 ${getCategoryBgClass(res.overallCategory)}`}
+                      >
+                        <div className="flex justify-between items-center mb-1">
+                          <p className="text-sm opacity-90 font-medium">Kategori ISPU</p>
+                          <span className="text-2xl font-black">{res.overallMax}</span>
+                        </div>
+                        <h3 className="text-xl font-bold">{res.overallCategory}</h3>
+                      </div>
+                    ) : (
+                      <div className={`h-[84px] rounded-xl flex flex-col items-center justify-center border-2 border-white transition-colors gap-1 italic text-sm ${isHovered ? "bg-blue-100 text-blue-600" : "bg-slate-200/50 text-slate-400"}`}>
+                         <div className={`w-8 h-8 rounded-full border-2 flex items-center justify-center opacity-50 ${isHovered ? "border-blue-400 animate-pulse" : "border-slate-300"}`}>?</div>
+                         {isHovered ? "Ready to Scan" : "Drop Scanner Here"}
+                      </div>
+                    )}
+
+                    <div className="bg-white border rounded-xl overflow-hidden text-sm shadow-sm">
+                      <table className="w-full">
+                        <thead className="bg-slate-50 text-slate-500">
+                          <tr>
+                            <th className="p-3 text-left">Parameter</th>
+                            <th className="p-3 text-center">Nilai</th>
+                          </tr>
+                        </thead>
+                        <tbody className="divide-y divide-slate-100">
+                          {PARAMETERS.map((param) => {
+                            const cat = res.categories[param.key];
+                            return (
+                              <tr key={param.key}>
+                                <td className="p-3">
+                                  <span className="font-medium block">
+                                    {param.label}
+                                  </span>
+                                  <span className="text-xs text-slate-400">
+                                    {param.unit}
+                                  </span>
+                                </td>
+                                <td className="p-3 text-center font-mono font-bold">
+                                  <div className="flex flex-col items-center">
+                                    <span>{cat.value !== null ? cat.value : "-"}</span>
+                                    {isRevealed && cat.category !== "-" && (
+                                      <span
+                                        className={`text-[10px] px-1.5 py-0.5 rounded animate-in fade-in slide-in-from-top-1 ${getCategoryTextClass(cat.category)}`}
+                                        style={{ backgroundColor: cat.color + "20" }}
+                                      >
+                                        {cat.category}
+                                      </span>
+                                    )}
+                                  </div>
+                                </td>
+                              </tr>
+                            );
+                          })}
+                        </tbody>
+                      </table>
+                    </div>
                   </div>
-                </div>
-              ))}
+                );
+              })}
             </div>
           </div>
 
-          <div className="pt-4 border-t">
+          <div className="pt-4 border-t bg-white sticky bottom-0">
             <button
               onClick={() => {
                 setScreen("start");
                 setResults([]);
                 setSelectedTime(null);
+                setRevealedCities([]);
               }}
-              className="w-full bg-slate-100 text-slate-700 py-3 rounded-xl font-bold hover:bg-slate-200 transition-colors"
+              className="w-full bg-slate-100 text-slate-700 py-3 rounded-xl font-bold hover:bg-slate-200 transition-colors active:scale-95"
             >
               Ukur Ulang
             </button>
@@ -992,6 +1144,28 @@ export default function AirQualityMeasurementLab({
       >
         {renderLeftPanel()}
       </div>
+
+      {/* Drag Overlay for Scanner */}
+      {dragInfo.isDragging && (
+        <div
+          id="scanner-overlay"
+          className="fixed pointer-events-none z-[100] transform -translate-x-1/2 drop-shadow-2xl scale-125"
+          style={{ 
+            left: dragInfo.x, 
+            top: dragInfo.y - (dragInfo.isTouch ? 60 : 0),
+            marginTop: dragInfo.isTouch ? '-20px' : '0px'
+          }}
+        >
+          <div className="bg-white p-3 rounded-full border-4 border-blue-500 shadow-[0_0_20px_rgba(59,130,246,0.6)]">
+            <AeroScannerIcon className="w-12 h-12" />
+          </div>
+          {dragInfo.isTouch && (
+            <div className="absolute top-full left-1/2 -translate-x-1/2 mt-2 px-2 py-1 bg-blue-600 text-white text-[8px] font-bold rounded uppercase whitespace-nowrap shadow-md">
+              Scanning Mode
+            </div>
+          )}
+        </div>
+      )}
     </div>
   );
 }
