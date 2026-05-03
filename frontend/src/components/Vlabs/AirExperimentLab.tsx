@@ -45,7 +45,6 @@ type LabState = {
   flaskA: {
     hasThermo: boolean;
     hasStopper: boolean;
-    hasPlant: boolean;
     temp: number;
   };
   flaskB: { hasThermo: boolean; hasStopper: boolean; temp: number };
@@ -83,7 +82,6 @@ type ErlenmeyerProps = {
   hasStopper?: boolean;
   hasSoda?: boolean;
   hasVinegar?: boolean;
-  hasPlant?: boolean;
   isBubbling?: boolean;
 };
 
@@ -103,7 +101,7 @@ type ToplesProps = {
 const DEFAULT_DURATION = 5;
 
 const initialState: LabState = {
-  flaskA: { hasThermo: false, hasStopper: false, hasPlant: false, temp: 28 },
+  flaskA: { hasThermo: false, hasStopper: false, temp: 28 },
   flaskB: { hasThermo: false, hasStopper: false, temp: 28 },
   flaskC: { hasSoda: false, hasVinegar: false, hasStopper: false },
   flaskD: { hasThermo: false, hasStopper: false, temp: 28 },
@@ -198,7 +196,6 @@ const ErlenmeyerSVG = ({
   hasStopper,
   hasSoda,
   hasVinegar,
-  hasPlant,
   isBubbling,
 }: ErlenmeyerProps) => (
   <svg viewBox="0 0 120 160" className="w-full h-full drop-shadow-md">
@@ -276,15 +273,6 @@ const ErlenmeyerSVG = ({
     >
       {label}
     </text>
-
-    {/* Isi Tabung: Tanaman */}
-    {hasPlant && (
-      <g transform="translate(60, 140)">
-        <path d="M 0 0 Q -10 -20 -5 -40 Q 5 -20 0 0" fill="#22c55e" />
-        <path d="M 0 0 Q 15 -15 20 -30 Q 5 -10 0 0" fill="#16a34a" />
-        <path d="M 0 0 Q -20 -10 -25 -25 Q -10 -5 0 0" fill="#15803d" />
-      </g>
-    )}
 
     {/* Isi Tabung: Baking Soda */}
     {hasSoda && (
@@ -1020,7 +1008,7 @@ export default function AirExperimentLab({ onBack }: AirExperimentLabProps) {
     if (!state.isSunny)
       return "12. Tarik Matahari ke area kosong untuk memindahkan set alat ke luar ruangan.";
     if (!state.isRunning && state.time === 0)
-      return "13. Tarik Stopwatch ke area kerja untuk mulai mengamati suhu A dan B!";
+      return "13. Tarik stopwacth ke area kerja untuk mulai mengamati perbedaan suhu tabung A, B, dan D!";
     if (state.time < state.duration)
       return "Mengamati... (Perhatikan suhu di Tabung B naik lebih cepat karena CO2 dari Tabung C)";
     return "Praktikum selesai! LKPD menampilkan perbandingan suhu Tabung A dan B tiap menit.";
@@ -1208,7 +1196,6 @@ export default function AirExperimentLab({ onBack }: AirExperimentLabProps) {
                   label="A"
                   hasThermo={state.flaskA.hasThermo}
                   hasStopper={state.flaskA.hasStopper}
-                  hasPlant={state.flaskA.hasPlant}
                 />
               </div>
 

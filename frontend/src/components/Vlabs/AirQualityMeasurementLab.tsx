@@ -5,7 +5,6 @@ import IndonesiaMapSVG from "../../assets/air_labs/indonesian_map.svg";
 
 type Screen =
   | "start"
-  | "location"
   | "time"
   | "confirm"
   | "measuring"
@@ -46,7 +45,6 @@ type MeasurementResult = {
 // ─── Constants ─────────────────────────────────────────────────────────────
 
 const LOCATIONS = ["Tasikmalaya", "Solo", "Kutai Barat"] as const;
-type Location = (typeof LOCATIONS)[number];
 
 const PARAMETERS = [
   { key: "pm10", label: "PM₁₀", unit: "µg/m³" },
@@ -102,21 +100,6 @@ function getCategoryTextClass(category: ISPUCategory | "-"): string {
       return "text-purple-900";
     default:
       return "text-gray-400";
-  }
-}
-
-function getCategoryDescription(category: ISPUCategory): string {
-  switch (category) {
-    case "Baik":
-      return "Tingkat kualitas udara yang sangat baik, tidak memberikan efek negatif terhadap manusia, hewan, dan tumbuhan.";
-    case "Sedang":
-      return "Tingkat kualitas udara masih dapat diterima, namun perlu diawasi untuk pencemaran yang meningkat.";
-    case "Tidak Sehat":
-      return "Tingkat kualitas udara yang tidak sehat bagi kelompok sensitif seperti anak-anak, lansia, dan penderita penyakit pernapasan.";
-    case "Sangat Tidak Sehat":
-      return "Tingkat kualitas udara yang sangat tidak sehat bagi semua kelompok. Dapat menimbulkan gangguan kesehatan serius.";
-    case "Berbahaya":
-      return "Tingkat kualitas udara yang berbahaya! Segera lakukan tindakan evakuasi dan pengurangan aktivitas luar ruangan.";
   }
 }
 
@@ -296,7 +279,7 @@ const MapIndonesiaBase = () => (
   </div>
 );
 
-const LocationPins = ({ selected }: { selected: string | null }) => (
+const LocationPins = ({ isMonitoring = false }: { isMonitoring?: boolean }) => (
   <svg
     viewBox="0 0 1000 500"
     className="w-full h-full absolute inset-0 z-10 pointer-events-none"
@@ -315,8 +298,6 @@ const LocationPins = ({ selected }: { selected: string | null }) => (
         y = 200;
       } // Kutai Barat
 
-      const isSelected = selected === loc;
-
       return (
         <g
           key={loc}
@@ -326,19 +307,19 @@ const LocationPins = ({ selected }: { selected: string | null }) => (
           <circle
             cx="0"
             cy="0"
-            r={isSelected ? "18" : "12"}
-            fill={isSelected ? "#EF4444" : "#3B82F6"}
+            r={isMonitoring ? "20" : "12"}
+            fill={isMonitoring ? "#10B981" : "#3B82F6"}
             opacity="0.3"
             className="animate-ping"
           />
           <circle
             cx="0"
             cy="0"
-            r={isSelected ? "12" : "8"}
-            fill={isSelected ? "#EF4444" : "#3B82F6"}
+            r={isMonitoring ? "10" : "8"}
+            fill={isMonitoring ? "#10B981" : "#3B82F6"}
           />
           <path
-            d="M -8 -8 L 8 8 M 8 -8 L -8 8"
+            d="M -6 -6 L 6 6 M 6 -6 L -6 6"
             stroke="white"
             strokeWidth="2"
           />
@@ -349,6 +330,7 @@ const LocationPins = ({ selected }: { selected: string | null }) => (
             fill="#1F2937"
             fontSize="14"
             fontWeight="bold"
+            className="drop-shadow-sm"
           >
             {loc}
           </text>
@@ -358,10 +340,10 @@ const LocationPins = ({ selected }: { selected: string | null }) => (
   </svg>
 );
 
-const IndonesiaMap = ({ selected }: { selected: string | null }) => (
+const IndonesiaMap = ({ isMonitoring = false }: { isMonitoring?: boolean }) => (
   <div className="relative w-full max-w-2xl aspect-[2/1] mx-auto bg-[#E0F6FF] rounded-2xl overflow-hidden shadow-inner border border-blue-200">
     <MapIndonesiaBase />
-    <LocationPins selected={selected} />
+    <LocationPins isMonitoring={isMonitoring} />
   </div>
 );
 
@@ -369,15 +351,17 @@ const DeviceSVG = ({
   progress = 0,
   status,
   result,
+  compact = false,
 }: {
   progress?: number;
   status?: string;
   result?: MeasurementResult | null;
+  compact?: boolean;
 }) => {
   return (
     <svg
       viewBox="0 0 400 500"
-      className="w-64 sm:w-72 md:w-87.5 lg:w-100 h-auto drop-shadow-2xl mx-auto"
+      className={`${compact ? "w-full max-w-[240px]" : "w-64 sm:w-72 md:w-87.5 lg:w-100"} h-auto drop-shadow-2xl mx-auto`}
     >
       {/* Device Body */}
       <rect x="40" y="20" width="320" height="460" rx="30" fill="#2d3748" />
@@ -407,29 +391,31 @@ const DeviceSVG = ({
         <g>
           <text
             x="200"
-            y="140"
+            y="130"
             textAnchor="middle"
             fill="#60a5fa"
-            fontSize="20"
+            fontSize="18"
             fontFamily="monospace"
           >
-            MENGUKUR KUALITAS UDARA
+            MENGUKUR...
           </text>
-          <text
-            x="200"
-            y="180"
-            textAnchor="middle"
-            fill="#9ca3af"
-            fontSize="14"
-            fontFamily="monospace"
-          >
-            {status}
-          </text>
+          {!compact && (
+            <text
+              x="200"
+              y="160"
+              textAnchor="middle"
+              fill="#9ca3af"
+              fontSize="12"
+              fontFamily="monospace"
+            >
+              {status}
+            </text>
+          )}
 
-          <rect x="80" y="210" width="240" height="20" rx="10" fill="#1e293b" />
+          <rect x="80" y="200" width="240" height="20" rx="10" fill="#1e293b" />
           <rect
             x="80"
-            y="210"
+            y="200"
             width={(progress / 100) * 240}
             height="20"
             rx="10"
@@ -448,7 +434,7 @@ const DeviceSVG = ({
             y="260"
             textAnchor="middle"
             fill="#ffffff"
-            fontSize="28"
+            fontSize="32"
             fontWeight="bold"
             fontFamily="monospace"
           >
@@ -471,13 +457,13 @@ const DeviceSVG = ({
           />
           <text
             x="200"
-            y="125"
+            y="120"
             textAnchor="middle"
             fill="#9ca3af"
-            fontSize="16"
+            fontSize="14"
             fontFamily="sans-serif"
           >
-            NILAI ISPU
+            ISPU {result.record.kota.toUpperCase()}
           </text>
           <text
             x="200"
@@ -491,16 +477,16 @@ const DeviceSVG = ({
             {result.overallMax}
           </text>
           <rect
-            x="90"
-            y="220"
-            width="220"
+            x="80"
+            y="225"
+            width="240"
             height="40"
             rx="20"
             fill={result.overallColor}
           />
           <text
             x="200"
-            y="247"
+            y="252"
             textAnchor="middle"
             fill="#ffffff"
             fontSize="18"
@@ -523,17 +509,7 @@ const DeviceSVG = ({
             fontSize="24"
             fontFamily="monospace"
           >
-            SIAP DIGUNAKAN
-          </text>
-          <text
-            x="200"
-            y="210"
-            textAnchor="middle"
-            fill="#4b5563"
-            fontSize="14"
-            fontFamily="monospace"
-          >
-            Tunggu instruksi
+            READY
           </text>
         </g>
       )}
@@ -541,29 +517,24 @@ const DeviceSVG = ({
       {/* Buttons / Bottom details */}
       <circle cx="200" cy="360" r="40" fill="#374151" />
       <circle cx="200" cy="360" r="30" fill="#1f2937" />
-      {/* Small buttons */}
-      <circle cx="100" cy="420" r="15" fill="#374151" />
-      <circle cx="150" cy="420" r="15" fill="#374151" />
-      <circle cx="250" cy="420" r="15" fill="#374151" />
-      <circle cx="300" cy="420" r="15" fill="#374151" />
-
+      
       {/* Vents */}
-      <rect x="100" y="330" width="15" height="40" rx="5" fill="#111827" />
-      <rect x="125" y="330" width="15" height="40" rx="5" fill="#111827" />
-      <rect x="260" y="330" width="15" height="40" rx="5" fill="#111827" />
-      <rect x="285" y="330" width="15" height="40" rx="5" fill="#111827" />
+      <rect x="80" y="340" width="10" height="40" rx="5" fill="#111827" />
+      <rect x="100" y="340" width="10" height="40" rx="5" fill="#111827" />
+      <rect x="290" y="340" width="10" height="40" rx="5" fill="#111827" />
+      <rect x="310" y="340" width="10" height="40" rx="5" fill="#111827" />
 
       {/* Brand logo */}
       <text
         x="200"
-        y="470"
+        y="460"
         textAnchor="middle"
         fill="#4b5563"
         fontSize="12"
         fontWeight="bold"
         fontFamily="sans-serif"
       >
-        ECO SENSOR PRO
+        MULTILOC SENSOR V2
       </text>
     </svg>
   );
@@ -579,15 +550,12 @@ export default function AirQualityMeasurementLab({
   onBack,
 }: AirQualityMeasurementLabProps) {
   const [screen, setScreen] = useState<Screen>("start");
-  const [selectedLocation, setSelectedLocation] = useState<Location | null>(
-    null,
-  );
   const [selectedTime, setSelectedTime] = useState<string | null>(null);
   const [data, setData] = useState<AirQualityRecord[]>([]);
   const [loading, setLoading] = useState(true);
   const [measureProgress, setMeasureProgress] = useState(0);
   const [measureStatus, setMeasureStatus] = useState("");
-  const [result, setResult] = useState<MeasurementResult | null>(null);
+  const [results, setResults] = useState<MeasurementResult[]>([]);
   const measureIntervalRef = useRef<ReturnType<typeof setInterval> | null>(
     null,
   );
@@ -605,38 +573,38 @@ export default function AirQualityMeasurementLab({
   }, []);
 
   const availableTimes = useMemo(() => {
-    if (!selectedLocation) return [];
+    if (data.length === 0) return [];
+    // Use Solo as reference for times (assuming all cities have same times)
     const times = data
-      .filter((r) => r.kota === selectedLocation)
+      .filter((r) => r.kota === "Solo")
       .map((r) => r.jam);
     return [...new Set(times)].sort((a, b) => {
       const ah = parseFloat(a.replace(".", ":"));
       const bh = parseFloat(b.replace(".", ":"));
       return ah - bh;
     });
-  }, [data, selectedLocation]);
+  }, [data]);
 
   const availableDates = useMemo(() => {
-    if (!selectedLocation || !selectedTime) return [];
+    if (!selectedTime || data.length === 0) return [];
     return data
-      .filter((r) => r.kota === selectedLocation && r.jam === selectedTime)
+      .filter((r) => r.kota === "Solo" && r.jam === selectedTime)
       .map((r) => ({ hari: r.hari, tanggal: r.tanggal }));
-  }, [data, selectedLocation, selectedTime]);
+  }, [data, selectedTime]);
 
   const startMeasurement = useCallback(() => {
-    if (!selectedLocation || !selectedTime) return;
+    if (!selectedTime) return;
 
     setScreen("measuring");
     setMeasureProgress(0);
 
     const statuses = [
-      "Menginisialisasi alat ukur...",
-      "Menyiapkan sensor PM₁₀ dan PM₂.₅...",
-      "Mengukur konsentrasi SO₂...",
-      "Mendeteksi level CO...",
-      "Menganalisis O₃ dan NO₂...",
-      "Memproses data HC...",
-      "Menghitung indeks ISPU...",
+      "Menginisialisasi alat ukur di 3 lokasi...",
+      "Menyiapkan sensor di Tasikmalaya, Solo, dan Kutai Barat...",
+      "Mengukur konsentrasi polutan udara...",
+      "Sinkronisasi data antar stasiun...",
+      "Menganalisis parameter ISPU...",
+      "Menghitung rata-rata regional...",
       "Finalisasi hasil pengukuran...",
     ];
 
@@ -653,17 +621,24 @@ export default function AirQualityMeasurementLab({
       if (progress >= 100) {
         if (measureIntervalRef.current)
           clearInterval(measureIntervalRef.current);
-        const record = data.find(
-          (r) => r.kota === selectedLocation && r.jam === selectedTime,
-        );
-        if (record) {
-          const res = calculateResult(record);
-          setResult(res);
+        
+        const currentResults: MeasurementResult[] = [];
+        LOCATIONS.forEach(loc => {
+          const record = data.find(
+            (r) => r.kota === loc && r.jam === selectedTime,
+          );
+          if (record) {
+            currentResults.push(calculateResult(record));
+          }
+        });
+
+        if (currentResults.length > 0) {
+          setResults(currentResults);
           setScreen("result");
         }
       }
-    }, 60); // Faster for demo purposes
-  }, [data, selectedLocation, selectedTime]);
+    }, 40);
+  }, [data, selectedTime]);
 
   useEffect(() => {
     return () => {
@@ -682,7 +657,7 @@ export default function AirQualityMeasurementLab({
       );
     }
 
-    if (screen === "start" || screen === "location") {
+    if (screen === "start") {
       return (
         <div className="flex flex-col h-full space-y-6">
           <div className="flex items-center justify-between">
@@ -696,51 +671,40 @@ export default function AirQualityMeasurementLab({
               ← Kembali
             </button>
           </div>
-          <p className="text-slate-500 mt-2">
-            Pilih lokasi pemantauan pada peta atau daftar di bawah untuk
-            memulai simulasi pengukuran kualitas udara.
-          </p>
-
-          <div className="flex-1 overflow-y-auto pr-2 space-y-3">
-            {LOCATIONS.map((loc) => (
-              <button
-                key={loc}
-                onClick={() => {
-                  setSelectedLocation(loc);
-                  setSelectedTime(null);
-                }}
-                className={`w-full flex items-center justify-between p-4 rounded-xl border-2 transition-all ${
-                  selectedLocation === loc
-                    ? "border-primary bg-primary/10 shadow-sm"
-                    : "border-slate-200 hover:border-primary/50 bg-white"
-                }`}
-              >
-                <div className="flex items-center gap-3">
-                  <MapPinIcon
-                    className={`w-6 h-6 ${selectedLocation === loc ? "text-primary" : "text-slate-400"}`}
-                  />
-                  <span className="font-bold text-slate-700">{loc}</span>
-                </div>
-                <div
-                  className={`w-6 h-6 rounded-full border-2 flex items-center justify-center ${selectedLocation === loc ? "border-primary" : "border-slate-300"}`}
-                >
-                  {selectedLocation === loc && (
-                    <div className="w-3 h-3 bg-primary rounded-full" />
-                  )}
-                </div>
-              </button>
-            ))}
+          
+          <div className="bg-blue-50 border-l-4 border-primary p-4 rounded-r-xl">
+            <h3 className="font-bold text-primary mb-1">Misi Pengukuran</h3>
+            <p className="text-sm text-slate-600 leading-relaxed">
+              Anda akan melakukan pemantauan kualitas udara secara serentak di 3 lokasi berbeda di Indonesia untuk membandingkan kondisi lingkungan yang berbeda.
+            </p>
           </div>
 
-          <div className="mt-auto pt-6 space-y-3">
+          <div className="flex-1 space-y-4">
+            <h4 className="font-bold text-slate-700">Lokasi Pemantauan:</h4>
+            <div className="space-y-3">
+              {LOCATIONS.map((loc) => (
+                <div
+                  key={loc}
+                  className="flex items-center gap-3 p-4 rounded-xl border-2 border-slate-100 bg-white shadow-sm"
+                >
+                  <MapPinIcon className="w-6 h-6 text-primary" />
+                  <div>
+                    <span className="font-bold text-slate-700 block">{loc}</span>
+                    <span className="text-xs text-slate-500">
+                      {loc === "Tasikmalaya" ? "Jawa Barat (Kaki Gunung)" : 
+                       loc === "Solo" ? "Jawa Tengah (Pusat Kota)" : 
+                       "Kalimantan Timur (Area Hutan)"}
+                    </span>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+
+          <div className="mt-auto pt-6">
             <button
-              disabled={!selectedLocation}
               onClick={() => setScreen("time")}
-              className={`w-full py-4 rounded-xl font-bold tracking-wide shadow-lg transition-all ${
-                selectedLocation
-                  ? "bg-primary text-white hover:shadow-xl active:scale-95"
-                  : "bg-slate-200 text-slate-400 cursor-not-allowed"
-              }`}
+              className="w-full py-4 rounded-xl font-bold tracking-wide shadow-lg transition-all bg-primary text-white hover:shadow-xl active:scale-95"
             >
               Lanjut Pilih Waktu
             </button>
@@ -753,22 +717,22 @@ export default function AirQualityMeasurementLab({
       return (
         <div className="flex flex-col h-full space-y-6">
           <button
-            onClick={() => setScreen("location")}
+            onClick={() => setScreen("start")}
             className="self-start text-sm text-primary font-medium hover:underline flex items-center gap-1"
           >
-            ← Kembali Pilih Lokasi
+            ← Kembali ke Info
           </button>
 
           <div>
             <h2 className="text-2xl font-serif font-bold text-slate-800">
               Pilih Waktu Pengukuran
             </h2>
-            <p className="text-slate-500 mt-1 flex items-center gap-1">
-              <MapPinIcon className="w-4 h-4" /> {selectedLocation}
+            <p className="text-slate-500 mt-1">
+              Pengukuran akan dilakukan secara serentak pada waktu yang Anda pilih.
             </p>
           </div>
 
-          <div className="grid grid-cols-3 gap-3 flex-1 content-start">
+          <div className="grid grid-cols-3 gap-3 flex-1 content-start overflow-y-auto pr-2">
             {availableTimes.map((time) => (
               <button
                 key={time}
@@ -816,16 +780,15 @@ export default function AirQualityMeasurementLab({
               Konfirmasi & Mulai
             </h2>
             <p className="text-slate-500 mt-2">
-              Anda akan melakukan pengukuran kualitas udara dengan parameter
-              berikut:
+              Anda akan mengaktifkan sensor di 3 lokasi pemantauan pada:
             </p>
           </div>
 
           <div className="bg-slate-100 rounded-xl p-5 space-y-4">
-            <div className="flex justify-between">
-              <span className="text-slate-500 text-sm">Lokasi</span>
-              <span className="font-bold text-slate-800">
-                {selectedLocation}
+            <div className="flex justify-between items-start">
+              <span className="text-slate-500 text-sm">Lokasi (3)</span>
+              <span className="font-bold text-slate-800 text-right">
+                Tasikmalaya, Solo,<br />Kutai Barat
               </span>
             </div>
             <div className="flex justify-between">
@@ -847,7 +810,7 @@ export default function AirQualityMeasurementLab({
               onClick={startMeasurement}
               className="w-full bg-primary text-white mb-4 py-4 rounded-xl font-bold tracking-wide shadow-lg hover:shadow-xl transition-all active:scale-95"
             >
-              Mulai Pengukuran
+              Mulai Pengukuran Serentak
             </button>
           </div>
         </div>
@@ -855,98 +818,97 @@ export default function AirQualityMeasurementLab({
     }
 
     if (screen === "measuring") {
-      return (
-        <div className="flex flex-col h-full justify-center items-center text-center space-y-6">
-          <div className="w-16 h-16 border-4 border-primary/20 border-t-primary rounded-full animate-spin mx-auto" />
-          <div>
-            <h2 className="text-2xl font-serif font-bold text-slate-800">
-              Proses Pengukuran
-            </h2>
-            <p className="text-slate-500 mt-2">
-              Mohon tunggu, sensor sedang mengambil data dari lingkungan
-              sekitar.
-            </p>
-          </div>
-        </div>
-      );
+      return null;
     }
 
-    if (screen === "result" && result) {
+    if (screen === "result" && results.length > 0) {
       return (
-        <div className="flex flex-col h-full space-y-6 overflow-hidden">
+        <div className="flex flex-col h-full space-y-6 overflow-hidden max-w-5xl mx-auto w-full">
           <div>
             <h2 className="text-2xl font-serif font-bold text-slate-800">
               Hasil Pengukuran
             </h2>
             <div className="flex gap-2 mt-2 text-sm text-slate-500">
               <span className="px-2 py-1 bg-slate-100 rounded">
-                {result.record.kota}
+                Serentak di 3 Lokasi
               </span>
               <span className="px-2 py-1 bg-slate-100 rounded">
-                {result.record.jam}
+                Jam {results[0].record.jam}
               </span>
             </div>
           </div>
 
-          <div className="flex-1 overflow-y-auto pr-2 space-y-4">
-            <div
-              className={`p-4 rounded-xl text-white ${getCategoryBgClass(result.overallCategory)}`}
-            >
-              <p className="text-sm opacity-90 font-medium">Kategori Dominan</p>
-              <h3 className="text-xl font-bold">{result.overallCategory}</h3>
-              <p className="text-xs mt-2 opacity-80">
-                {getCategoryDescription(result.overallCategory)}
-              </p>
-            </div>
+          <div className="flex-1 overflow-y-auto pr-2 space-y-8">
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+              {results.map((res, idx) => (
+                <div key={res.record.kota} className="space-y-4">
+                  <div className="flex items-center gap-2 border-b pb-2">
+                    <div className="w-6 h-6 rounded-full bg-primary text-white flex items-center justify-center text-xs font-bold">
+                      {idx + 1}
+                    </div>
+                    <h3 className="font-bold text-slate-800 text-lg">{res.record.kota}</h3>
+                  </div>
 
-            <div className="bg-white border rounded-xl overflow-hidden text-sm">
-              <table className="w-full">
-                <thead className="bg-slate-50 text-slate-500">
-                  <tr>
-                    <th className="p-3 text-left">Parameter</th>
-                    <th className="p-3 text-center">Nilai</th>
-                  </tr>
-                </thead>
-                <tbody className="divide-y divide-slate-100">
-                  {PARAMETERS.map((param) => {
-                    const cat = result.categories[param.key];
-                    return (
-                      <tr key={param.key}>
-                        <td className="p-3">
-                          <span className="font-medium block">
-                            {param.label}
-                          </span>
-                          <span className="text-xs text-slate-400">
-                            {param.unit}
-                          </span>
-                        </td>
-                        <td className="p-3 text-center font-mono font-bold">
-                          <div className="flex flex-col items-center">
-                            <span>{cat.value !== null ? cat.value : "-"}</span>
-                            {cat.category !== "-" && (
-                              <span
-                                className={`text-[10px] px-1.5 py-0.5 rounded ${getCategoryTextClass(cat.category)}`}
-                                style={{ backgroundColor: cat.color + "20" }}
-                              >
-                                {cat.category}
-                              </span>
-                            )}
-                          </div>
-                        </td>
-                      </tr>
-                    );
-                  })}
-                </tbody>
-              </table>
+                  <div
+                    className={`p-4 rounded-xl text-white ${getCategoryBgClass(res.overallCategory)}`}
+                  >
+                    <div className="flex justify-between items-center mb-1">
+                      <p className="text-sm opacity-90 font-medium">Kategori ISPU</p>
+                      <span className="text-2xl font-black">{res.overallMax}</span>
+                    </div>
+                    <h3 className="text-xl font-bold">{res.overallCategory}</h3>
+                  </div>
+
+                  <div className="bg-white border rounded-xl overflow-hidden text-sm shadow-sm">
+                    <table className="w-full">
+                      <thead className="bg-slate-50 text-slate-500">
+                        <tr>
+                          <th className="p-3 text-left">Parameter</th>
+                          <th className="p-3 text-center">Nilai</th>
+                        </tr>
+                      </thead>
+                      <tbody className="divide-y divide-slate-100">
+                        {PARAMETERS.map((param) => {
+                          const cat = res.categories[param.key];
+                          return (
+                            <tr key={param.key}>
+                              <td className="p-3">
+                                <span className="font-medium block">
+                                  {param.label}
+                                </span>
+                                <span className="text-xs text-slate-400">
+                                  {param.unit}
+                                </span>
+                              </td>
+                              <td className="p-3 text-center font-mono font-bold">
+                                <div className="flex flex-col items-center">
+                                  <span>{cat.value !== null ? cat.value : "-"}</span>
+                                  {cat.category !== "-" && (
+                                    <span
+                                      className={`text-[10px] px-1.5 py-0.5 rounded ${getCategoryTextClass(cat.category)}`}
+                                      style={{ backgroundColor: cat.color + "20" }}
+                                    >
+                                      {cat.category}
+                                    </span>
+                                  )}
+                                </div>
+                              </td>
+                            </tr>
+                          );
+                        })}
+                      </tbody>
+                    </table>
+                  </div>
+                </div>
+              ))}
             </div>
           </div>
 
           <div className="pt-4 border-t">
             <button
               onClick={() => {
-                setScreen("location");
-                setResult(null);
-                setSelectedLocation(null);
+                setScreen("start");
+                setResults([]);
                 setSelectedTime(null);
               }}
               className="w-full bg-slate-100 text-slate-700 py-3 rounded-xl font-bold hover:bg-slate-200 transition-colors"
@@ -966,50 +928,68 @@ export default function AirQualityMeasurementLab({
   return (
     <div className="flex flex-col md:flex-row w-full h-screen bg-slate-50 overflow-hidden font-sans">
       {/* Visual Stage: Top on mobile, right on desktop */}
-      <div className="flex-none h-[40vh] min-h-[300px] md:h-full md:flex-1 relative bg-[#E0F6FF] overflow-hidden justify-center items-center order-1 md:order-2">
-        {/* Background Visuals based on screen */}
-        {(screen === "start" ||
-          screen === "location" ||
-          screen === "time" ||
-          screen === "confirm") && (
+      <div
+        className={`flex-none transition-all duration-500 relative bg-[#E0F6FF] overflow-hidden order-1 md:order-2
+        ${(screen === "time" || screen === "confirm") ? "h-0 md:h-full md:flex-1" : "h-[45vh] min-h-[350px] md:h-full md:flex-1"}
+        ${screen === "measuring" ? "h-full md:h-full md:flex-1" : ""}
+        ${screen === "result" ? "hidden" : ""}
+      `}
+      >
+        {/* Background Visuals for selection phases */}
+        {(screen === "start" || screen === "time" || screen === "confirm") && (
           <div className="absolute inset-0 flex items-center justify-center p-4 md:p-8">
             <div className="w-full max-w-4xl text-center">
-              <h2 className="text-2xl md:text-4xl font-serif text-sky-800 opacity-50 mb-4 md:mb-12">
-                Pilih Lokasi Pemantauan
+              <h2 className="text-xl md:text-3xl font-serif text-sky-800 opacity-60 mb-4 md:mb-8">
+                Jaringan Pemantauan Kualitas Udara
               </h2>
-              <IndonesiaMap selected={selectedLocation} />
+              <IndonesiaMap isMonitoring={screen === "confirm"} />
             </div>
           </div>
         )}
 
+        {/* Measuring/Result visuals - 3 split screen */}
         {(screen === "measuring" || screen === "result") && (
-          <div className="absolute inset-0 transition-opacity duration-1000 opacity-100">
-            <EnvironmentVisual location={selectedLocation || "Tasikmalaya"} />
-            {/* Dark overlay during measuring for focus */}
-            {screen === "measuring" && (
-              <div className="absolute inset-0 bg-black/20" />
-            )}
+          <div className="flex flex-col md:flex-row h-full w-full">
+            {LOCATIONS.map((loc, idx) => (
+              <div
+                key={loc}
+                className={`relative flex-1 border-slate-300/30 ${idx !== 2 ? "border-b md:border-b-0 md:border-r" : ""}`}
+              >
+                <div className="absolute inset-0 transition-opacity duration-1000 opacity-100">
+                  <EnvironmentVisual location={loc} />
+                  <div className="absolute inset-0 bg-black/10" />
+
+                  {/* Location Label */}
+                  <div className="absolute top-4 left-4 z-20">
+                    <span className="px-3 py-1 bg-white/90 backdrop-blur shadow-sm rounded-full text-xs font-bold text-slate-700">
+                      {loc}
+                    </span>
+                  </div>
+
+                  {/* Device/Measurement UI for this location */}
+                  <div className="absolute inset-x-0 bottom-4 flex justify-center items-end px-4">
+                    <div className="w-full max-w-[180px] md:max-w-[240px]">
+                      <DeviceSVG
+                        progress={measureProgress}
+                        status={measureStatus}
+                        result={results[idx] || null}
+                        compact={true}
+                      />
+                    </div>
+                  </div>
+                </div>
+              </div>
+            ))}
           </div>
         )}
-
-        {/* Foreground Visuals: The Device */}
-        <div
-          className={`absolute bottom-0 xl:-bottom-12 transition-transform duration-1000 transform ${
-            screen === "measuring" || screen === "result"
-              ? "translate-y-0 opacity-100 scale-100"
-              : "translate-y-full opacity-0 scale-75 pointer-events-none"
-          }`}
-        >
-          <DeviceSVG
-            progress={measureProgress}
-            status={measureStatus}
-            result={result}
-          />
-        </div>
       </div>
 
       {/* Left Panel: Controls */}
-      <div className="flex-1 md:w-100 lg:w-112.5 md:shrink-0 bg-white border-t md:border-t-0 md:border-r border-slate-200 p-6 md:p-8 flex flex-col z-10 shadow-[0_-4px_24px_rgba(0,0,0,0.05)] md:shadow-[4px_0_24px_rgba(0,0,0,0.05)] overflow-y-auto relative order-2 md:order-1">
+      <div
+        className={`flex-1 md:w-100 lg:w-112.5 md:shrink-0 bg-white border-t md:border-t-0 md:border-r border-slate-200 p-6 md:p-8 flex flex-col z-10 shadow-[0_-4px_24px_rgba(0,0,0,0.05)] md:shadow-[4px_0_24px_rgba(0,0,0,0.05)] overflow-y-auto relative order-2 md:order-1
+        ${screen === "measuring" ? "hidden" : "flex"}
+      `}
+      >
         {renderLeftPanel()}
       </div>
     </div>

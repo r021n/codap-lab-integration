@@ -37,39 +37,13 @@ export default function VirtualLab() {
             Virtual Laboratory
           </h1>
           <p className="text-lg text-slate-600 max-w-2xl mx-auto">
-            Selamat datang di laboratorium virtual. Silakan pilih praktikum yang ingin Anda lakukan hari ini.
+            Selamat datang di laboratorium virtual. Silakan pilih praktikum yang
+            ingin Anda lakukan hari ini.
           </p>
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-12">
-          {/* Lab 1: Air Experiment */}
-          <div
-            onClick={() => setSelectedLab("air-experiment")}
-            className={`cursor-pointer group relative overflow-hidden rounded-3xl border-2 transition-all duration-300 ${
-              selectedLab === "air-experiment"
-                ? "border-primary bg-primary/5 shadow-lg ring-4 ring-primary/10"
-                : "border-slate-200 bg-white hover:border-primary/50 hover:shadow-md"
-            }`}
-          >
-            <div className="p-8">
-              <div className={`mb-6 flex h-16 w-16 items-center justify-center rounded-2xl transition-colors duration-300 ${
-                selectedLab === "air-experiment" ? "bg-primary text-white" : "bg-slate-100 text-slate-600 group-hover:bg-primary/10 group-hover:text-primary"
-              }`}>
-                <FlaskConical size={32} />
-              </div>
-              <h3 className="text-2xl font-bold text-slate-800 mb-3">Percobaan Udara</h3>
-              <p className="text-slate-600 leading-relaxed">
-                Simulasi interaktif untuk mengamati pengaruh CO₂ terhadap suhu lingkungan dan peran tanaman dalam menyeimbangkan ekosistem.
-              </p>
-            </div>
-            {selectedLab === "air-experiment" && (
-              <div className="absolute top-4 right-4 text-primary">
-                <CheckCircle2 size={24} />
-              </div>
-            )}
-          </div>
-
-          {/* Lab 2: Air Quality Measurement */}
+          {/* Lab 1: Air Quality Measurement */}
           <div
             onClick={() => setSelectedLab("air-quality")}
             className={`cursor-pointer group relative overflow-hidden rounded-3xl border-2 transition-all duration-300 ${
@@ -79,17 +53,58 @@ export default function VirtualLab() {
             }`}
           >
             <div className="p-8">
-              <div className={`mb-6 flex h-16 w-16 items-center justify-center rounded-2xl transition-colors duration-300 ${
-                selectedLab === "air-quality" ? "bg-primary text-white" : "bg-slate-100 text-slate-600 group-hover:bg-primary/10 group-hover:text-primary"
-              }`}>
+              <div
+                className={`mb-6 flex h-16 w-16 items-center justify-center rounded-2xl transition-colors duration-300 ${
+                  selectedLab === "air-quality"
+                    ? "bg-primary text-white"
+                    : "bg-slate-100 text-slate-600 group-hover:bg-primary/10 group-hover:text-primary"
+                }`}
+              >
                 <Wind size={32} />
               </div>
-              <h3 className="text-2xl font-bold text-slate-800 mb-3">Pengukuran Lingkungan</h3>
+              <h3 className="text-2xl font-bold text-slate-800 mb-3">
+                Pengukuran Kualitas Udara
+              </h3>
               <p className="text-slate-600 leading-relaxed">
-                Ukur kualitas udara di berbagai lokasi menggunakan sensor virtual. Analisis data PM₂.₅, PM₁₀, dan indeks ISPU secara real-time.
+                Simulasi interaktif pengukuran kualitas udara di beberapa lokasi
+                menggunakan alat sensor secara real time
               </p>
             </div>
             {selectedLab === "air-quality" && (
+              <div className="absolute top-4 right-4 text-primary">
+                <CheckCircle2 size={24} />
+              </div>
+            )}
+          </div>
+
+          {/* Lab 2: Air Experiment */}
+          <div
+            onClick={() => setSelectedLab("air-experiment")}
+            className={`cursor-pointer group relative overflow-hidden rounded-3xl border-2 transition-all duration-300 ${
+              selectedLab === "air-experiment"
+                ? "border-primary bg-primary/5 shadow-lg ring-4 ring-primary/10"
+                : "border-slate-200 bg-white hover:border-primary/50 hover:shadow-md"
+            }`}
+          >
+            <div className="p-8">
+              <div
+                className={`mb-6 flex h-16 w-16 items-center justify-center rounded-2xl transition-colors duration-300 ${
+                  selectedLab === "air-experiment"
+                    ? "bg-primary text-white"
+                    : "bg-slate-100 text-slate-600 group-hover:bg-primary/10 group-hover:text-primary"
+                }`}
+              >
+                <FlaskConical size={32} />
+              </div>
+              <h3 className="text-2xl font-bold text-slate-800 mb-3">
+                Pengaruh Gas CO2 terhadap Suhu
+              </h3>
+              <p className="text-slate-600 leading-relaxed">
+                Simulasi interaktif untuk mengamati pengaruh gas CO2 terhadap
+                suhu lingkungan
+              </p>
+            </div>
+            {selectedLab === "air-experiment" && (
               <div className="absolute top-4 right-4 text-primary">
                 <CheckCircle2 size={24} />
               </div>
